@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 const props = defineProps({
-  id: number,
+  id: { type: Number, required: true },
 });
 const emit = defineEmits<{
   markAsRead: [id: number];
