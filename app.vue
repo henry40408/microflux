@@ -19,9 +19,18 @@
         <small>feed</small> {{ entry.feed.title }} <small>category</small>
         {{ entry.feed.category.title }}
       </div>
-      <EntryAction :id="entry.id" @mark-as-read="onEntryMarkedAsRead" />
+      <EntryAction
+        :id="entry.id"
+        :url="entry.url"
+        @mark-as-read="onEntryMarkedAsRead"
+      />
+      <h3>content</h3>
       <blockquote>{{ entry.content }}</blockquote>
-      <EntryAction :id="entry.id" @mark-as-read="onEntryMarkedAsRead" />
+      <EntryAction
+        :id="entry.id"
+        :url="entry.url"
+        @mark-as-read="onEntryMarkedAsRead"
+      />
     </div>
   </div>
   <div v-else>

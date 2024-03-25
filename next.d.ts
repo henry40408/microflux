@@ -1,5 +1,7 @@
 declare module "nuxt/schema" {
   interface RuntimeConfig {
+    kagiApiToken: string;
+    kagiLanguage: string;
     minifluxUrl: string;
     minifluxApiKey: string;
   }

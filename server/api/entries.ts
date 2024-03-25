@@ -14,7 +14,7 @@ export default defineEventHandler(async () => {
   try {
     const data: MinifluxEntries = await sendRequest<MinifluxEntries>({
       path: "/v1/entries",
-      query: { status: "unread", direction: "desc" },
+      query: { status: "unread", direction: "asc" },
     });
     for (const entry of data.entries) {
       entry.content = sanitizeHtml(entry.content, {

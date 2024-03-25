@@ -20,6 +20,8 @@ export default defineNuxtConfig({
     checker: true,
   },
   runtimeConfig: {
+    kagiApiToken: "",
+    kagiLanguage: "EN",
     minifluxUrl: "",
     minifluxApiKey: "",
   },
