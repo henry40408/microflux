@@ -18,8 +18,8 @@ export default defineEventHandler(async () => {
     });
     for (const entry of data.entries) {
       entry.content = sanitizeHtml(entry.content, {
-        allowedTags: [],
-        allowedAttributes: {},
+        allowedTags: ["a", "br", "img", "p"],
+        allowedAttributes: { a: ["href"], img: ["src"] },
       });
     }
     return data;

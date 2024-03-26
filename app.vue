@@ -1,5 +1,13 @@
 <template>
   <h1>Microflux</h1>
+  <div>
+    <h2>options</h2>
+    <label>
+      <input v-model="autoMarkAsRead" type="checkbox" />
+      Mark as read automatically
+    </label>
+  </div>
+  <h2>entries</h2>
   <div class="actions">
     <small>actions </small>
     <span v-if="pending">loading...</span>
@@ -10,7 +18,12 @@
   <div v-if="data?.entries.length > 0">
     <div v-for="entry in data.entries" :key="entry.id" class="entry">
       <h2>
-        <a :href="entry.url" target="_blank" rel="nofollow">
+        <a
+          :href="entry.url"
+          target="_blank"
+          rel="nofollow"
+          @click="onTitleClicked(entry.id)"
+        >
           {{ entry.title }}
           <small> #{{ entry.id }}</small>
         </a>
@@ -22,15 +35,21 @@
       <EntryAction
         :id="entry.id"
         :url="entry.url"
+        :title="entry.title"
         @mark-as-read="onEntryMarkedAsRead"
+        @open="onTitleClicked"
       />
-      <h3>content</h3>
-      <blockquote>{{ entry.content }}</blockquote>
-      <EntryAction
-        :id="entry.id"
-        :url="entry.url"
-        @mark-as-read="onEntryMarkedAsRead"
-      />
+      <details>
+        <summary>content</summary>
+        <div v-html="entry.content"></div>
+        <EntryAction
+          :id="entry.id"
+          :url="entry.url"
+          :title="entry.title"
+          @mark-as-read="onEntryMarkedAsRead"
+          @open="onTitleClicked"
+        />
+      </details>
     </div>
   </div>
   <div v-else>
@@ -39,7 +58,10 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalStorage } from "@vueuse/core";
+
 const { data, pending, refresh } = await useFetch("/api/entries");
+const autoMarkAsRead = useLocalStorage("auto-mark-as-read", false);
 
 function onRefreshList() {
   refresh();
@@ -51,6 +73,19 @@ function onEntryMarkedAsRead(id) {
     entries: data.value.entries.filter((e) => e.id !== id),
   };
   refresh();
+}
+
+async function onTitleClicked(id) {
+  if (!autoMarkAsRead.value) return;
+  try {
+    await $fetch("/api/entry", {
+      method: "POST",
+      body: { op: "mark-as-read", id },
+    });
+    onEntryMarkedAsRead(id);
+  } catch (err) {
+    console.error("failed to mark as read", err);
+  }
 }
 </script>
 
