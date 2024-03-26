@@ -32,5 +32,6 @@ export default defineEventHandler(async (event) => {
 
   return {
     summary: resp.data.output,
+    tokens,
   };
 });

@@ -23,7 +23,9 @@
 {{ props.url }}
 
 {{ summary }}</code></pre>
-    <small>summary actions </small>
+    <small>token usage </small>
+    <span>{{ tokens }}</span>
+    <small> summary actions </small>
     <span v-if="copied">copied!</span>
     <span v-else>
       <a href="#" @click.prevent="copy(copyable)">copy</a>
@@ -49,6 +51,7 @@ const summarizing = ref(false);
 const saved = ref(false);
 
 const summary = ref("");
+const tokens = ref(0);
 const copyable = computed(
   () => `${props.title}\n\n${props.url}\n\n${summary.value}`,
 );
@@ -90,6 +93,7 @@ async function summarize() {
       body: { url: props.url },
     });
     summary.value = data.summary;
+    tokens.value = data.tokens;
   } catch (err) {
     // empty
   } finally {
