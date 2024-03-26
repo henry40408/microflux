@@ -39,9 +39,7 @@
         @mark-as-read="onEntryMarkedAsRead"
         @open="onTitleClicked"
       />
-      <details>
-        <summary>content</summary>
-        <div v-html="entry.content"></div>
+      <EntryContent :content="entry.content">
         <EntryAction
           :id="entry.id"
           :url="entry.url"
@@ -49,7 +47,7 @@
           @mark-as-read="onEntryMarkedAsRead"
           @open="onTitleClicked"
         />
-      </details>
+      </EntryContent>
     </div>
   </div>
   <div v-else>
