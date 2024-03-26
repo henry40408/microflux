@@ -7,7 +7,7 @@
       Mark as read automatically
     </label>
   </div>
-  <h2>entries</h2>
+  <h2>{{ unread }} <small>unread entries</small></h2>
   <div class="actions">
     <small>actions </small>
     <span v-if="pending">loading...</span>
@@ -62,6 +62,12 @@ import { useLocalStorage } from "@vueuse/core";
 
 const { data, pending, refresh } = await useFetch("/api/entries");
 const autoMarkAsRead = useLocalStorage("auto-mark-as-read", false);
+
+const unread = computed(() => {
+  if (!data.value) return 0;
+  const { counters } = data.value;
+  return Object.values(counters.unreads).reduce((acc, v) => acc + v, 0);
+});
 
 function onRefreshList() {
   refresh();

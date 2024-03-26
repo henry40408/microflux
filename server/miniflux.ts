@@ -6,7 +6,7 @@ interface Options {
   body?: Record<string, unknown>;
 }
 
-export async function sendRequest<T>(options: Options) {
+export async function sendRequest<T>(options: Options): Promise<T> {
   const { minifluxUrl, minifluxApiKey } = useRuntimeConfig();
   options.headers = options.headers || {};
   options.headers["x-auth-token"] =
@@ -15,5 +15,6 @@ export async function sendRequest<T>(options: Options) {
   for (const [k, v] of Object.entries(options.query || {})) {
     url.searchParams.set(k, v);
   }
-  return $fetch<T>(url.toString(), options);
+  const data = await $fetch(url.toString(), options);
+  return data as T;
 }
