@@ -1,21 +1,30 @@
 <template>
   <h1>Microflux</h1>
-  <div>
-    <h2>options</h2>
-    <label>
-      <input v-model="autoMarkAsRead" type="checkbox" />
-      Mark as read automatically
-    </label>
-  </div>
-  <h2>{{ unread }} <small>unread entries</small></h2>
+  <h2>options</h2>
+  <label>
+    <input v-model="autoMarkAsRead" type="checkbox" />
+    Mark as read automatically
+  </label>
+  <h2>
+    {{ unread }}
+    <small>unread entries</small>
+    {{ data.entries.length }}
+    <small>entries</small>
+  </h2>
   <div class="actions">
     <small>actions </small>
     <span v-if="pending">loading...</span>
     <span v-else>
-      <a href="#" @click.prevent="onRefreshList">refresh</a>
+      <a href="#" @click.prevent="refresh">refresh</a>
+      <span v-if="selectedFeed">
+        |
+        <a href="#" @click.prevent="onFeedClick(null)">
+          unselect {{ selectedFeedTitle }}
+        </a>
+      </span>
     </span>
   </div>
-  <div v-if="data?.entries.length > 0">
+  <div v-if="data.entries.length > 0">
     <div v-for="entry in data.entries" :key="entry.id" class="entry">
       <h2>
         <a
@@ -29,7 +38,11 @@
         </a>
       </h2>
       <div class="metadata">
-        <small>feed</small> {{ entry.feed.title }} <small>category</small>
+        <small>feed </small>
+        <a href="#" @click.prevent="onFeedClick(entry.feed.id)">
+          {{ entry.feed.title }}
+        </a>
+        <small> category</small>
         {{ entry.feed.category.title }}
       </div>
       <EntryAction
@@ -50,6 +63,9 @@
       </EntryContent>
     </div>
   </div>
+  <div v-if="data.entries.length > 0" class="actions">
+    <a href="#" @click.prevent="onMarkAllAsReadClick">mark all as read</a>
+  </div>
   <div v-else>
     <em>(no entries)</em>
   </div>
@@ -57,25 +73,32 @@
 
 <script setup lang="ts">
 import { useLocalStorage } from "@vueuse/core";
+import uniqBy from "lodash/uniqBy";
 
-const { data, pending, refresh } = await useFetch("/api/entries");
-const autoMarkAsRead = useLocalStorage("auto-mark-as-read", false);
-
-const unread = computed(() => {
-  if (!data.value) return 0;
-  const { counters } = data.value;
-  return Object.values(counters.unreads).reduce((acc, v) => acc + v, 0);
+const selectedFeed = ref(null);
+const selectedFeedTitle = computed(
+  () => feeds.value.find((f) => f.id === selectedFeed.value).title,
+);
+const entriesUrl = computed(
+  () => `/api/entries?feed_id=${selectedFeed.value ?? ""}`,
+);
+const { data, pending, refresh } = await useFetch(entriesUrl, {
+  refetch: true,
 });
-
-function onRefreshList() {
-  refresh();
-}
+const feeds = computed(() =>
+  uniqBy(data.value.entries.map((e) => e.feed).flat(), (f) => f.id),
+);
+const autoMarkAsRead = useLocalStorage("auto-mark-as-read", false);
+const unread = computed(() =>
+  Object.values(data.value.counters.unreads).reduce((acc, v) => acc + v, 0),
+);
 
 function onEntryMarkedAsRead(id) {
   data.value = {
     ...data.value,
     entries: data.value.entries.filter((e) => e.id !== id),
   };
+  if (data.value.entries.length <= 0) selectedFeed.value = null;
   refresh();
 }
 
@@ -87,6 +110,25 @@ async function onTitleClicked(id) {
       body: { op: "mark-as-read", id },
     });
     onEntryMarkedAsRead(id);
+  } catch (err) {
+    console.error("failed to mark as read", err);
+  }
+}
+
+function onFeedClick(id) {
+  selectedFeed.value = id;
+}
+
+async function onMarkAllAsReadClick() {
+  try {
+    if (!confirm("are you sure?")) return;
+    const ids = data.value.entries.map((e) => e.id);
+    await $fetch("/api/entry", {
+      method: "POST",
+      body: { op: "mark-as-read", ids },
+    });
+    selectedFeed.value = null;
+    refresh();
   } catch (err) {
     console.error("failed to mark as read", err);
   }

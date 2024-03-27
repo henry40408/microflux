@@ -1,3 +1,4 @@
+import { getQuery } from "h3";
 import sanitizeHtml from "sanitize-html";
 
 import { sendRequest } from "../miniflux";
@@ -19,11 +20,13 @@ interface MinifluxUnreadCounters {
   };
 }
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
   try {
+    const query = getQuery(event);
+    const feedId = query.feed_id;
     const [data, counters] = await Promise.all([
       sendRequest<MinifluxEntries>({
-        path: "/v1/entries",
+        path: feedId ? `/v1/feeds/${feedId}/entries` : "/v1/entries",
         query: { status: "unread", direction: "asc" },
       }),
       sendRequest<MinifluxUnreadCounters>({
