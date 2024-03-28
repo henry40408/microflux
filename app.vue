@@ -5,21 +5,42 @@ import uniqBy from "lodash/uniqBy";
 // options
 const autoMarkAsRead = useLocalStorage("auto-mark-as-read", false);
 
-// fitler by feed
+// fitler by category / feed
+const selectedCategory = ref(null);
+const selectedCategoryTitle = computed(
+  () => categories.value.find((c) => c.id === selectedCategory.value).title,
+);
 const selectedFeed = ref(null);
 const selectedFeedTitle = computed(
   () => feeds.value.find((f) => f.id === selectedFeed.value).title,
 );
-const entriesUrl = computed(
-  () => `/api/entries?feed_id=${selectedFeed.value ?? ""}`,
-);
+
+const entriesFilter = computed(() => {
+  if (selectedCategory.value) {
+    return `category:${selectedCategory.value}`;
+  }
+  if (selectedFeed.value) {
+    return `feed:${selectedFeed.value}`;
+  }
+  return "";
+});
+const entriesUrl = computed(() => `/api/entries?filter=${entriesFilter.value}`);
 const { data, pending, refresh } = await useFetch(entriesUrl, {
   refetch: true,
 });
 
-const entriesCount = computed(() => data.value.entries.length);
+const filteredEntries = computed(() => {
+  if (selectedCategory.value && selectedFeed.value) {
+    return data.value.entries.filter((e) => e.feed.id === selectedFeed.value);
+  }
+  return data.value.entries;
+});
+const entriesCount = computed(() => filteredEntries.value.length);
 const feeds = computed(() =>
-  uniqBy(data.value.entries.map((e) => e.feed).flat(), (f) => f.id),
+  uniqBy(filteredEntries.value.map((e) => e.feed).flat(), (f) => f.id),
+);
+const categories = computed(() =>
+  uniqBy(feeds.value.map((f) => f.category).flat(), (c) => c.id),
 );
 const unread = computed(() =>
   Object.values(data.value.counters.unreads).reduce((acc, v) => acc + v, 0),
@@ -32,12 +53,19 @@ async function fetchMarkAsRead(ids: number[]) {
   });
 }
 
+function onCategoryClick(id) {
+  selectedCategory.value = id;
+}
+
 function onEntryMarkedAsRead(ids: number[]) {
   data.value = {
     ...data.value,
     entries: data.value.entries.filter((e) => !ids.includes(e.id)),
   };
-  if (data.value.entries.length <= 0) selectedFeed.value = null;
+  if (data.value.entries.length <= 0) {
+    selectedCategory.value = null;
+    selectedFeed.value = null;
+  }
   refresh();
 }
 
@@ -47,7 +75,7 @@ function onFeedClick(id) {
 
 async function onMarkAllAsReadClick() {
   try {
-    const ids = data.value.entries.map((e) => e.id);
+    const ids = filteredEntries.value.map((e) => e.id);
     await fetchMarkAsRead(ids);
     onEntryMarkedAsRead(ids);
   } catch (err) {
@@ -81,6 +109,14 @@ async function onTitleClicked(id) {
     <span v-else>
       <a href="#" @click.prevent="refresh">refresh</a>
       {{}}
+      <span v-if="selectedCategory">
+        <small>selected category</small>
+        {{}}
+        {{ selectedCategoryTitle }}
+        {{}}
+        <a href="#" @click.prevent="onCategoryClick(null)">clear</a>
+      </span>
+      {{}}
       <span v-if="selectedFeed">
         <small>selected feed</small>
         {{}}
@@ -90,8 +126,8 @@ async function onTitleClicked(id) {
       </span>
     </span>
   </div>
-  <div v-if="data.entries.length > 0">
-    <div v-for="entry in data.entries" :key="entry.id" class="entry">
+  <div v-if="filteredEntries.length > 0">
+    <div v-for="entry in filteredEntries" :key="entry.id" class="entry">
       <h2>
         <a
           :href="entry.url"
@@ -112,7 +148,9 @@ async function onTitleClicked(id) {
         {{}}
         <small>category</small>
         {{}}
-        {{ entry.feed.category.title }}
+        <a href="#" @click.prevent="onCategoryClick(entry.feed.category.id)">
+          {{ entry.feed.category.title }}
+        </a>
       </div>
       <EntryAction
         :id="entry.id"

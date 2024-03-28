@@ -23,10 +23,22 @@ interface MinifluxUnreadCounters {
 export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event);
-    const feedId = query.feed_id;
+
+    const filter = query.filter?.toString() || "";
+    const [type, id] = filter.split(":");
+
+    let path = "";
+    if (type === "category") {
+      path = `/v1/categories/${id}/entries`;
+    } else if (type === "feed") {
+      path = `/v1/feeds/${id}/entries`;
+    } else {
+      path = "/v1/entries";
+    }
+
     const [entries, counters] = await Promise.all([
       sendRequest<MinifluxEntries>({
-        path: feedId ? `/v1/feeds/${feedId}/entries` : "/v1/entries",
+        path,
         query: { status: "unread", direction: "asc" },
       }),
       sendRequest<MinifluxUnreadCounters>({
