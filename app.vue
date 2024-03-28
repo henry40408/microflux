@@ -173,12 +173,15 @@ async function onTitleClicked(id) {
   <div v-else>
     <em>(no entries)</em>
   </div>
-  <div v-if="!pending && data.entries.length > 0" class="actions">
+  <div v-if="filteredEntries.length > 0" class="actions">
     <small>actions</small>
     {{}}
-    <Confirm question="are you sure?" @confirmed="onMarkAllAsReadClick">
-      mark all as read
-    </Confirm>
+    <span v-if="pending">loading...</span>
+    <span v-else>
+      <Confirm question="are you sure?" @confirmed="onMarkAllAsReadClick">
+        mark all as read
+      </Confirm>
+    </span>
   </div>
 </template>
 

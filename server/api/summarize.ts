@@ -1,3 +1,5 @@
+import pangu from "pangu";
+
 interface KaigSummary {
   meta: {
     id: string;
@@ -35,7 +37,7 @@ export default defineEventHandler(async (event) => {
     console.log("%j", { action: "summarize", url, tokens });
 
     return {
-      summary: resp.data.output,
+      summary: pangu.spacing(resp.data.output),
       tokens,
     };
   } catch (err) {
