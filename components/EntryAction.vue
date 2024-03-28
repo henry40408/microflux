@@ -1,17 +1,91 @@
+<script setup lang="ts">
+import { useClipboard } from "@vueuse/core";
+
+const props = defineProps({
+  id: { type: Number, required: true },
+  title: { type: String, required: true },
+  url: { type: String, required: true },
+});
+const emit = defineEmits<{
+  markAsRead: [id: number];
+  open: [id: number];
+}>();
+
+const loading = ref(false);
+const summarizing = ref(false);
+const saved = ref(false);
+
+const summary = ref("");
+const tokens = ref(0);
+
+const copyable = computed(
+  () => `${props.title}\n\n${props.url}\n\n${summary.value}`,
+);
+const { copy, copied } = useClipboard({ source: "" });
+
+async function onMarkAsReadClick() {
+  try {
+    loading.value = true;
+    await $fetch("/api/entry", {
+      method: "POST",
+      body: { op: "mark-as-read", id: props.id },
+    });
+    emit("markAsRead", props.id);
+  } catch (err) {
+    //empty
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function onSaveClick() {
+  try {
+    await $fetch("/api/entry", {
+      method: "POST",
+      body: { op: "save", id: props.id },
+    });
+    saved.value = true;
+  } catch (err) {
+    //empty
+  }
+}
+
+async function onSummarizeClick() {
+  try {
+    summarizing.value = true;
+    const data = await $fetch("/api/summarize", {
+      method: "POST",
+      body: { url: props.url },
+    });
+    summary.value = data.summary;
+    tokens.value = data.tokens;
+  } catch (err) {
+    // empty
+  } finally {
+    summarizing.value = false;
+  }
+}
+
+function onOpen() {
+  emit("open", props.id);
+}
+</script>
+
 <template>
   <div v-if="loading">loading...</div>
   <div v-else>
-    <small>entry actions </small>
-    <a href="#" @click.prevent="markAsRead">mark as read</a>
+    <small>actions</small>
+    {{}}
+    <a href="#" @click.prevent="onMarkAsReadClick">mark as read</a>
     |
     <span v-if="saved">done!</span>
     <span v-else>
-      <a href="#" @click.prevent="save">save</a>
+      <a href="#" @click.prevent="onSaveClick">save</a>
     </span>
     |
     <span v-if="summarizing">summarizing...</span>
     <span v-if="!summarizing && !summary">
-      <a href="#" @click.prevent="summarize">summarize</a>
+      <a href="#" @click.prevent="onSummarizeClick">summarize</a>
     </span>
     <span v-if="summary">summarized!</span>
     |
@@ -32,79 +106,6 @@
     </span>
   </div>
 </template>
-
-<script setup lang="ts">
-import { useClipboard } from "@vueuse/core";
-
-const props = defineProps({
-  id: { type: Number, required: true },
-  title: { type: String, required: true },
-  url: { type: String, required: true },
-});
-const emit = defineEmits<{
-  markAsRead: [id: number];
-  open: [id: number];
-}>();
-
-const loading = ref(false);
-const summarizing = ref(false);
-const saved = ref(false);
-
-const summary = ref("");
-const tokens = ref(0);
-const copyable = computed(
-  () => `${props.title}\n\n${props.url}\n\n${summary.value}`,
-);
-
-const { copy, copied } = useClipboard({ source: "" });
-
-async function markAsRead() {
-  try {
-    loading.value = true;
-    await $fetch("/api/entry", {
-      method: "POST",
-      body: { op: "mark-as-read", id: props.id },
-    });
-    emit("markAsRead", props.id);
-  } catch (err) {
-    //empty
-  } finally {
-    loading.value = false;
-  }
-}
-
-async function save() {
-  try {
-    await $fetch("/api/entry", {
-      method: "POST",
-      body: { op: "save", id: props.id },
-    });
-    saved.value = true;
-  } catch (err) {
-    //empty
-  }
-}
-
-async function summarize() {
-  try {
-    summarizing.value = true;
-    const data = await $fetch("/api/summarize", {
-      method: "POST",
-      body: { url: props.url },
-    });
-    summary.value = data.summary;
-    tokens.value = data.tokens;
-  } catch (err) {
-    // empty
-  } finally {
-    summarizing.value = false;
-  }
-}
-
-function onOpen() {
-  emit("open", props.id);
-}
-</script>
 
 <style scoped>
 .summary {

@@ -12,7 +12,10 @@ async function markAsRead(ids: number[]) {
     return { ids };
   } catch (err) {
     console.error("failed to mark %j as read", ids, err);
-    return {};
+    throw createError({
+      status: 502,
+      message: "failed to mark as read",
+    });
   }
 }
 
@@ -25,7 +28,10 @@ async function save(id: number) {
     return { id };
   } catch (err) {
     console.error("failed to save %d", id);
-    return {};
+    throw createError({
+      status: 502,
+      message: "failed to save",
+    });
   }
 }
 

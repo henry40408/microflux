@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event);
     const feedId = query.feed_id;
-    const [data, counters] = await Promise.all([
+    const [entries, counters] = await Promise.all([
       sendRequest<MinifluxEntries>({
         path: feedId ? `/v1/feeds/${feedId}/entries` : "/v1/entries",
         query: { status: "unread", direction: "asc" },
@@ -33,18 +33,27 @@ export default defineEventHandler(async (event) => {
         path: "/v1/feeds/counters",
       }),
     ]);
-    for (const entry of data.entries) {
+    console.debug("%j", {
+      action: "fetch_unread_entries",
+      count: entries.entries.length,
+    });
+    console.debug("%j", { action: "fetch_unread_counters", counters });
+
+    for (const entry of entries.entries) {
       entry.content = sanitizeHtml(entry.content, {
-        allowedTags: ["a", "br", "img", "p"],
+        allowedTags: ["a", "br", "img", "li", "ol", "p", "ul"],
         allowedAttributes: { a: ["href"], img: ["src"] },
       });
     }
     return {
-      entries: data.entries,
+      entries: entries.entries,
       counters,
     };
   } catch (err) {
-    console.error("failed to fetch entries from Miniflux", err);
-    return {};
+    console.error("failed to fetch unread entries from Miniflux", err);
+    throw createError({
+      status: 502,
+      message: "failed to fetch unread entries from Miniflux",
+    });
   }
 });
