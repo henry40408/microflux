@@ -7,8 +7,8 @@ const props = defineProps({
   url: { type: String, required: true },
 });
 const emit = defineEmits<{
-  markAsRead: [id: number];
-  open: [id: number];
+  markAsRead: [ids: number[]];
+  open: [ids: number[]];
 }>();
 
 const loading = ref(false);
@@ -30,7 +30,7 @@ async function onMarkAsReadClick() {
       method: "POST",
       body: { op: "mark-as-read", id: props.id },
     });
-    emit("markAsRead", props.id);
+    emit("markAsRead", [props.id]);
   } catch (err) {
     //empty
   } finally {

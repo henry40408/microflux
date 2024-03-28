@@ -32,10 +32,10 @@ async function fetchMarkAsRead(ids: number[]) {
   });
 }
 
-function onEntryMarkedAsRead(id) {
+function onEntryMarkedAsRead(ids: number[]) {
   data.value = {
     ...data.value,
-    entries: data.value.entries.filter((e) => e.id !== id),
+    entries: data.value.entries.filter((e) => !ids.includes(e.id)),
   };
   if (data.value.entries.length <= 0) selectedFeed.value = null;
   refresh();
@@ -49,8 +49,7 @@ async function onMarkAllAsReadClick() {
   try {
     const ids = data.value.entries.map((e) => e.id);
     await fetchMarkAsRead(ids);
-    selectedFeed.value = null;
-    refresh();
+    onEntryMarkedAsRead(ids);
   } catch (err) {
     console.error("failed to mark as read", err);
   }
@@ -60,7 +59,7 @@ async function onTitleClicked(id) {
   if (!autoMarkAsRead.value) return;
   try {
     await fetchMarkAsRead([id]);
-    onEntryMarkedAsRead(id);
+    onEntryMarkedAsRead([id]);
   } catch (err) {
     console.error("failed to mark as read", err);
   }
