@@ -5,22 +5,37 @@ import uniqBy from "lodash/uniqBy";
 // options
 const autoMarkAsRead = useLocalStorage("auto-mark-as-read", false);
 
+// route
+const { query } = useRoute();
+const router = useRouter();
+
 // fitler by category / feed
-const selectedCategory = ref(null);
-const selectedCategoryTitle = computed(
-  () => categories.value.find((c) => c.id === selectedCategory.value)?.title,
+const category = ref(query.category ? Number(query.category) : null);
+const categoryTitle = computed(
+  () => categories.value.find((c) => c.id === category.value)?.title,
 );
-const selectedFeed = ref(null);
-const selectedFeedTitle = computed(
-  () => feeds.value.find((f) => f.id === selectedFeed.value)?.title,
+const feed = ref(query.feed ? Number(query.feed) : null);
+const feedTitle = computed(
+  () => feeds.value.find((f) => f.id === feed.value)?.title,
+);
+
+watch(
+  () => [category.value || undefined, feed.value || undefined],
+  (next) => {
+    const [category, feed] = next;
+    router.push({
+      path: "/",
+      query: { category, feed },
+    });
+  },
 );
 
 const filter = computed(() => {
-  if (selectedCategory.value) {
-    return `category:${selectedCategory.value}`;
+  if (category.value) {
+    return `category:${category.value}`;
   }
-  if (selectedFeed.value) {
-    return `feed:${selectedFeed.value}`;
+  if (feed.value) {
+    return `feed:${feed.value}`;
   }
   return "";
 });
@@ -30,8 +45,8 @@ const { data, error, pending, refresh } = await useFetch(entriesUrl, {
 });
 
 const entries = computed(() => {
-  if (selectedCategory.value && selectedFeed.value) {
-    return data.value.entries.filter((e) => e.feed.id === selectedFeed.value);
+  if (category.value && feed.value) {
+    return data.value.entries.filter((e) => e.feed.id === feed.value);
   }
   return data.value.entries;
 });
@@ -59,14 +74,14 @@ async function onEntryMarkedAsRead(ids: number[]) {
 
   // fallback to category if no entries
   if (entries.value.length <= 0) {
-    selectedFeed.value = null;
+    feed.value = null;
   }
 
   await nextTick();
 
   // fallback to all if no entries
   if (entries.value.length <= 0) {
-    selectedCategory.value = null;
+    category.value = null;
   }
 
   refresh();
@@ -107,20 +122,20 @@ async function onTitleClicked(id) {
     <span v-else>
       <a href="#" @click.prevent="refresh">refresh</a>
       {{}}
-      <span v-if="selectedCategory">
+      <span v-if="category">
         <small>selected category</small>
         {{}}
-        {{ selectedCategoryTitle }}
+        {{ categoryTitle }}
         {{}}
-        <a href="#" @click.prevent="selectedCategory = null">clear</a>
+        <a href="#" @click.prevent="category = null">clear</a>
       </span>
       {{}}
-      <span v-if="selectedFeed">
+      <span v-if="feed">
         <small>selected feed</small>
         {{}}
-        {{ selectedFeedTitle }}
+        {{ feedTitle }}
         {{}}
-        <a href="#" @click.prevent="selectedFeed = null">clear</a>
+        <a href="#" @click.prevent="feed = null">clear</a>
       </span>
     </span>
   </div>
@@ -140,13 +155,13 @@ async function onTitleClicked(id) {
       <div class="metadata">
         <small>feed</small>
         {{}}
-        <a href="#" @click.prevent="selectedFeed = entry.feed.id">
+        <a href="#" @click.prevent="feed = entry.feed.id">
           {{ entry.feed.title }}
         </a>
         {{}}
         <small>category</small>
         {{}}
-        <a href="#" @click.prevent="selectedCategory = entry.feed.category.id">
+        <a href="#" @click.prevent="category = entry.feed.category.id">
           {{ entry.feed.category.title }}
         </a>
       </div>

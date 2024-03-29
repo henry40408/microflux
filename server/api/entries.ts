@@ -54,7 +54,13 @@ export default defineEventHandler(async (event) => {
     for (const entry of entries.entries) {
       entry.content = sanitizeHtml(entry.content, {
         allowedTags: ["a", "br", "img", "li", "ol", "p", "ul"],
-        allowedAttributes: { a: ["href"], img: ["src"] },
+        allowedAttributes: { a: ["href", "rel", "target"], img: ["src"] },
+        transformTags: {
+          a: (tagName, attribs) => ({
+            tagName,
+            attribs: { ...attribs, rel: "nofollow", target: "_blank" },
+          }),
+        },
       });
     }
     return {

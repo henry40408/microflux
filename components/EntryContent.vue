@@ -16,7 +16,13 @@ function toggle(e) {
   <details @toggle="toggle">
     <summary>content</summary>
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div v-if="opened" v-html="content" />
+    <div v-if="opened" class="content" v-html="content" />
     <slot />
   </details>
 </template>
+
+<style scoped>
+.content {
+  margin: 0 0 0.6rem;
+}
+</style>
