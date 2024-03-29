@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useConfirmDialog } from "@vueuse/core";
 
-const props = defineProps({
+defineProps({
   question: { type: String, required: true },
 });
 
@@ -20,7 +20,7 @@ onConfirm(() => emit("confirmed"));
 
 <template>
   <span v-if="isRevealed">
-    <span>{{ props.question }}</span>
+    <span>{{ question }}</span>
     {{}}
     <a class="confirm" href="#" @click.prevent="confirm">confirm</a>
     {{}}

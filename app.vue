@@ -8,14 +8,14 @@ const autoMarkAsRead = useLocalStorage("auto-mark-as-read", false);
 // fitler by category / feed
 const selectedCategory = ref(null);
 const selectedCategoryTitle = computed(
-  () => categories.value.find((c) => c.id === selectedCategory.value).title,
+  () => categories.value.find((c) => c.id === selectedCategory.value)?.title,
 );
 const selectedFeed = ref(null);
 const selectedFeedTitle = computed(
-  () => feeds.value.find((f) => f.id === selectedFeed.value).title,
+  () => feeds.value.find((f) => f.id === selectedFeed.value)?.title,
 );
 
-const entriesFilter = computed(() => {
+const filter = computed(() => {
   if (selectedCategory.value) {
     return `category:${selectedCategory.value}`;
   }
@@ -24,20 +24,20 @@ const entriesFilter = computed(() => {
   }
   return "";
 });
-const entriesUrl = computed(() => `/api/entries?filter=${entriesFilter.value}`);
-const { data, pending, refresh } = await useFetch(entriesUrl, {
+const entriesUrl = computed(() => `/api/entries?filter=${filter.value}`);
+const { data, error, pending, refresh } = await useFetch(entriesUrl, {
   refetch: true,
 });
 
-const filteredEntries = computed(() => {
+const entries = computed(() => {
   if (selectedCategory.value && selectedFeed.value) {
     return data.value.entries.filter((e) => e.feed.id === selectedFeed.value);
   }
   return data.value.entries;
 });
-const entriesCount = computed(() => filteredEntries.value.length);
+
 const feeds = computed(() =>
-  uniqBy(filteredEntries.value.map((e) => e.feed).flat(), (f) => f.id),
+  uniqBy(entries.value.map((e) => e.feed).flat(), (f) => f.id),
 );
 const categories = computed(() =>
   uniqBy(feeds.value.map((f) => f.category).flat(), (c) => c.id),
@@ -51,33 +51,31 @@ async function fetchMarkAsRead(ids: number[]) {
     method: "POST",
     body: { op: "mark-as-read", ids },
   });
+  onEntryMarkedAsRead(ids);
 }
 
-function onCategoryClick(id) {
-  selectedCategory.value = id;
-}
+async function onEntryMarkedAsRead(ids: number[]) {
+  data.value.entries = data.value.entries.filter((e) => !ids.includes(e.id));
 
-function onEntryMarkedAsRead(ids: number[]) {
-  data.value = {
-    ...data.value,
-    entries: data.value.entries.filter((e) => !ids.includes(e.id)),
-  };
-  if (data.value.entries.length <= 0) {
-    selectedCategory.value = null;
+  // fallback to category if no entries
+  if (entries.value.length <= 0) {
     selectedFeed.value = null;
   }
+
+  await nextTick();
+
+  // fallback to all if no entries
+  if (entries.value.length <= 0) {
+    selectedCategory.value = null;
+  }
+
   refresh();
 }
 
-function onFeedClick(id) {
-  selectedFeed.value = id;
-}
-
-async function onMarkAllAsReadClick() {
+async function onMarkAllAsRead() {
   try {
-    const ids = filteredEntries.value.map((e) => e.id);
+    const ids = entries.value.map((e) => e.id);
     await fetchMarkAsRead(ids);
-    onEntryMarkedAsRead(ids);
   } catch (err) {
     console.error("failed to mark as read", err);
   }
@@ -87,7 +85,6 @@ async function onTitleClicked(id) {
   if (!autoMarkAsRead.value) return;
   try {
     await fetchMarkAsRead([id]);
-    onEntryMarkedAsRead([id]);
   } catch (err) {
     console.error("failed to mark as read", err);
   }
@@ -101,11 +98,12 @@ async function onTitleClicked(id) {
     <input v-model="autoMarkAsRead" type="checkbox" />
     Mark as read automatically
   </label>
-  <h2>{{ entriesCount }} / {{ unread }} <small>unread entries</small></h2>
-  <div class="actions">
+  <h2>{{ entries.length }} / {{ unread }} <small>unread entries</small></h2>
+  <div>
     <small>actions</small>
     {{}}
-    <span v-if="pending">loading...</span>
+    <span v-if="error">{{ error }}</span>
+    <span v-else-if="pending">loading...</span>
     <span v-else>
       <a href="#" @click.prevent="refresh">refresh</a>
       {{}}
@@ -114,7 +112,7 @@ async function onTitleClicked(id) {
         {{}}
         {{ selectedCategoryTitle }}
         {{}}
-        <a href="#" @click.prevent="onCategoryClick(null)">clear</a>
+        <a href="#" @click.prevent="selectedCategory = null">clear</a>
       </span>
       {{}}
       <span v-if="selectedFeed">
@@ -122,13 +120,13 @@ async function onTitleClicked(id) {
         {{}}
         {{ selectedFeedTitle }}
         {{}}
-        <a href="#" @click.prevent="onFeedClick(null)">clear</a>
+        <a href="#" @click.prevent="selectedFeed = null">clear</a>
       </span>
     </span>
   </div>
-  <div v-if="filteredEntries.length > 0">
-    <div v-for="entry in filteredEntries" :key="entry.id" class="entry">
-      <h2>
+  <div v-if="entries.length > 0">
+    <div v-for="entry in entries" :key="entry.id" class="entry">
+      <h2 class="title">
         <a
           :href="entry.url"
           target="_blank"
@@ -142,13 +140,13 @@ async function onTitleClicked(id) {
       <div class="metadata">
         <small>feed</small>
         {{}}
-        <a href="#" @click.prevent="onFeedClick(entry.feed.id)">
+        <a href="#" @click.prevent="selectedFeed = entry.feed.id">
           {{ entry.feed.title }}
         </a>
         {{}}
         <small>category</small>
         {{}}
-        <a href="#" @click.prevent="onCategoryClick(entry.feed.category.id)">
+        <a href="#" @click.prevent="selectedCategory = entry.feed.category.id">
           {{ entry.feed.category.title }}
         </a>
       </div>
@@ -156,8 +154,8 @@ async function onTitleClicked(id) {
         :id="entry.id"
         :url="entry.url"
         :title="entry.title"
+        class="actions"
         @mark-as-read="onEntryMarkedAsRead"
-        @open="onTitleClicked"
       />
       <EntryContent :content="entry.content">
         <EntryAction
@@ -165,7 +163,6 @@ async function onTitleClicked(id) {
           :url="entry.url"
           :title="entry.title"
           @mark-as-read="onEntryMarkedAsRead"
-          @open="onTitleClicked"
         />
       </EntryContent>
     </div>
@@ -173,12 +170,12 @@ async function onTitleClicked(id) {
   <div v-else>
     <em>(no entries)</em>
   </div>
-  <div v-if="filteredEntries.length > 0" class="actions">
+  <div v-if="entries.length > 0">
     <small>actions</small>
     {{}}
     <span v-if="pending">loading...</span>
     <span v-else>
-      <Confirm question="are you sure?" @confirmed="onMarkAllAsReadClick">
+      <Confirm question="are you sure?" @confirmed="onMarkAllAsRead">
         mark all as read
       </Confirm>
     </span>
@@ -186,18 +183,14 @@ async function onTitleClicked(id) {
 </template>
 
 <style scoped>
-small {
-  color: lightgray;
-}
-
 .entry {
   margin: 0 0 1rem;
-  .metadata {
-    margin: 0 0 1rem;
+  .title small {
+    color: lightgray;
   }
-}
-
-.actions {
-  margin: 0 0 1rem;
+  .actions,
+  .metadata {
+    margin: 0 0 0.6rem;
+  }
 }
 </style>

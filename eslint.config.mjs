@@ -10,4 +10,12 @@ import withNuxt from "./.nuxt/eslint.config.mjs";
 // {
 //   ...
 // }
-export default withNuxt({}, {});
+export default withNuxt(
+  {
+    rules: {
+      // https://github.com/prettier/prettier/issues/5246
+      "vue/html-self-closing": "off",
+    },
+  },
+  {},
+);

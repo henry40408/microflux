@@ -8,7 +8,6 @@ const props = defineProps({
 });
 const emit = defineEmits<{
   markAsRead: [ids: number[]];
-  open: [ids: number[]];
 }>();
 
 const loading = ref(false);
@@ -65,45 +64,41 @@ async function onSummarizeClick() {
     summarizing.value = false;
   }
 }
-
-function onOpen() {
-  emit("open", props.id);
-}
 </script>
 
 <template>
-  <div v-if="loading">loading...</div>
-  <div v-else>
-    <small>actions</small>
-    {{}}
-    <a href="#" @click.prevent="onMarkAsReadClick">mark as read</a>
-    |
-    <span v-if="saved">done!</span>
-    <span v-else>
-      <a href="#" @click.prevent="onSaveClick">save</a>
-    </span>
-    |
-    <span v-if="summarizing">summarizing...</span>
-    <span v-if="!summarizing && !summary">
-      <a href="#" @click.prevent="onSummarizeClick">summarize</a>
-    </span>
-    <span v-if="summary">summarized!</span>
-    |
-    <a :href="props.url" target="_blank" rel="nofollow" @click="onOpen">open</a>
-  </div>
-  <div v-if="summary">
-    <pre><code class="summary">{{ props.title }}
+  <div>
+    <div v-if="loading">loading...</div>
+    <div v-else>
+      <small>actions</small>
+      {{}}
+      <a href="#" @click.prevent="onMarkAsReadClick">mark as read</a>
+      |
+      <span v-if="saved">done!</span>
+      <span v-else>
+        <a href="#" @click.prevent="onSaveClick">save</a>
+      </span>
+      |
+      <span v-if="summarizing">summarizing...</span>
+      <span v-if="!summarizing && !summary">
+        <a href="#" @click.prevent="onSummarizeClick">summarize</a>
+      </span>
+      <span v-if="summary">summarized!</span>
+    </div>
+    <div v-if="summary">
+      <pre><code class="summary">{{ title }}
 
-{{ props.url }}
+{{ url }}
 
 {{ summary }}</code></pre>
-    <small>token usage </small>
-    <span>{{ tokens }}</span>
-    <small> summary actions </small>
-    <span v-if="copied">copied!</span>
-    <span v-else>
-      <a href="#" @click.prevent="copy(copyable)">copy</a>
-    </span>
+      <small>token usage </small>
+      <span>{{ tokens }}</span>
+      <small> summary actions </small>
+      <span v-if="copied">copied!</span>
+      <span v-else>
+        <a href="#" @click.prevent="copy(copyable)">copy</a>
+      </span>
+    </div>
   </div>
 </template>
 

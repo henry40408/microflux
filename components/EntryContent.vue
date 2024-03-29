@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps({
+defineProps({
   content: { type: String, required: true },
 });
 
@@ -15,7 +15,8 @@ function toggle(e) {
 <template>
   <details @toggle="toggle">
     <summary>content</summary>
-    <div v-if="opened" v-html="props.content"></div>
-    <slot></slot>
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <div v-if="opened" v-html="content" />
+    <slot />
   </details>
 </template>
