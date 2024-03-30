@@ -35,9 +35,10 @@ const filter = computed(() => {
   }
   return "";
 });
-const entriesUrl = computed(
-  () => `/api/miniflux/entries?filter=${filter.value}`,
-);
+const entriesUrl = computed(() => {
+  if (filter.value) return `/api/miniflux/entries?filter=${filter.value}`;
+  return "/api/miniflux/entries";
+});
 const { data, error, pending, refresh } = await useLazyFetch(entriesUrl, {
   key: "unread-entries-counters",
   refetch: true,
