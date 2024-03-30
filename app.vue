@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import { useLocalStorage } from "@vueuse/core";
 import uniqBy from "lodash/uniqBy";
-
-// options
-const autoMarkAsRead = useLocalStorage("auto-mark-as-read", false);
 
 // route
 const { query } = useRoute();
@@ -50,7 +46,6 @@ const entries = computed(() => {
   }
   return data.value.entries;
 });
-
 const feeds = computed(() =>
   uniqBy(entries.value.map((e) => e.feed).flat(), (f) => f.id),
 );
@@ -97,7 +92,6 @@ async function onMarkAllAsRead() {
 }
 
 async function onTitleClicked(id) {
-  if (!autoMarkAsRead.value) return;
   try {
     await fetchMarkAsRead([id]);
   } catch (err) {
@@ -108,12 +102,12 @@ async function onTitleClicked(id) {
 
 <template>
   <h1>Microflux</h1>
-  <h2>options</h2>
-  <label>
-    <input v-model="autoMarkAsRead" type="checkbox" />
-    Mark as read automatically
-  </label>
-  <h2>{{ entries.length }} / {{ unread }} <small>unread entries</small></h2>
+  <h2>
+    {{ entries.length }}
+    <small>entries on page</small>
+    / {{ pending ? "..." : unread }}
+    <small>unread on server</small>
+  </h2>
   <div>
     <small>actions</small>
     {{}}
