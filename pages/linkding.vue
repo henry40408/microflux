@@ -49,11 +49,14 @@ function formatDate(date) {
         <div class="metadata">
           <small>{{ bookmark.url }}</small>
         </div>
-        <div>
+        <div class="metadata">
           <ClientOnly>
+            <small>added</small>
+            {{}}
             <span>{{ formatDate(bookmark.date_added) }}</span>
           </ClientOnly>
         </div>
+        <BookmarkAction :bookmark="bookmark" />
       </div>
     </div>
   </div>
