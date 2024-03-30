@@ -7,11 +7,11 @@ interface Options {
 }
 
 export async function sendRequest<T>(options: Options): Promise<T> {
-  const { minifluxUrl, minifluxToken } = useRuntimeConfig();
+  const { linkdingUrl, linkdingToken } = useRuntimeConfig();
   options.headers = options.headers || {};
-  options.headers["x-auth-token"] =
-    options.headers["x-auth-token"] || minifluxToken;
-  const url = new URL(`${minifluxUrl}${options.path}`);
+  options.headers["authorization"] =
+    options.headers["authorization"] || `Token ${linkdingToken}`;
+  const url = new URL(`${linkdingUrl}${options.path}`);
   for (const [k, v] of Object.entries(options.query || {})) {
     url.searchParams.set(k, v);
   }

@@ -101,99 +101,102 @@ async function onRefreshClick() {
 </script>
 
 <template>
-  <h1>Microflux</h1>
-  <div v-if="error">
-    <pre><code class="error">{{ error }}</code></pre>
-  </div>
-  <h2>
-    {{ entries.length }}
-    <small>entries on page</small>
-    / {{ pending ? "..." : unread }}
-    <small>unread on server</small>
-  </h2>
   <div>
-    <div class="actions">
-      <small>actions</small>
-      {{}}
-      <span v-if="pending">refreshing...</span>
-      <span v-else>
-        <a href="#" @click.prevent="onRefreshClick">refresh</a>
-        {{}}
-        <span v-if="category">
-          <small>selected category</small>
-          {{}}
-          {{ categoryTitle }}
-          {{}}
-          <a href="#" @click.prevent="category = null">clear</a>
-        </span>
-        {{}}
-        <span v-if="feed">
-          <small>selected feed</small>
-          {{}}
-          {{ feedTitle }}
-          {{}}
-          <a href="#" @click.prevent="feed = null">clear</a>
-        </span>
-      </span>
+    <h1>Microflux - Miniflux</h1>
+    <Navigation />
+    <div v-if="error">
+      <pre><code class="error">{{ error }}</code></pre>
     </div>
-  </div>
-  <div v-if="entries.length > 0">
-    <div v-for="entry in entries" :key="entry.id" class="entry">
-      <h2 :class="{ title: true, read: entry.read }">
-        <a :href="entry.url" target="_blank" rel="nofollow noopener">
-          {{ entry.title }}
-          <small> #{{ entry.id }}</small>
-        </a>
-      </h2>
-      <div class="metadata">
-        <small>feed</small>
+    <h2>
+      {{ entries.length }}
+      <small>entries on page</small>
+      / {{ pending ? "..." : unread }}
+      <small>unread on server</small>
+    </h2>
+    <div>
+      <div class="actions">
+        <small>actions</small>
         {{}}
-        <a href="#" @click.prevent="feed = entry.feed.id">
-          {{ entry.feed.title }}
-        </a>
-        {{}}
-        <small>category</small>
-        {{}}
-        <a href="#" @click.prevent="category = entry.feed.category.id">
-          {{ entry.feed.category.title }}
-        </a>
+        <span v-if="pending">refreshing...</span>
+        <span v-else>
+          <a href="#" @click.prevent="onRefreshClick">refresh</a>
+          {{}}
+          <span v-if="category">
+            <small>selected category</small>
+            {{}}
+          {{ categoryTitle }}
+            {{}}
+            <a href="#" @click.prevent="category = null">clear</a>
+          </span>
+          {{}}
+          <span v-if="feed">
+            <small>selected feed</small>
+            {{}}
+          {{ feedTitle }}
+            {{}}
+            <a href="#" @click.prevent="feed = null">clear</a>
+          </span>
+        </span>
       </div>
-      <EntryAction
-        :entry="entry"
-        class="actions"
-        @mark-as-read="onEntryMarkedAsRead"
-      />
-      <EntryContent :content="entry.content">
+    </div>
+    <div v-if="entries.length > 0">
+      <div v-for="entry in entries" :key="entry.id" class="entry">
+        <h2 :class="{ title: true, read: entry.read }">
+          <a :href="entry.url" target="_blank" rel="nofollow noopener">
+            {{ entry.title }}
+            <small> #{{ entry.id }}</small>
+          </a>
+        </h2>
+        <div class="metadata">
+          <small>feed</small>
+          {{}}
+          <a href="#" @click.prevent="feed = entry.feed.id">
+            {{ entry.feed.title }}
+          </a>
+          {{}}
+          <small>category</small>
+          {{}}
+          <a href="#" @click.prevent="category = entry.feed.category.id">
+            {{ entry.feed.category.title }}
+          </a>
+        </div>
         <EntryAction
           :entry="entry"
           class="actions"
           @mark-as-read="onEntryMarkedAsRead"
         />
-      </EntryContent>
+        <EntryContent :content="entry.content">
+          <EntryAction
+            :entry="entry"
+            class="actions"
+            @mark-as-read="onEntryMarkedAsRead"
+          />
+        </EntryContent>
+      </div>
     </div>
-  </div>
-  <div v-else>
-    <em>(no entries)</em>
-  </div>
-  <div v-if="entries.length > 0">
-    <small>actions</small>
-    {{}}
-    <span v-if="pending">loading...</span>
-    <span v-else>
-      <Confirm question="are you sure?" @confirmed="onMarkAllAsReadClick">
-        <span>mark all as read</span>
-      </Confirm>
-      |
-      <span v-if="pending">refreshing...</span>
-      <a v-else href="#" @click.prevent="onRefreshClick">refresh</a>
-    </span>
+    <div v-else>
+      <em>(no entries)</em>
+    </div>
+    <div v-if="entries.length > 0">
+      <small>actions</small>
+      {{}}
+      <span v-if="pending">loading...</span>
+      <span v-else>
+        <Confirm question="are you sure?" @confirmed="onMarkAllAsReadClick">
+          <span>mark all as read</span>
+        </Confirm>
+        |
+        <span v-if="pending">refreshing...</span>
+        <a v-else href="#" @click.prevent="onRefreshClick">refresh</a>
+      </span>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .error {
-  background-color: red;
-  color: white;
+  background-color: pink;
+  color: black;
 }
 
 .actions {

@@ -23,13 +23,13 @@ export default defineEventHandler(async (event) => {
     }
 
     const { url }: { url: string } = body;
-    const { kagiApiToken, kagiLanguage } = useRuntimeConfig();
+    const { kagiToken, kagiLanguage } = useRuntimeConfig();
     const resp: KaigSummary = await $fetch(
       "https://kagi.com/api/v0/summarize",
       {
         method: "POST",
         body: { url, target_language: kagiLanguage },
-        headers: { authorization: `Bot ${kagiApiToken}` },
+        headers: { authorization: `Bot ${kagiToken}` },
       },
     );
 
