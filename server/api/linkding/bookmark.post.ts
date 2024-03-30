@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
-import { sendRequest } from "@/server/linkding";
-import { H3RequestEvent } from "@/types";
+import { sendRequest } from "~/server/linkding";
+import { H3RequestEvent } from "~/types";
 
 const deleteSchema = z.discriminatedUnion("op", [
   z.object({

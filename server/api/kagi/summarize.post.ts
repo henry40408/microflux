@@ -2,7 +2,7 @@ import pangu from "pangu";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
-import type { KaigSummary } from "@/types";
+import type { KaigSummary } from "~/types";
 
 const summarizeSchema = z.object({
   url: z.string(),

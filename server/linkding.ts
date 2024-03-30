@@ -1,4 +1,4 @@
-import type { H3RequestEvent } from "@/types";
+import type { H3RequestEvent } from "~/types";
 
 interface Options {
   path: string;

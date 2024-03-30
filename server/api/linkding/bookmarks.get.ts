@@ -1,6 +1,5 @@
-import { sendRequest } from "@/server/linkding";
-
-import type { LinkdingBookmarks } from "@/types";
+import { sendRequest } from "~/server/linkding";
+import type { LinkdingBookmarks } from "~/types";
 
 export default defineEventHandler(async (event) => {
   try {

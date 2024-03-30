@@ -2,8 +2,8 @@ import { getQuery } from "h3";
 import lodash from "lodash";
 import sanitizeHtml from "sanitize-html";
 
-import { sendRequest } from "@/server/miniflux";
-import type { MinifluxEntries, MinifluxUnreadCounters } from "@/types";
+import { sendRequest } from "~/server/miniflux";
+import type { MinifluxEntries, MinifluxUnreadCounters } from "~/types";
 
 export default defineEventHandler(async (event) => {
   try {

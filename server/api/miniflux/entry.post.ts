@@ -2,8 +2,8 @@ import { createError } from "h3";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
-import { H3RequestEvent } from "@/types";
-import { sendRequest } from "@/server/miniflux";
+import { H3RequestEvent } from "~/types";
+import { sendRequest } from "~/server/miniflux";
 
 const entrySchema = z.discriminatedUnion("op", [
   z.object({
