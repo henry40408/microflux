@@ -1,3 +1,4 @@
+import pick from "lodash/pick";
 import { getQuery } from "h3";
 import sanitizeHtml from "sanitize-html";
 
@@ -65,7 +66,7 @@ export default defineEventHandler(async (event) => {
     }
     return {
       entries: entries.entries,
-      counters,
+      counters: pick(counters, ["unreads"]),
     };
   } catch (err) {
     console.error("failed to fetch unread entries from Miniflux", err);

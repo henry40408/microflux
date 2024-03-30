@@ -39,6 +39,7 @@ const entriesUrl = computed(
   () => `/api/miniflux/entries?filter=${filter.value}`,
 );
 const { data, error, pending, refresh } = await useFetch(entriesUrl, {
+  key: "unread-entries-counters",
   refetch: true,
 });
 
@@ -63,21 +64,6 @@ const unread = computed(() => {
   );
 });
 
-const { status: markAllAsReadStatus, refresh: executeMarkAllAsRead } =
-  await useAsyncData(
-    async () => {
-      const ids = entries.value.map((e) => e.id);
-      await $fetch("/api/miniflux/entry", {
-        method: "POST",
-        body: { op: "mark-as-read", ids },
-      });
-      onRefreshClick();
-    },
-    {
-      immediate: false,
-    },
-  );
-
 function onEntryMarkedAsRead(ids: number[]) {
   data.value.entries = data.value.entries.map((e) => {
     if (ids.includes(e.id)) {
@@ -85,6 +71,15 @@ function onEntryMarkedAsRead(ids: number[]) {
     }
     return e;
   });
+}
+
+async function onMarkAllAsReadClick() {
+  const ids = entries.value.map((e) => e.id);
+  await $fetch("/api/miniflux/entry", {
+    method: "POST",
+    body: { op: "mark-as-read", ids },
+  });
+  onRefreshClick();
 }
 
 async function onRefreshClick() {
@@ -176,9 +171,9 @@ async function onRefreshClick() {
   <div v-if="entries.length > 0">
     <small>actions</small>
     {{}}
-    <span v-if="markAllAsReadStatus === 'pending'">loading...</span>
+    <span v-if="pending">loading...</span>
     <span v-else>
-      <Confirm question="are you sure?" @confirmed="executeMarkAllAsRead">
+      <Confirm question="are you sure?" @confirmed="onMarkAllAsReadClick">
         <span>mark all as read</span>
       </Confirm>
       |
