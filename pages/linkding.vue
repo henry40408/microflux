@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import pangu from "pangu";
 
-const { data, pending, error, refresh } = await useFetch(
+const { data, pending, error, refresh } = await useLazyFetch(
   "/api/linkding/bookmarks",
   { key: "bookmarks" },
 );

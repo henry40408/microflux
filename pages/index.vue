@@ -38,13 +38,13 @@ const filter = computed(() => {
 const entriesUrl = computed(
   () => `/api/miniflux/entries?filter=${filter.value}`,
 );
-const { data, error, pending, refresh } = await useFetch(entriesUrl, {
+const { data, error, pending, refresh } = await useLazyFetch(entriesUrl, {
   key: "unread-entries-counters",
   refetch: true,
 });
 
 const entries = computed(() => {
-  if (error.value) return [];
+  if (!data.value) return [];
   if (category.value && feed.value) {
     return data.value.entries.filter((e) => e.feed.id === feed.value);
   }
@@ -57,7 +57,7 @@ const categories = computed(() =>
   uniqBy(feeds.value.map((f) => f.category).flat(), (c) => c.id),
 );
 const unread = computed(() => {
-  if (error.value) return 0;
+  if (!data.value) return 0;
   return Object.values(data.value.counters.unreads).reduce(
     (acc, v) => acc + v,
     0,
