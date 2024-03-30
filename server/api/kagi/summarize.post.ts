@@ -1,16 +1,6 @@
 import pangu from "pangu";
 
-interface KaigSummary {
-  meta: {
-    id: string;
-    node: string;
-    ms: number;
-  };
-  data: {
-    output: string;
-    tokens: number;
-  };
-}
+import type { KaigSummary } from "@/types";
 
 export default defineEventHandler(async (event) => {
   try {

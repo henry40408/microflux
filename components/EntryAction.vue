@@ -1,13 +1,9 @@
 <script setup lang="ts">
+import type { MinifluxEntry } from "@/types";
+
 import { useClipboard } from "@vueuse/core";
 
-interface Entry {
-  id: number;
-  title: string;
-  url: string;
-}
-
-const props = defineProps<{ entry: Entry }>();
+const props = defineProps<{ entry: MinifluxEntry }>();
 
 const emit = defineEmits<{
   markAsRead: [ids: number[]];
@@ -21,6 +17,7 @@ const { copy, copied } = useClipboard({ source: "" });
 
 const { status: markAsReadStatus, refresh: executeMarkAsRead } =
   await useLazyFetch("/api/miniflux/entry", {
+    key: `mark-${props.entry.id}-as-read`,
     method: "POST",
     body: { op: "mark-as-read", id: props.entry.id },
     immediate: false,
@@ -33,6 +30,7 @@ const { status: markAsReadStatus, refresh: executeMarkAsRead } =
 const { status: saveStatus, refresh: executeSave } = await useLazyFetch(
   "/api/miniflux/entry",
   {
+    key: `save-${props.entry.id}`,
     method: "POST",
     body: { op: "save", id: props.entry.id },
     immediate: false,
@@ -44,6 +42,7 @@ const {
   status: summarizeStatus,
   refresh: executeSummarize,
 } = await useLazyFetch("/api/kagi/summarize", {
+  key: `summarize-${props.entry.id}`,
   method: "POST",
   body: { url: props.entry.url },
   immediate: false,

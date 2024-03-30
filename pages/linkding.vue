@@ -10,10 +10,10 @@ const bookmarks = computed(() => {
   if (data.value) return data.value.bookmarks;
   return [];
 });
-
-function getTitle(bookmark) {
-  return bookmark.title || bookmark.website_title;
-}
+const count = computed(() => {
+  if (data.value) return data.value.count;
+  return 0;
+});
 
 function formatDate(date) {
   const formatter = new Intl.DateTimeFormat(navigator.language, {
@@ -21,6 +21,13 @@ function formatDate(date) {
     timeStyle: "medium",
   });
   return pangu.spacing(formatter.format(new Date(date)));
+}
+
+function onBookmarksDelete(ids: number[]) {
+  data.value.bookmarks = data.value.bookmarks.filter(
+    (b) => !ids.includes(b.id),
+  );
+  refresh();
 }
 </script>
 
@@ -31,7 +38,7 @@ function formatDate(date) {
     <div v-if="error">
       <pre><code class="error">{{ error }}</code></pre>
     </div>
-    <h2>bookmarks</h2>
+    <h2>{{ count }} <small>bookmarks on server</small></h2>
     <div>
       <small>actions</small>
       {{}}
@@ -42,13 +49,16 @@ function formatDate(date) {
       <div v-for="bookmark in bookmarks" :key="bookmark.id" class="bookmark">
         <h3 class="title">
           <a :href="bookmark.url" target="_blank" rel="nofollow noopener">
-            {{ getTitle(bookmark) }}
+            {{ getLinkdingTitle(bookmark) }}
             <small>#{{ bookmark.id }}</small>
           </a>
         </h3>
         <div class="metadata">
           <small>{{ bookmark.url }}</small>
         </div>
+        <blockquote class="description">
+          {{ getLinkdingDescription(bookmark) }}
+        </blockquote>
         <div class="metadata">
           <ClientOnly>
             <small>added</small>
@@ -56,7 +66,7 @@ function formatDate(date) {
             <span>{{ formatDate(bookmark.date_added) }}</span>
           </ClientOnly>
         </div>
-        <BookmarkAction :bookmark="bookmark" />
+        <BookmarkAction :bookmark="bookmark" @deleted="onBookmarksDelete" />
       </div>
     </div>
   </div>
@@ -69,10 +79,14 @@ function formatDate(date) {
 }
 
 .bookmark {
-  .title small {
-    color: lightgray;
+  .title {
+    margin-bottom: 0;
+    small {
+      color: lightgray;
+    }
   }
-  .metadata {
+  .metadata,
+  .description {
     margin: 0 0 0.6rem;
   }
 }

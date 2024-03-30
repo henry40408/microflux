@@ -182,7 +182,7 @@ async function onRefreshClick() {
       {{}}
       <span v-if="pending">loading...</span>
       <span v-else>
-        <Confirm question="are you sure?" @confirmed="onMarkAllAsReadClick">
+        <Confirm @confirmed="onMarkAllAsReadClick">
           <span>mark all as read</span>
         </Confirm>
         |

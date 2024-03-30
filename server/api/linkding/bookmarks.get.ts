@@ -1,17 +1,14 @@
-import { sendRequest } from "~/server/linkding";
+import { sendRequest } from "@/server/linkding";
 
-interface Bookmark {}
-
-interface Bookmarks {
-  results: Bookmark[];
-}
+import type { LinkdingBookmarks } from "@/types";
 
 export default defineEventHandler(async () => {
   try {
-    const data: Bookmarks = await sendRequest({
+    const data: LinkdingBookmarks = await sendRequest({
       path: "/api/bookmarks/",
     });
     return {
+      count: data.count,
       bookmarks: data.results,
     };
   } catch (err) {

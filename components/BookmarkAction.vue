@@ -1,12 +1,14 @@
 <script setup lang="ts">
+import type { LinkdingBookmark } from "@/types";
+
 import { useClipboard } from "@vueuse/core";
 
-interface Bookmark {
-  url: string;
-}
-
 const props = defineProps<{
-  bookmark: Bookmark;
+  bookmark: LinkdingBookmark;
+}>();
+
+const emit = defineEmits<{
+  deleted: [ids: number[]];
 }>();
 
 const copyable = computed(
@@ -15,11 +17,26 @@ const copyable = computed(
 );
 const { copy, copied } = useClipboard({ source: "" });
 
+const { status: deleteStatus, refresh: executeDelete } = await useLazyFetch(
+  "/api/linkding/bookmark",
+  {
+    key: `delete-${props.bookmark.id}`,
+    method: "POST",
+    body: { op: "delete", id: props.bookmark.id },
+    immediate: false,
+    transform: (r) => {
+      emit("deleted", [props.bookmark.id]);
+      return r;
+    },
+  },
+);
+
 const {
   data: summarizeData,
   status: summarizeStatus,
   refresh: executeSummarize,
 } = await useLazyFetch("/api/kagi/summarize", {
+  key: `summarize-${props.bookmark.id}`,
   method: "POST",
   body: { url: props.bookmark.url },
   immediate: false,
@@ -34,6 +51,12 @@ function getTitle(bookmark) {
   <div>
     <small>actions</small>
     {{}}
+    <span v-if="deleteStatus === 'pending'">deleting...</span>
+    <span v-else-if="deleteStatus === 'error'">failed!</span>
+    <span v-else>
+      <Confirm @confirmed="executeDelete">delete</Confirm>
+    </span>
+    |
     <span v-if="summarizeStatus === 'pending'">summarizing...</span>
     <span v-else-if="summarizeStatus === 'error'">failed!</span>
     <span v-else-if="summarizeStatus === 'success'">summarized!</span>

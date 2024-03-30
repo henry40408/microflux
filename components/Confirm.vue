@@ -2,7 +2,7 @@
 import { useConfirmDialog } from "@vueuse/core";
 
 defineProps({
-  question: { type: String, required: true },
+  question: { type: String, default: "are you sure?" },
 });
 
 const emit = defineEmits<{

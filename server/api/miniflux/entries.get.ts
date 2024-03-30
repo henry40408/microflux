@@ -2,24 +2,8 @@ import pick from "lodash/pick";
 import { getQuery } from "h3";
 import sanitizeHtml from "sanitize-html";
 
-import { sendRequest } from "../../miniflux";
-
-interface MinifluxEntry {
-  content: string;
-}
-
-interface MinifluxEntries {
-  entries: MinifluxEntry[];
-}
-
-interface MinifluxUnreadCounters {
-  reads: {
-    [key: string]: number;
-  };
-  unreads: {
-    [key: string]: number;
-  };
-}
+import { sendRequest } from "@/server/miniflux";
+import type { MinifluxEntries, MinifluxUnreadCounters } from "@/types";
 
 export default defineEventHandler(async (event) => {
   try {
