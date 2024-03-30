@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { useClipboard } from "@vueuse/core";
 
-const props = defineProps({
-  id: { type: Number, required: true },
-  title: { type: String, required: true },
-  url: { type: String, required: true },
-});
+interface Entry {
+  id: number;
+  title: string;
+  url: string;
+}
+
+const props = defineProps<{ entry: Entry }>();
+
 const emit = defineEmits<{
   markAsRead: [ids: number[]];
 }>();
@@ -18,7 +21,7 @@ const summary = ref("");
 const tokens = ref(0);
 
 const copyable = computed(
-  () => `${props.title}\n\n${props.url}\n\n${summary.value}`,
+  () => `${props.entry.title}\n\n${props.entry.url}\n\n${summary.value}`,
 );
 const { copy, copied } = useClipboard({ source: "" });
 
@@ -27,11 +30,11 @@ async function onMarkAsReadClick() {
     loading.value = true;
     await $fetch("/api/entry", {
       method: "POST",
-      body: { op: "mark-as-read", id: props.id },
+      body: { op: "mark-as-read", id: props.entry.id },
     });
-    emit("markAsRead", [props.id]);
+    emit("markAsRead", [props.entry.id]);
   } catch (err) {
-    //empty
+    console.error("failed to mark the entry as read", err);
   } finally {
     loading.value = false;
   }
@@ -41,11 +44,11 @@ async function onSaveClick() {
   try {
     await $fetch("/api/entry", {
       method: "POST",
-      body: { op: "save", id: props.id },
+      body: { op: "save", id: model.id },
     });
     saved.value = true;
   } catch (err) {
-    //empty
+    console.error("failed to save the entry", err);
   }
 }
 
@@ -54,12 +57,12 @@ async function onSummarizeClick() {
     summarizing.value = true;
     const data = await $fetch("/api/summarize", {
       method: "POST",
-      body: { url: props.url },
+      body: { url: model.url },
     });
     summary.value = data.summary;
     tokens.value = data.tokens;
   } catch (err) {
-    // empty
+    console.error("failed to summarize the entry", err);
   } finally {
     summarizing.value = false;
   }

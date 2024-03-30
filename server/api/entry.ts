@@ -14,7 +14,7 @@ async function markAsRead(ids: number[]) {
     console.error("failed to mark %j as read", ids, err);
     throw createError({
       status: 502,
-      message: "failed to mark as read",
+      statusMessage: "failed to mark as read",
     });
   }
 }
@@ -30,7 +30,7 @@ async function save(id: number) {
     console.error("failed to save %d", id);
     throw createError({
       status: 502,
-      message: "failed to save",
+      statusMessage: "failed to save",
     });
   }
 }
@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
       if (!body.id && !body.ids) {
         throw createError({
           status: 400,
-          message: "id or ids is required",
+          statusMessage: "id or ids is required",
         });
       }
       const ids = body.ids ? body.ids : [body.id];
@@ -50,13 +50,13 @@ export default defineEventHandler(async (event) => {
     }
     case "save":
       if (!body.id) {
-        throw createError({ status: 400, message: "id is required" });
+        throw createError({ status: 400, statusMessage: "id is required" });
       }
       return save(body.id);
     default:
       throw createError({
         status: 400,
-        message: `unexpected operation ${body.op}`,
+        statusMessage: `unexpected operation ${body.op}`,
       });
   }
 });

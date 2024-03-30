@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     if (!body.url) {
       throw createError({
         status: 400,
-        message: "url is required",
+        statusMessage: "url is required",
       });
     }
 
@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
     console.error("failed to summarize", err);
     throw createError({
       status: 502,
-      message: "failed to summarize",
+      statusMessage: "failed to summarize",
     });
   }
 });

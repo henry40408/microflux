@@ -71,7 +71,7 @@ export default defineEventHandler(async (event) => {
     console.error("failed to fetch unread entries from Miniflux", err);
     throw createError({
       status: 502,
-      message: "failed to fetch unread entries from Miniflux",
+      statusMessage: "failed to fetch unread entries from Miniflux",
     });
   }
 });
