@@ -1,5 +1,5 @@
-import pick from "lodash/pick";
 import { getQuery } from "h3";
+import lodash from "lodash";
 import sanitizeHtml from "sanitize-html";
 
 import { sendRequest } from "@/server/miniflux";
@@ -34,7 +34,12 @@ export default defineEventHandler(async (event) => {
       action: "fetch_unread_entries",
       count: entries.entries.length,
     });
-    console.debug("%j", { action: "fetch_unread_counters", counters });
+
+    const pickedCounter = lodash.pick(counters, ["unreads"]);
+    console.debug("%j", {
+      action: "fetch_unread_counters",
+      counters: pickedCounter,
+    });
 
     for (const entry of entries.entries) {
       entry.content = sanitizeHtml(entry.content, {
@@ -50,7 +55,7 @@ export default defineEventHandler(async (event) => {
     }
     return {
       entries: entries.entries,
-      counters: pick(counters, ["unreads"]),
+      counters: pickedCounter,
     };
   } catch (err) {
     console.error("failed to fetch unread entries from Miniflux", err);

@@ -15,6 +15,9 @@ const count = computed(() => {
   return 0;
 });
 
+const titleTemplate = computed(() => `%s - Linkding (${count.value})`);
+useHead({ titleTemplate });
+
 function formatDate(date) {
   const formatter = new Intl.DateTimeFormat(navigator.language, {
     dateStyle: "medium",

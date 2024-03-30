@@ -64,8 +64,8 @@ const unread = computed(() => {
   );
 });
 
-const title = computed(() => `%s (${unread.value})`);
-useHead({ titleTemplate: title });
+const titleTemplate = computed(() => `%s - Miniflux (${unread.value})`);
+useHead({ titleTemplate });
 
 function onEntryMarkedAsRead(ids: number[]) {
   data.value.entries = data.value.entries.map((e) => {
