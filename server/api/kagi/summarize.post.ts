@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const { url } = result.data;
-    const { kagiToken, kagiLanguage } = useRuntimeConfig();
+    const { kagiToken, kagiLanguage } = useRuntimeConfig(event);
     const resp: KaigSummary = await $fetch(
       "https://kagi.com/api/v0/summarize",
       {

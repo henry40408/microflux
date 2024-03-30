@@ -1,3 +1,5 @@
+import type { H3RequestEvent } from "@/types";
+
 interface Options {
   path: string;
   query?: Record<string, string>;
@@ -6,8 +8,11 @@ interface Options {
   body?: Record<string, unknown>;
 }
 
-export async function sendRequest<T>(options: Options): Promise<T> {
-  const { linkdingUrl, linkdingToken } = useRuntimeConfig();
+export async function sendRequest<T>(
+  event: H3RequestEvent,
+  options: Options,
+): Promise<T> {
+  const { linkdingUrl, linkdingToken } = useRuntimeConfig(event);
   options.headers = options.headers || {};
   options.headers["authorization"] =
     options.headers["authorization"] || `Token ${linkdingToken}`;

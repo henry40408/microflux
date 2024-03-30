@@ -2,9 +2,9 @@ import { sendRequest } from "@/server/linkding";
 
 import type { LinkdingBookmarks } from "@/types";
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
   try {
-    const data: LinkdingBookmarks = await sendRequest({
+    const data: LinkdingBookmarks = await sendRequest(event, {
       path: "/api/bookmarks/",
     });
     return {

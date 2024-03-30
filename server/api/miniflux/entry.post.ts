@@ -2,6 +2,7 @@ import { createError } from "h3";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
+import { H3RequestEvent } from "@/types";
 import { sendRequest } from "@/server/miniflux";
 
 const entrySchema = z.discriminatedUnion("op", [
@@ -19,9 +20,9 @@ const entrySchema = z.discriminatedUnion("op", [
   }),
 ]);
 
-async function markAsRead(ids: number[]) {
+async function markAsRead(event: H3RequestEvent, ids: number[]) {
   try {
-    await sendRequest({
+    await sendRequest(event, {
       path: "/v1/entries",
       method: "PUT",
       body: { entry_ids: ids, status: "read" },
@@ -36,9 +37,9 @@ async function markAsRead(ids: number[]) {
   }
 }
 
-async function save(id: number) {
+async function save(event: H3RequestEvent, id: number) {
   try {
-    await sendRequest({
+    await sendRequest(event, {
       path: `/v1/entries/${id}/save`,
       method: "POST",
     });
@@ -66,13 +67,13 @@ export default defineEventHandler(async (event) => {
   switch (result.data.op) {
     case "mark-as-read": {
       const { id } = result.data;
-      return markAsRead([id]);
+      return markAsRead(event, [id]);
     }
     case "mark-many-as-read": {
       const { ids } = result.data;
-      return markAsRead(ids);
+      return markAsRead(event, ids);
     }
     case "save":
-      return save(result.data.id);
+      return save(event, result.data.id);
   }
 });

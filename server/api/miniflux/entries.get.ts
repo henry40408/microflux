@@ -22,11 +22,11 @@ export default defineEventHandler(async (event) => {
     }
 
     const [entries, counters] = await Promise.all([
-      sendRequest<MinifluxEntries>({
+      sendRequest<MinifluxEntries>(event, {
         path,
         query: { status: "unread", direction: "asc" },
       }),
-      sendRequest<MinifluxUnreadCounters>({
+      sendRequest<MinifluxUnreadCounters>(event, {
         path: "/v1/feeds/counters",
       }),
     ]);

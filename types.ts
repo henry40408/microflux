@@ -1,3 +1,7 @@
+import type { H3Event, EventHandlerRequest } from "h3";
+
+export type H3RequestEvent = H3Event<EventHandlerRequest>;
+
 export interface KaigSummary {
   meta: {
     id: string;
