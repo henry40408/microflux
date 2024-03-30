@@ -1,6 +1,23 @@
-import { readBody, createError } from "h3";
+import { createError } from "h3";
+import { z } from "zod";
+import { fromZodError } from "zod-validation-error";
 
 import { sendRequest } from "@/server/miniflux";
+
+const entrySchema = z.discriminatedUnion("op", [
+  z.object({
+    op: z.literal("mark-as-read"),
+    id: z.number(),
+  }),
+  z.object({
+    op: z.literal("mark-many-as-read"),
+    ids: z.number().array().min(1),
+  }),
+  z.object({
+    op: z.literal("save"),
+    id: z.number(),
+  }),
+]);
 
 async function markAsRead(ids: number[]) {
   try {
@@ -36,27 +53,26 @@ async function save(id: number) {
 }
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event).catch(() => ({}));
-  switch (body.op) {
+  const result = await readValidatedBody(event, (body) =>
+    entrySchema.safeParse(body),
+  );
+  if (!result.success) {
+    const validationError = fromZodError(result.error);
+    throw createError({
+      status: 400,
+      statusMessage: validationError.toString(),
+    });
+  }
+  switch (result.data.op) {
     case "mark-as-read": {
-      if (!body.id && !body.ids) {
-        throw createError({
-          status: 400,
-          statusMessage: "id or ids is required",
-        });
-      }
-      const ids = body.ids ? body.ids : [body.id];
+      const { id } = result.data;
+      return markAsRead([id]);
+    }
+    case "mark-many-as-read": {
+      const { ids } = result.data;
       return markAsRead(ids);
     }
     case "save":
-      if (!body.id) {
-        throw createError({ status: 400, statusMessage: "id is required" });
-      }
-      return save(body.id);
-    default:
-      throw createError({
-        status: 400,
-        statusMessage: `unexpected operation ${body.op}`,
-      });
+      return save(result.data.id);
   }
 });

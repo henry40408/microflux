@@ -1,18 +1,27 @@
 import pangu from "pangu";
+import { z } from "zod";
+import { fromZodError } from "zod-validation-error";
 
 import type { KaigSummary } from "@/types";
 
-export default defineEventHandler(async (event) => {
-  try {
-    const body = await readBody(event).catch(() => ({}));
-    if (!body.url) {
-      throw createError({
-        status: 400,
-        statusMessage: "url is required",
-      });
-    }
+const summarizeSchema = z.object({
+  url: z.string(),
+});
 
-    const { url }: { url: string } = body;
+export default defineEventHandler(async (event) => {
+  const result = await readValidatedBody(event, (body) =>
+    summarizeSchema.safeParse(body),
+  );
+  if (!result.success) {
+    const validationError = fromZodError(result.error);
+    throw createError({
+      status: 400,
+      statusMessage: validationError.toString(),
+    });
+  }
+
+  try {
+    const { url } = result.data;
     const { kagiToken, kagiLanguage } = useRuntimeConfig();
     const resp: KaigSummary = await $fetch(
       "https://kagi.com/api/v0/summarize",

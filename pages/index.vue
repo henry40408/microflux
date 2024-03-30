@@ -81,7 +81,7 @@ async function onMarkAllAsReadClick() {
   const ids = entries.value.map((e) => e.id);
   await $fetch("/api/miniflux/entry", {
     method: "POST",
-    body: { op: "mark-as-read", ids },
+    body: { op: "mark-many-as-read", ids },
   });
   onRefreshClick();
 }
