@@ -145,7 +145,7 @@ async function onTitleClicked(id) {
         <a
           :href="entry.url"
           target="_blank"
-          rel="nofollow"
+          rel="nofollow noopener"
           @click="onTitleClicked(entry.id)"
         >
           {{ entry.title }}

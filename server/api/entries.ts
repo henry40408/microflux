@@ -58,7 +58,7 @@ export default defineEventHandler(async (event) => {
         transformTags: {
           a: (tagName, attribs) => ({
             tagName,
-            attribs: { ...attribs, rel: "nofollow", target: "_blank" },
+            attribs: { ...attribs, rel: "nofollow noopener", target: "_blank" },
           }),
         },
       });
