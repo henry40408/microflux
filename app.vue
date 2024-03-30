@@ -64,6 +64,9 @@ const unread = computed(() => {
   );
 });
 
+const title = computed(() => `%s (${unread.value})`);
+useHead({ titleTemplate: title });
+
 function onEntryMarkedAsRead(ids: number[]) {
   data.value.entries = data.value.entries.map((e) => {
     if (ids.includes(e.id)) {
@@ -161,7 +164,11 @@ async function onRefreshClick() {
         @mark-as-read="onEntryMarkedAsRead"
       />
       <EntryContent :content="entry.content">
-        <EntryAction :entry="entry" @mark-as-read="onEntryMarkedAsRead" />
+        <EntryAction
+          :entry="entry"
+          class="actions"
+          @mark-as-read="onEntryMarkedAsRead"
+        />
       </EntryContent>
     </div>
   </div>
