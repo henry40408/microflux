@@ -161,12 +161,14 @@ async function onRefreshClick() {
           </a>
         </div>
         <EntryAction
+          :key="entry.id"
           :entry="entry"
           class="actions"
           @mark-as-read="onEntryMarkedAsRead"
         />
         <EntryContent :content="entry.content">
           <EntryAction
+            :key="entry.id"
             :entry="entry"
             class="actions"
             @mark-as-read="onEntryMarkedAsRead"
