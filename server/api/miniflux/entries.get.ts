@@ -1,7 +1,7 @@
 import { getQuery } from "h3";
 import sanitizeHtml from "sanitize-html";
 
-import { sendRequest } from "../miniflux";
+import { sendRequest } from "../../miniflux";
 
 interface MinifluxEntry {
   content: string;

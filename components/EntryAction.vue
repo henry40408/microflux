@@ -20,7 +20,7 @@ const copyable = computed(
 const { copy, copied } = useClipboard({ source: "" });
 
 const { status: markAsReadStatus, refresh: executeMarkAsRead } =
-  await useLazyFetch("/api/entry", {
+  await useLazyFetch("/api/miniflux/entry", {
     method: "POST",
     body: { op: "mark-as-read", id: props.entry.id },
     immediate: false,
@@ -31,7 +31,7 @@ const { status: markAsReadStatus, refresh: executeMarkAsRead } =
   });
 
 const { status: saveStatus, refresh: executeSave } = await useLazyFetch(
-  "/api/entry",
+  "/api/miniflux/entry",
   {
     method: "POST",
     body: { op: "save", id: props.entry.id },
@@ -43,7 +43,7 @@ const {
   data: summarizeData,
   status: summarizeStatus,
   refresh: executeSummarize,
-} = await useLazyFetch("/api/summarize", {
+} = await useLazyFetch("/api/kagi/summarize", {
   method: "POST",
   body: { url: props.entry.url },
   immediate: false,

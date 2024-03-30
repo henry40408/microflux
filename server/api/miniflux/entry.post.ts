@@ -1,6 +1,6 @@
 import { readBody, createError } from "h3";
 
-import { sendRequest } from "../miniflux";
+import { sendRequest } from "../../miniflux";
 
 async function markAsRead(ids: number[]) {
   try {
