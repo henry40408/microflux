@@ -61,13 +61,20 @@ const unread = computed(() => {
   );
 });
 
-async function fetchMarkAsRead(ids: number[]) {
-  await $fetch("/api/entry", {
-    method: "POST",
-    body: { op: "mark-as-read", ids },
-  });
-  onEntryMarkedAsRead(ids);
-}
+const { status: markAllAsReadStatus, refresh: executeMarkAllAsRead } =
+  await useAsyncData(
+    async () => {
+      const ids = entries.value.map((e) => e.id);
+      await $fetch("/api/entry", {
+        method: "POST",
+        body: { op: "mark-as-read", ids },
+      });
+      onRefreshClick();
+    },
+    {
+      immediate: false,
+    },
+  );
 
 function onEntryMarkedAsRead(ids: number[]) {
   data.value.entries = data.value.entries.map((e) => {
@@ -76,16 +83,6 @@ function onEntryMarkedAsRead(ids: number[]) {
     }
     return e;
   });
-}
-
-async function onMarkAllAsRead() {
-  try {
-    const ids = entries.value.map((e) => e.id);
-    await fetchMarkAsRead(ids);
-    await onRefreshClick();
-  } catch (err) {
-    console.error("failed to mark as read", err);
-  }
 }
 
 async function onRefreshClick() {
@@ -177,9 +174,9 @@ async function onRefreshClick() {
   <div v-if="entries.length > 0">
     <small>actions</small>
     {{}}
-    <span v-if="pending">loading...</span>
+    <span v-if="markAllAsReadStatus === 'pending'">loading...</span>
     <span v-else>
-      <Confirm question="are you sure?" @confirmed="onMarkAllAsRead">
+      <Confirm question="are you sure?" @confirmed="executeMarkAllAsRead">
         mark all as read
       </Confirm>
       |
