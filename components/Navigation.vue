@@ -10,6 +10,9 @@
 
 <style scoped>
 .router-link-exact-active {
-  color: white;
+  color: black;
+  @media (prefers-color-scheme: dark) {
+    color: white;
+  }
 }
 </style>

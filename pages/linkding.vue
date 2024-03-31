@@ -129,7 +129,10 @@ function onRandomClick() {
 }
 
 .random-picked {
-  border: 1px solid white;
+  border: 1px solid lightgray;
+  @media (prefers-color-scheme: dark) {
+    border: 1px solid white;
+  }
   padding: 0.6rem;
   margin: 0.6rem 0;
   .title {
