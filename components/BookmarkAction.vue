@@ -58,7 +58,9 @@ function getTitle(bookmark) {
     </span>
     |
     <span v-if="summarizeStatus === 'pending'">summarizing...</span>
-    <span v-else-if="summarizeStatus === 'error'">failed!</span>
+    <span v-else-if="summarizeStatus === 'error'">
+      <a href="#" @click.prevent="executeSummarize">failed, try again</a>
+    </span>
     <span v-else-if="summarizeStatus === 'success'">summarized!</span>
     <a v-else href="#" @click.prevent="executeSummarize">summarize</a>
     <div v-if="summarizeData">
