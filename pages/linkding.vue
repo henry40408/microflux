@@ -53,7 +53,12 @@ function onRandomClick() {
     <div v-if="error">
       <pre><code class="error">{{ error }}</code></pre>
     </div>
-    <h2>{{ count }} <small>bookmarks on server</small></h2>
+    <h2>
+      <span v-if="pending">...</span>
+      <span v-else>{{ count }}</span>
+      {{}}
+      <small>bookmarks on server</small>
+    </h2>
     <div>
       <div>
         <small>actions</small>
