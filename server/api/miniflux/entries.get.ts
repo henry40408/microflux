@@ -1,6 +1,7 @@
 import { getQuery } from "h3";
 import lodash from "lodash";
 import sanitizeHtml from "sanitize-html";
+import * as OpenCC from "opencc-js";
 
 import { sendRequest } from "~/server/miniflux";
 import type { MinifluxEntries, MinifluxUnreadCounters } from "~/types";
@@ -8,6 +9,8 @@ import type { MinifluxEntries, MinifluxUnreadCounters } from "~/types";
 const HEADINGS = ["h1", "h2", "h3", "h4", "h5", "h6"];
 const ALLOWED_TAGS = HEADINGS.concat(["a", "br", "img", "li", "ol", "p", "ul"]);
 const ALLOWED_ATTRIBS = { a: ["href", "rel", "target"], img: ["src"] };
+
+const convert = OpenCC.Converter({ from: "cn", to: "tw" });
 
 export default defineEventHandler(async (event) => {
   try {
@@ -46,17 +49,24 @@ export default defineEventHandler(async (event) => {
     });
 
     for (const entry of entries.entries) {
-      entry.content = sanitizeHtml(entry.content, {
+      const sanitized = sanitizeHtml(entry.content, {
         allowedTags: ALLOWED_TAGS,
         allowedAttributes: ALLOWED_ATTRIBS,
         transformTags: {
           a: (tagName, attribs) => ({
             tagName,
-            attribs: { ...attribs, rel: "nofollow noopener", target: "_blank" },
+            attribs: {
+              ...attribs,
+              rel: "nofollow noopener",
+              target: "_blank",
+            },
           }),
         },
       });
+      const converted = convert(sanitized);
+      entry.content = converted;
     }
+
     return {
       entries: entries.entries,
       counters: pickedCounter,
