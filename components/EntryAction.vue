@@ -67,10 +67,13 @@ const {
       </span>
       |
       <span v-if="summarizeStatus === 'pending'">summarizing...</span>
-      <span v-else-if="summarizeStatus === 'error'">failed!</span>
       <span v-else-if="summarizeStatus === 'success'">summarized!</span>
       <span v-else>
         <a href="#" @click.prevent="executeSummarize">summarize</a>
+        <span v-if="summarizeStatus === 'error'">
+          {{}}
+          <span>failed!</span>
+        </span>
       </span>
     </div>
     <div v-if="summarizeData">

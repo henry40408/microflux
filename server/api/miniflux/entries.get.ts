@@ -5,6 +5,10 @@ import sanitizeHtml from "sanitize-html";
 import { sendRequest } from "~/server/miniflux";
 import type { MinifluxEntries, MinifluxUnreadCounters } from "~/types";
 
+const HEADINGS = ["h1", "h2", "h3", "h4", "h5", "h6"];
+const ALLOWED_TAGS = HEADINGS.concat(["a", "br", "img", "li", "ol", "p", "ul"]);
+const ALLOWED_ATTRIBS = { a: ["href", "rel", "target"], img: ["src"] };
+
 export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event);
@@ -43,8 +47,8 @@ export default defineEventHandler(async (event) => {
 
     for (const entry of entries.entries) {
       entry.content = sanitizeHtml(entry.content, {
-        allowedTags: ["a", "br", "img", "li", "ol", "p", "ul"],
-        allowedAttributes: { a: ["href", "rel", "target"], img: ["src"] },
+        allowedTags: ALLOWED_TAGS,
+        allowedAttributes: ALLOWED_ATTRIBS,
         transformTags: {
           a: (tagName, attribs) => ({
             tagName,
