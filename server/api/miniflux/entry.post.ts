@@ -7,8 +7,9 @@ import { sendRequest } from "~/server/miniflux";
 
 const entrySchema = z.discriminatedUnion("op", [
   z.object({
-    op: z.literal("mark-as-read"),
+    op: z.literal("toggle-read"),
     id: z.number(),
+    status: z.enum(["read", "unread"]),
   }),
   z.object({
     op: z.literal("mark-many-as-read"),
@@ -20,12 +21,16 @@ const entrySchema = z.discriminatedUnion("op", [
   }),
 ]);
 
-async function markAsRead(event: H3RequestEvent, ids: number[]) {
+async function toggleRead(
+  event: H3RequestEvent,
+  ids: number[],
+  status: "read" | "unread",
+) {
   try {
     await sendRequest(event, {
       path: "/v1/entries",
       method: "PUT",
-      body: { entry_ids: ids, status: "read" },
+      body: { entry_ids: ids, status },
     });
     return { ids };
   } catch (err) {
@@ -65,13 +70,13 @@ export default defineEventHandler(async (event) => {
     });
   }
   switch (result.data.op) {
-    case "mark-as-read": {
-      const { id } = result.data;
-      return markAsRead(event, [id]);
+    case "toggle-read": {
+      const { id, status } = result.data;
+      return toggleRead(event, [id], status);
     }
     case "mark-many-as-read": {
       const { ids } = result.data;
-      return markAsRead(event, ids);
+      return toggleRead(event, ids, "read");
     }
     case "save":
       return save(event, result.data.id);

@@ -68,15 +68,6 @@ const unread = computed(() => {
 const titleTemplate = computed(() => `%s - Miniflux (${unread.value})`);
 useHead({ titleTemplate });
 
-function onEntryMarkedAsRead(ids: number[]) {
-  data.value.entries = data.value.entries.map((e) => {
-    if (ids.includes(e.id)) {
-      e.read = true;
-    }
-    return e;
-  });
-}
-
 async function onMarkAllAsReadClick() {
   const ids = entries.value.map((e) => e.id);
   await $fetch("/api/miniflux/entry", {
@@ -125,7 +116,7 @@ async function onRefreshClick() {
           <span v-if="category">
             <small>selected category</small>
             {{}}
-          {{ categoryTitle }}
+            {{ categoryTitle }}
             {{}}
             <a href="#" @click.prevent="category = null">clear</a>
           </span>
@@ -133,7 +124,7 @@ async function onRefreshClick() {
           <span v-if="feed">
             <small>selected feed</small>
             {{}}
-          {{ feedTitle }}
+            {{ feedTitle }}
             {{}}
             <a href="#" @click.prevent="feed = null">clear</a>
           </span>
@@ -141,8 +132,8 @@ async function onRefreshClick() {
       </div>
     </div>
     <div v-if="entries.length > 0">
-      <div v-for="entry in entries" :key="entry.id" class="entry">
-        <h2 :class="{ title: true, read: entry.read }">
+      <div v-for="(entry, index) in entries" :key="entry.id" class="entry">
+        <h2 :class="{ title: true, read: entry.status === 'read' }">
           <a :href="entry.url" target="_blank" rel="nofollow noopener">
             {{ entry.title }}
             <small> #{{ entry.id }}</small>
@@ -161,19 +152,9 @@ async function onRefreshClick() {
             {{ entry.feed.category.title }}
           </a>
         </div>
-        <EntryAction
-          :key="entry.id"
-          :entry="entry"
-          class="actions"
-          @mark-as-read="onEntryMarkedAsRead"
-        />
+        <EntryAction v-model="entries[index]" class="actions" />
         <EntryContent :content="entry.content">
-          <EntryAction
-            :key="entry.id"
-            :entry="entry"
-            class="actions"
-            @mark-as-read="onEntryMarkedAsRead"
-          />
+          <EntryAction v-model="entries[index]" class="actions" />
         </EntryContent>
       </div>
     </div>

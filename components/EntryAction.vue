@@ -3,50 +3,59 @@ import type { MinifluxEntry } from "@/types";
 
 import { useClipboard } from "@vueuse/core";
 
-const props = defineProps<{ entry: MinifluxEntry }>();
+const model = defineModel<MinifluxEntry>();
 
-const emit = defineEmits<{
-  markAsRead: [ids: number[]];
-}>();
+function useToggleRead() {
+  const status = ref("idle");
+  const execute = async () => {
+    try {
+      status.value = "pending";
+      const nextStatus = model.value.status === "unread" ? "read" : "unread";
+      await $fetch("/api/miniflux/entry", {
+        method: "POST",
+        body: { op: "toggle-read", id: model.value.id, status: nextStatus },
+      });
+      model.value.status = nextStatus;
+      status.value = "success";
+    } catch (err) {
+      console.error("failed to toggle read", err);
+      status.value = "error";
+    }
+  };
+  return { status, execute };
+}
+const { status: toggleReadStatus, execute: executeToggleRead } =
+  useToggleRead();
 
-const copyable = computed(
-  () =>
-    `${props.entry.title}\n\n${props.entry.url}\n\n${summarizeData.value.summary}`,
-);
-const { copy, copied } = useClipboard({ source: "" });
-
-const { status: markAsReadStatus, refresh: executeMarkAsRead } =
-  await useLazyFetch("/api/miniflux/entry", {
-    key: `mark-${props.entry.id}-as-read`,
+function useSave() {
+  const { status, execute } = useFetch("/api/miniflux/entry", {
     method: "POST",
-    body: { op: "mark-as-read", id: props.entry.id },
+    body: { op: "save", id: model.value.id },
     immediate: false,
-    transform: (r) => {
-      emit("markAsRead", [props.entry.id]);
-      return r;
-    },
   });
+  return { status, execute };
+}
+const { status: saveStatus, execute: executeSave } = useSave();
 
-const { status: saveStatus, refresh: executeSave } = await useLazyFetch(
-  "/api/miniflux/entry",
-  {
-    key: `save-${props.entry.id}`,
+function useSummarize() {
+  const { data, status, execute } = useFetch("/api/kagi/summarize", {
     method: "POST",
-    body: { op: "save", id: props.entry.id },
+    body: { url: model.value.url },
     immediate: false,
-  },
-);
-
+  });
+  return { data, status, execute };
+}
 const {
   data: summarizeData,
   status: summarizeStatus,
-  refresh: executeSummarize,
-} = await useLazyFetch("/api/kagi/summarize", {
-  key: `summarize-${props.entry.id}`,
-  method: "POST",
-  body: { url: props.entry.url },
-  immediate: false,
-});
+  execute: executeSummarize,
+} = useSummarize();
+
+const copyable = computed(
+  () =>
+    `${model.value.title}\n\n${model.value.url}\n\n${summarizeData.value.summary}`,
+);
+const { copy, copied } = useClipboard({ source: copyable });
 </script>
 
 <template>
@@ -54,32 +63,32 @@ const {
     <div>
       <small>actions</small>
       {{}}
-      <span v-if="markAsReadStatus === 'pending'">marking...</span>
-      <span v-else-if="markAsReadStatus === 'error'">failed!</span>
-      <span v-else-if="markAsReadStatus === 'success'">marked!</span>
-      <a v-else href="#" @click.prevent="executeMarkAsRead">mark as read</a>
+      <span v-if="toggleReadStatus === 'pending'">marking...</span>
+      <span v-else>
+        <a href="#" @click.prevent="executeToggleRead()">
+          mark as {{ model.status === "unread" ? "read" : "unread" }}
+        </a>
+        <span v-if="toggleReadStatus === 'error'">{{}}failed!</span>
+      </span>
       |
       <span v-if="saveStatus === 'pending'">saving...</span>
-      <span v-else-if="saveStatus === 'error'">failed!</span>
       <span v-else-if="saveStatus === 'success'">saved!</span>
       <span v-else>
-        <a href="#" @click.prevent="executeSave">save</a>
+        <a href="#" @click.prevent="executeSave()">save</a>
+        <span v-if="saveStatus === 'error'">{{}}failed!</span>
       </span>
       |
       <span v-if="summarizeStatus === 'pending'">summarizing...</span>
       <span v-else-if="summarizeStatus === 'success'">summarized!</span>
       <span v-else>
-        <a href="#" @click.prevent="executeSummarize">summarize</a>
-        <span v-if="summarizeStatus === 'error'">
-          {{}}
-          <span>failed!</span>
-        </span>
+        <a href="#" @click.prevent="executeSummarize()">summarize</a>
+        <span v-if="summarizeStatus === 'error'">{{}}failed!</span>
       </span>
     </div>
     <div v-if="summarizeData">
-      <pre><code class="summary">{{ entry.title }}
+      <pre><code class="summary">{{ model.title }}
 
-{{ entry.url }}
+{{ model.url }}
 
 {{ summarizeData.summary }}</code></pre>
       <small>token usage</small>
