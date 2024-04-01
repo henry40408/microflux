@@ -71,7 +71,7 @@ function onRandomClick() {
         <a href="#" @click.prevent="onRandomClick">random</a>
       </div>
       <h3 v-if="randomPicked">random picked</h3>
-      <div v-if="randomPicked" class="random-picked">
+      <div v-if="randomPicked" class="bookmark random-picked">
         <h3 class="title">
           <a :href="randomPicked.url" target="_blank" rel="nofollow noopener">
             {{ getLinkdingTitle(randomPicked) }}
@@ -81,7 +81,10 @@ function onRandomClick() {
         <div class="metadata">
           <small>{{ randomPicked.url }}</small>
         </div>
-        <blockquote class="description">
+        <blockquote
+          v-if="getLinkdingDescription(randomPicked)"
+          class="description"
+        >
           {{ getLinkdingDescription(randomPicked) }}
         </blockquote>
         <div class="metadata">
@@ -107,7 +110,7 @@ function onRandomClick() {
         <div class="metadata">
           <small>{{ bookmark.url }}</small>
         </div>
-        <blockquote class="description">
+        <blockquote v-if="getLinkdingDescription(bookmark)" class="description">
           {{ getLinkdingDescription(bookmark) }}
         </blockquote>
         <div class="metadata">
