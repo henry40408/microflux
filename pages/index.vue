@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import uniqBy from "lodash/uniqBy";
 
-// route
 const { query } = useRoute();
-const router = useRouter();
 
 // fitler by category / feed
 const category = ref(query.category ? Number(query.category) : null);
@@ -17,9 +15,9 @@ const feedTitle = computed(
 
 watch(
   () => [category.value || undefined, feed.value || undefined],
-  (next) => {
+  async (next) => {
     const [category, feed] = next;
-    router.push({
+    await navigateTo({
       path: "/",
       query: { category, feed },
     });
