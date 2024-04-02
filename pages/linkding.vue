@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { sample } from "lodash";
+import sample from "lodash/sample";
 import pangu from "pangu";
 
 const { data, pending, error, refresh } = await useLazyFetch(
