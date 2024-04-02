@@ -3,31 +3,28 @@ import type { LinkdingBookmark } from "@/types";
 
 import { useClipboard } from "@vueuse/core";
 
-const props = defineProps<{
-  bookmark: LinkdingBookmark;
-}>();
+const model = defineModel<LinkdingBookmark>();
+
+defineProps<{ enableNext: boolean }>();
 
 const emit = defineEmits<{
   deleted: [ids: number[]];
+  deleteAndNext: [ids: number[]];
 }>();
 
 const copyable = computed(
   () =>
-    `${getTitle(props.bookmark)}\n\n${props.bookmark.url}\n\n${summarizeData.value.summary}`,
+    `${getLinkdingTitle(model.value)}\n\n${model.value.url}\n\n${summarizeData.value.summary}`,
 );
 const { copy, copied } = useClipboard({ source: "" });
 
 const { status: deleteStatus, refresh: executeDelete } = await useLazyFetch(
   "/api/linkding/bookmark",
   {
-    key: `delete-${props.bookmark.id}`,
+    key: `delete-${model.value.id}`,
     method: "POST",
-    body: { op: "delete", id: props.bookmark.id },
+    body: { op: "delete", id: model.value.id },
     immediate: false,
-    transform: (r) => {
-      emit("deleted", [props.bookmark.id]);
-      return r;
-    },
   },
 );
 
@@ -36,14 +33,20 @@ const {
   status: summarizeStatus,
   refresh: executeSummarize,
 } = await useLazyFetch("/api/kagi/summarize", {
-  key: `summarize-${props.bookmark.id}`,
+  key: `summarize-${model.value.id}`,
   method: "POST",
-  body: { url: props.bookmark.url },
+  body: { url: model.value.url },
   immediate: false,
 });
 
-function getTitle(bookmark) {
-  return bookmark.title || bookmark.website_title;
+async function onDelete() {
+  await executeDelete();
+  emit("deleted", [model.value.id]);
+}
+
+async function onDeleteAndNext() {
+  await executeDelete();
+  emit("deleteAndNext", [model.value.id]);
 }
 </script>
 
@@ -54,7 +57,15 @@ function getTitle(bookmark) {
     <span v-if="deleteStatus === 'pending'">deleting...</span>
     <span v-else-if="deleteStatus === 'error'">failed!</span>
     <span v-else>
-      <Confirm @confirmed="executeDelete">delete</Confirm>
+      <Confirm @confirmed="onDelete()">delete</Confirm>
+    </span>
+    <span v-if="enableNext">
+      |
+      <span v-if="deleteStatus === 'pending'">deleting...</span>
+      <span v-else-if="deleteStatus === 'error'">failed!</span>
+      <span v-else>
+        <Confirm @confirmed="onDeleteAndNext()">delete and next</Confirm>
+      </span>
     </span>
     |
     <span v-if="summarizeStatus === 'pending'">summarizing...</span>
@@ -64,9 +75,9 @@ function getTitle(bookmark) {
     <span v-else-if="summarizeStatus === 'success'">summarized!</span>
     <a v-else href="#" @click.prevent="executeSummarize">summarize</a>
     <div v-if="summarizeData">
-      <pre><code class="summary">{{ getTitle(bookmark) }}
+      <pre><code class="summary">{{ getLinkdingTitle(model) }}
 
-{{ bookmark.url }}
+{{ model.url }}
 
 {{ summarizeData.summary }}</code></pre>
       <small>token usage</small>

@@ -35,14 +35,20 @@ function onBookmarksDelete(ids: number[]) {
   refresh();
 }
 
-function onRandomBookmarksDelete(id: number) {
+function onDeleteAndNext(id: number) {
   randomPicked.value = null;
   onBookmarksDelete([id]);
+  randomPicked.value = sample(data.value.bookmarks);
 }
 
-function onRandomClick() {
+function onRandom() {
   if (!data.value) return;
   randomPicked.value = sample(data.value.bookmarks);
+}
+
+function onRandomDelete(id: number) {
+  randomPicked.value = null;
+  onBookmarksDelete([id]);
 }
 </script>
 
@@ -68,7 +74,7 @@ function onRandomClick() {
           <a href="#" @click.prevent="refresh">refresh</a>
         </span>
         |
-        <a href="#" @click.prevent="onRandomClick">random</a>
+        <a href="#" @click.prevent="onRandom">random</a>
       </div>
       <h3 v-if="randomPicked">random picked</h3>
       <div v-if="randomPicked" class="bookmark random-picked">
@@ -96,11 +102,17 @@ function onRandomClick() {
         </div>
         <BookmarkAction
           :key="randomPicked.id"
-          :bookmark="randomPicked"
-          @deleted="onRandomBookmarksDelete(randomPicked.id)"
+          v-model="randomPicked"
+          enable-next
+          @deleted="onRandomDelete(randomPicked.id)"
+          @delete-and-next="onDeleteAndNext(randomPicked.id)"
         />
       </div>
-      <div v-for="bookmark in bookmarks" :key="bookmark.id" class="bookmark">
+      <div
+        v-for="(bookmark, index) in bookmarks"
+        :key="bookmark.id"
+        class="bookmark"
+      >
         <h3 class="title">
           <a :href="bookmark.url" target="_blank" rel="nofollow noopener">
             {{ getLinkdingTitle(bookmark) }}
@@ -122,7 +134,7 @@ function onRandomClick() {
         </div>
         <BookmarkAction
           :key="bookmark.id"
-          :bookmark="bookmark"
+          v-model="bookmarks[index]"
           @deleted="onBookmarksDelete"
         />
       </div>

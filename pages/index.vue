@@ -93,7 +93,7 @@ async function filterByFeed(id) {
   await fallbackIfEmpty();
 }
 
-async function onRefreshClick() {
+async function onRefresh() {
   await refresh();
   await fallbackIfEmpty();
 }
@@ -108,7 +108,7 @@ function useMarkAllAsRead() {
         method: "POST",
         body: { op: "mark-many-as-read", ids },
       });
-      onRefreshClick();
+      onRefresh();
       status.value = "success";
     } catch (err) {
       console.error("failed to mark all as read");
@@ -140,7 +140,7 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
         {{}}
         <span v-if="pending">refreshing...</span>
         <span v-else>
-          <a href="#" @click.prevent="onRefreshClick">refresh</a>
+          <a href="#" @click.prevent="onRefresh">refresh</a>
           {{}}
           <span v-if="category">
             <small>selected category</small>
@@ -200,7 +200,7 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
         </Confirm>
         |
         <span v-if="pending">refreshing...</span>
-        <a v-else href="#" @click.prevent="onRefreshClick">refresh</a>
+        <a v-else href="#" @click.prevent="onRefresh">refresh</a>
       </span>
     </div>
   </div>
