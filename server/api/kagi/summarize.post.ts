@@ -1,8 +1,11 @@
+import * as OpenCC from "opencc-js";
 import pangu from "pangu";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
 import type { KaigSummary } from "~/types";
+
+const convert = OpenCC.Converter({ from: "cn", to: "tw" });
 
 const summarizeSchema = z.object({
   url: z.string(),
@@ -36,7 +39,7 @@ export default defineEventHandler(async (event) => {
     console.log("%j", { action: "summarize", url, tokens });
 
     return {
-      summary: pangu.spacing(resp.data.output),
+      summary: pangu.spacing(convert(resp.data.output)),
       tokens,
     };
   } catch (err) {
