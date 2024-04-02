@@ -60,7 +60,7 @@ function onRandomClick() {
       <small>bookmarks on server</small>
     </h2>
     <div>
-      <div>
+      <div class="actions">
         <small>actions</small>
         {{}}
         <span v-if="pending">loading...</span>
@@ -158,6 +158,12 @@ function onRandomClick() {
   .metadata,
   .description {
     margin: 0 0 0.6rem;
+  }
+}
+
+.actions {
+  @media (max-width: 640px) {
+    text-align: right;
   }
 }
 </style>

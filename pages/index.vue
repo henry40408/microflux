@@ -101,9 +101,9 @@ async function onRefreshClick() {
     </div>
     <h2>
       {{ entries.length }}
-      <small>entries on page</small>
+      <small class="gray">entries on page</small>
       / {{ pending ? "..." : unread }}
-      <small>unread on server</small>
+      <small class="gray">unread on server</small>
     </h2>
     <div>
       <div class="actions">
@@ -185,6 +185,9 @@ async function onRefreshClick() {
 
 .actions {
   margin: 0 0 0.6rem;
+  @media (max-width: 640px) {
+    text-align: right;
+  }
 }
 
 .entry {
@@ -197,5 +200,9 @@ async function onRefreshClick() {
   .metadata {
     margin: 0 0 0.6rem;
   }
+}
+
+.gray {
+  color: lightgray;
 }
 </style>

@@ -63,26 +63,29 @@ const { copy, copied } = useClipboard({ source: copyable });
     <div>
       <small>actions</small>
       {{}}
-      <span v-if="toggleReadStatus === 'pending'">marking...</span>
+      <span v-if="summarizeStatus === 'pending'">summarizing...</span>
+      <span v-else-if="summarizeStatus === 'success'">summarized!</span>
       <span v-else>
-        <a href="#" @click.prevent="executeToggleRead()">
-          mark as {{ model.status === "unread" ? "read" : "unread" }}
-        </a>
-        <span v-if="toggleReadStatus === 'error'">{{}}failed!</span>
+        <a href="#" @click.prevent="executeSummarize()">summarize</a>
+        {{}}
+        <span v-if="summarizeStatus === 'error'">failed!</span>
       </span>
       |
       <span v-if="saveStatus === 'pending'">saving...</span>
       <span v-else-if="saveStatus === 'success'">saved!</span>
       <span v-else>
         <a href="#" @click.prevent="executeSave()">save</a>
-        <span v-if="saveStatus === 'error'">{{}}failed!</span>
+        {{}}
+        <span v-if="saveStatus === 'error'">failed!</span>
       </span>
       |
-      <span v-if="summarizeStatus === 'pending'">summarizing...</span>
-      <span v-else-if="summarizeStatus === 'success'">summarized!</span>
+      <span v-if="toggleReadStatus === 'pending'">marking...</span>
       <span v-else>
-        <a href="#" @click.prevent="executeSummarize()">summarize</a>
-        <span v-if="summarizeStatus === 'error'">{{}}failed!</span>
+        <a href="#" @click.prevent="executeToggleRead()">
+          mark as {{ model.status === "unread" ? "read" : "unread" }}
+        </a>
+        {{}}
+        <span v-if="toggleReadStatus === 'error'">failed!</span>
       </span>
     </div>
     <div v-if="summarizeData">
@@ -108,5 +111,6 @@ const { copy, copied } = useClipboard({ source: copyable });
 <style scoped>
 .summary {
   text-wrap: wrap;
+  text-align: left;
 }
 </style>

@@ -48,7 +48,7 @@ function getTitle(bookmark) {
 </script>
 
 <template>
-  <div>
+  <div class="actions">
     <small>actions</small>
     {{}}
     <span v-if="deleteStatus === 'pending'">deleting...</span>
@@ -86,5 +86,14 @@ function getTitle(bookmark) {
 <style scoped>
 .summary {
   text-wrap: wrap;
+}
+
+.actions {
+  @media (max-width: 640px) {
+    text-align: right;
+  }
+  .summary {
+    text-align: left;
+  }
 }
 </style>
