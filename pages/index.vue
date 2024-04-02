@@ -64,32 +64,61 @@ const unread = computed(() => {
     0,
   );
 });
+const unreadEntries = computed(() =>
+  entries.value.filter((e) => e.status === "unread"),
+);
 
 const titleTemplate = computed(() => `%s - Miniflux (${unread.value})`);
 useHead({ titleTemplate });
 
-async function onMarkAllAsReadClick() {
-  const ids = entries.value.map((e) => e.id);
-  await $fetch("/api/miniflux/entry", {
-    method: "POST",
-    body: { op: "mark-many-as-read", ids },
-  });
-  onRefreshClick();
-}
-
-async function onRefreshClick() {
-  await refresh();
-  if (entries.value.length <= 0) {
+async function fallbackIfEmpty() {
+  if (unreadEntries.value.length <= 0) {
     // fallback to category when no entries listed
     feed.value = null;
   }
-  // wait for entries are computed
-  await nextTick();
-  if (entries.value.length <= 0) {
+  await nextTick(); // wait for entries are computed
+  if (unreadEntries.value.length <= 0) {
     // fallback to all when no entries listed
     category.value = null;
   }
 }
+
+async function filterByCategory(id) {
+  category.value = id;
+  await fallbackIfEmpty();
+}
+
+async function filterByFeed(id) {
+  feed.value = id;
+  await fallbackIfEmpty();
+}
+
+async function onRefreshClick() {
+  await refresh();
+  await fallbackIfEmpty();
+}
+
+function useMarkAllAsRead() {
+  const status = ref("idle");
+  const execute = async () => {
+    try {
+      status.value = "pending";
+      const ids = entries.value.map((e) => e.id);
+      await $fetch("/api/miniflux/entry", {
+        method: "POST",
+        body: { op: "mark-many-as-read", ids },
+      });
+      onRefreshClick();
+      status.value = "success";
+    } catch (err) {
+      console.error("failed to mark all as read");
+      status.value = "error";
+    }
+  };
+  return { status, execute };
+}
+const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
+  useMarkAllAsRead();
 </script>
 
 <template>
@@ -118,7 +147,7 @@ async function onRefreshClick() {
             {{}}
             {{ categoryTitle }}
             {{}}
-            <a href="#" @click.prevent="category = null">clear</a>
+            <a href="#" @click.prevent="filterByCategory(null)">clear</a>
           </span>
           {{}}
           <span v-if="feed">
@@ -126,7 +155,7 @@ async function onRefreshClick() {
             {{}}
             {{ feedTitle }}
             {{}}
-            <a href="#" @click.prevent="feed = null">clear</a>
+            <a href="#" @click.prevent="filterByFeed(null)">clear</a>
           </span>
         </span>
       </div>
@@ -142,13 +171,13 @@ async function onRefreshClick() {
         <div class="metadata">
           <small>feed</small>
           {{}}
-          <a href="#" @click.prevent="feed = entry.feed.id">
+          <a href="#" @click.prevent="filterByFeed(entry.feed.id)">
             {{ entry.feed.title }}
           </a>
           {{}}
           <small>category</small>
           {{}}
-          <a href="#" @click.prevent="category = entry.feed.category.id">
+          <a href="#" @click.prevent="filterByCategory(entry.feed.category.id)">
             {{ entry.feed.category.title }}
           </a>
         </div>
@@ -164,9 +193,9 @@ async function onRefreshClick() {
     <div v-if="entries.length > 0">
       <small>actions</small>
       {{}}
-      <span v-if="pending">loading...</span>
+      <span v-if="markAllAsReadStatus === 'pending'">marking...</span>
       <span v-else>
-        <Confirm @confirmed="onMarkAllAsReadClick">
+        <Confirm @confirmed="executeMarkAllAsRead">
           <span>mark all as read</span>
         </Confirm>
         |
