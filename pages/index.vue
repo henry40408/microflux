@@ -129,7 +129,15 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
       <small text-gray-300>on server</small>
     </h2>
     <div>
-      <div space-y-2 text-right md:flex md:space-x-1 md:space-y-0 md:text-left>
+      <div
+        pb-2
+        space-y-2
+        text-right
+        md:flex
+        md:space-x-1
+        md:space-y-0
+        md:text-left
+      >
         <div><small>actions</small></div>
         <div>
           <div v-if="pending">refreshing...</div>
