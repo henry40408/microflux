@@ -200,7 +200,7 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
         <span v-if="markAllAsReadStatus === 'pending'">marking...</span>
         <span v-else>
           <Confirm @confirmed="executeMarkAllAsRead">
-            <span>mark all as read</span>
+            <span>mark {{ formatNumber(entries.length) }} as read</span>
           </Confirm>
           <span v-if="markAllAsReadStatus === 'error'" pl-1>failed!</span>
         </span>

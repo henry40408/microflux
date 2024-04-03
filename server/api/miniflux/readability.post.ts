@@ -1,4 +1,4 @@
-import { Readability, isProbablyReaderable } from "@mozilla/readability";
+import { Readability } from "@mozilla/readability";
 import { JSDOM } from "jsdom";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -22,14 +22,9 @@ export default defineEventHandler(async (event) => {
     const html = await $fetch<string>(result.data.url, {
       headers: { "user-agent": "Microflux/1.0" },
     });
-    const dom = new JSDOM(html);
+    const sanitized = sanitizeContent(html);
+    const dom = new JSDOM(sanitized);
     const document = dom.window.document;
-
-    if (!isProbablyReaderable(document))
-      throw createError({
-        status: 400,
-        statusMessage: "web page is not readable",
-      });
 
     const reader = new Readability(document);
     const readable = reader.parse();

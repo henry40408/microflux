@@ -107,7 +107,7 @@ async function onDeleteAndNext() {
       readable ({{ formatNumber(readabilityData.length) }} chars)
     </h3>
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div px-2 v-html="readabilityData.content" />
+    <div border="1 dashed white" px-2 v-html="readabilityData.content" />
   </div>
   <div>
     <div v-if="summarizeData">
