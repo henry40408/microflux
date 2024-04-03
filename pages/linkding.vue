@@ -63,9 +63,9 @@ function onRandomDelete(id: number) {
       <span v-if="pending">...</span>
       <span v-else>{{ count }}</span>
       {{}}
-      <small>bookmarks on server</small>
+      <small text-gray-300>bookmarks on server</small>
     </h2>
-    <div>
+    <div pb-2>
       <div text-right md:flex md:space-x-2 md:text-left>
         <div><small>actions</small></div>
         <div>
@@ -133,5 +133,6 @@ function onRandomDelete(id: number) {
         />
       </div>
     </div>
+    <div v-if="bookmarks.length <= 0" font-italic>(no bookmarks)</div>
   </div>
 </template>

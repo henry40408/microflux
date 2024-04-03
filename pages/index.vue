@@ -155,45 +155,38 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
         </div>
       </div>
     </div>
-    <div v-if="entries.length > 0">
-      <div v-for="(entry, index) in entries" :key="entry.id">
-        <h2>
-          <a
-            :class="{ 'text-gray-300': entry.status === 'read' }"
-            :href="entry.url"
-            target="_blank"
-            rel="nofollow noopener"
-          >
-            {{ entry.title }}
-            <small text-gray-300> #{{ entry.id }}</small>
+    <div v-for="(entry, index) in entries" :key="entry.id">
+      <h2>
+        <a
+          :class="{ 'text-gray-300': entry.status === 'read' }"
+          :href="entry.url"
+          target="_blank"
+          rel="nofollow noopener"
+        >
+          {{ entry.title }}
+          <small text-gray-300> #{{ entry.id }}</small>
+        </a>
+      </h2>
+      <div pb-2 space-x-2 space-y-2 text-right md:flex md:space-y-0>
+        <div>
+          <small pr-2>feed</small>
+          <a href="#" @click.prevent="filterByFeed(entry.feed.id)">
+            {{ entry.feed.title }}
           </a>
-        </h2>
-        <div pb-2 space-x-2 space-y-2 text-right md:flex md:space-y-0>
-          <div>
-            <small pr-2>feed</small>
-            <a href="#" @click.prevent="filterByFeed(entry.feed.id)">
-              {{ entry.feed.title }}
-            </a>
-          </div>
-          <div>
-            <small pr-2>category</small>
-            <a
-              href="#"
-              @click.prevent="filterByCategory(entry.feed.category.id)"
-            >
-              {{ entry.feed.category.title }}
-            </a>
-          </div>
         </div>
-        <EntryAction v-model="entries[index]" />
-        <EntryContent :content="entry.content">
-          <EntryAction v-model="entries[index]" pb-2 />
-        </EntryContent>
+        <div>
+          <small pr-2>category</small>
+          <a href="#" @click.prevent="filterByCategory(entry.feed.category.id)">
+            {{ entry.feed.category.title }}
+          </a>
+        </div>
       </div>
+      <EntryAction v-model="entries[index]" />
+      <EntryContent :content="entry.content">
+        <EntryAction v-model="entries[index]" pb-2 />
+      </EntryContent>
     </div>
-    <div v-else>
-      <em>(no entries)</em>
-    </div>
+    <div v-if="entries.length <= 0" font-italic>(no entries)</div>
     <div
       v-if="entries.length > 0"
       pb-10
