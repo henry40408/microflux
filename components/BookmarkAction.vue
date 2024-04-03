@@ -5,7 +5,7 @@ import { useClipboard } from "@vueuse/core";
 
 const model = defineModel<LinkdingBookmark>();
 
-defineProps<{ enableNext: boolean }>();
+defineProps<{ enableNext: { type: Boolean; default: false } }>();
 
 const emit = defineEmits<{
   deleted: [ids: number[]];
