@@ -194,6 +194,7 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
       md:flex
       md:pb-5
       md:space-x-2
+      md:space-y-0
       md:text-left
     >
       <div><small>actions</small></div>
