@@ -56,7 +56,7 @@ function onRandomDelete(id: number) {
       <small text-gray-400 pl-1>bookmarks on server</small>
     </h2>
     <div pb-2>
-      <div text-right md:flex md:space-x-2 md:text-left>
+      <div text-right space-y-2 md:flex md:space-x-2 md:space-y-0 md:text-left>
         <div><small>actions</small></div>
         <div>
           <span v-if="pending">loading...</span>

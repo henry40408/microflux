@@ -189,6 +189,7 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
     <div
       v-if="entries.length > 0"
       pb-10
+      space-y-2
       text-right
       md:flex
       md:pb-5

@@ -67,7 +67,7 @@ async function onDeleteAndNext() {
 </script>
 
 <template>
-  <div pb-2 text-right md:flex md:space-x-2 md:text-left>
+  <div space-y-2 text-right md:flex md:space-x-2 md:space-y-0 md:text-left>
     <div>
       <small>actions</small>
     </div>
@@ -103,9 +103,7 @@ async function onDeleteAndNext() {
     </div>
   </div>
   <div v-if="readabilityData">
-    <h3 mb-2 mt-0>
-      readable ({{ formatNumber(readabilityData.length) }} chars)
-    </h3>
+    <h3 my-4>readable ({{ formatNumber(readabilityData.length) }} chars)</h3>
     <!-- eslint-disable-next-line vue/no-v-html -->
     <div border="1 dashed white" px-2 v-html="readabilityData.content" />
   </div>
