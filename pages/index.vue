@@ -67,7 +67,6 @@ async function fallbackIfEmpty() {
     // fallback to category when no entries listed
     await navigateTo({ path: "/", query: { category: category.value } });
   }
-  await nextTick(); // wait for entries are computed
   if (unreadEntries.value.length <= 0) {
     // fallback to all when no entries listed
     await navigateTo({ path: "/" });
