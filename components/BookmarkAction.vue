@@ -51,7 +51,7 @@ async function onDeleteAndNext() {
 </script>
 
 <template>
-  <div class="actions">
+  <div>
     <small>actions</small>
     {{}}
     <span v-if="deleteStatus === 'pending'">deleting...</span>
@@ -75,7 +75,7 @@ async function onDeleteAndNext() {
     <span v-else-if="summarizeStatus === 'success'">summarized!</span>
     <a v-else href="#" @click.prevent="executeSummarize">summarize</a>
     <div v-if="summarizeData">
-      <pre><code class="summary">{{ getLinkdingTitle(model) }}
+      <pre><code>{{ getLinkdingTitle(model) }}
 
 {{ model.url }}
 
@@ -93,18 +93,3 @@ async function onDeleteAndNext() {
     </div>
   </div>
 </template>
-
-<style scoped>
-.summary {
-  text-wrap: wrap;
-}
-
-.actions {
-  @media (max-width: 640px) {
-    text-align: right;
-  }
-  .summary {
-    text-align: left;
-  }
-}
-</style>

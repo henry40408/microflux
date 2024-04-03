@@ -89,7 +89,7 @@ const { copy, copied } = useClipboard({ source: copyable });
       </span>
     </div>
     <div v-if="summarizeData">
-      <pre><code class="summary">{{ model.title }}
+      <pre><code>{{ model.title }}
 
 {{ model.url }}
 
@@ -107,10 +107,3 @@ const { copy, copied } = useClipboard({ source: copyable });
     </div>
   </div>
 </template>
-
-<style scoped>
-.summary {
-  text-wrap: wrap;
-  text-align: left;
-}
-</style>

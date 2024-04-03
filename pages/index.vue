@@ -124,16 +124,16 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
     <h1>Microflux - Miniflux</h1>
     <Navigation />
     <div v-if="error">
-      <pre><code class="error">{{ error }}</code></pre>
+      <pre><code>{{ error }}</code></pre>
     </div>
     <h2>
       {{ entries.length }}
-      <small class="gray">entries on page</small>
+      <small>entries on page</small>
       / {{ pending ? "..." : unread }}
-      <small class="gray">unread on server</small>
+      <small>unread on server</small>
     </h2>
     <div>
-      <div class="actions">
+      <div>
         <small>actions</small>
         {{}}
         <span v-if="pending">refreshing...</span>
@@ -159,14 +159,14 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
       </div>
     </div>
     <div v-if="entries.length > 0">
-      <div v-for="(entry, index) in entries" :key="entry.id" class="entry">
-        <h2 :class="{ title: true, read: entry.status === 'read' }">
+      <div v-for="(entry, index) in entries" :key="entry.id">
+        <h2>
           <a :href="entry.url" target="_blank" rel="nofollow noopener">
             {{ entry.title }}
             <small> #{{ entry.id }}</small>
           </a>
         </h2>
-        <div class="metadata">
+        <div>
           <small>feed</small>
           {{}}
           <a href="#" @click.prevent="filterByFeed(entry.feed.id)">
@@ -179,9 +179,9 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
             {{ entry.feed.category.title }}
           </a>
         </div>
-        <EntryAction v-model="entries[index]" class="actions" />
+        <EntryAction v-model="entries[index]" />
         <EntryContent :content="entry.content">
-          <EntryAction v-model="entries[index]" class="actions" />
+          <EntryAction v-model="entries[index]" />
         </EntryContent>
       </div>
     </div>
@@ -203,33 +203,3 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
     </div>
   </div>
 </template>
-
-<style scoped>
-.error {
-  background-color: pink;
-  color: black;
-}
-
-.actions {
-  margin: 0 0 0.6rem;
-  @media (max-width: 640px) {
-    text-align: right;
-  }
-}
-
-.entry {
-  margin: 0 0 1rem;
-  .title small,
-  .title.read a {
-    color: lightgray;
-  }
-  .actions,
-  .metadata {
-    margin: 0 0 0.6rem;
-  }
-}
-
-.gray {
-  color: lightgray;
-}
-</style>

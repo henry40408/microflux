@@ -57,7 +57,7 @@ function onRandomDelete(id: number) {
     <h1>Microflux - Linkding</h1>
     <Navigation />
     <div v-if="error">
-      <pre><code class="error">{{ error }}</code></pre>
+      <pre><code>{{ error }}</code></pre>
     </div>
     <h2>
       <span v-if="pending">...</span>
@@ -66,7 +66,7 @@ function onRandomDelete(id: number) {
       <small>bookmarks on server</small>
     </h2>
     <div>
-      <div class="actions">
+      <div>
         <small>actions</small>
         {{}}
         <span v-if="pending">loading...</span>
@@ -77,23 +77,20 @@ function onRandomDelete(id: number) {
         <a href="#" @click.prevent="onRandom">random</a>
       </div>
       <h3 v-if="randomPicked">random picked</h3>
-      <div v-if="randomPicked" class="bookmark random-picked">
-        <h3 class="title">
+      <div v-if="randomPicked">
+        <h3>
           <a :href="randomPicked.url" target="_blank" rel="nofollow noopener">
             {{ getLinkdingTitle(randomPicked) }}
             <small>#{{ randomPicked.id }}</small>
           </a>
         </h3>
-        <div class="metadata">
+        <div>
           <small>{{ randomPicked.url }}</small>
         </div>
-        <blockquote
-          v-if="getLinkdingDescription(randomPicked)"
-          class="description"
-        >
+        <blockquote v-if="getLinkdingDescription(randomPicked)">
           {{ getLinkdingDescription(randomPicked) }}
         </blockquote>
-        <div class="metadata">
+        <div>
           <ClientOnly>
             <small>added</small>
             {{}}
@@ -108,24 +105,20 @@ function onRandomDelete(id: number) {
           @delete-and-next="onDeleteAndNext(randomPicked.id)"
         />
       </div>
-      <div
-        v-for="(bookmark, index) in bookmarks"
-        :key="bookmark.id"
-        class="bookmark"
-      >
-        <h3 class="title">
+      <div v-for="(bookmark, index) in bookmarks" :key="bookmark.id">
+        <h3>
           <a :href="bookmark.url" target="_blank" rel="nofollow noopener">
             {{ getLinkdingTitle(bookmark) }}
             <small>#{{ bookmark.id }}</small>
           </a>
         </h3>
-        <div class="metadata">
+        <div>
           <small>{{ bookmark.url }}</small>
         </div>
-        <blockquote v-if="getLinkdingDescription(bookmark)" class="description">
+        <blockquote v-if="getLinkdingDescription(bookmark)">
           {{ getLinkdingDescription(bookmark) }}
         </blockquote>
-        <div class="metadata">
+        <div>
           <ClientOnly>
             <small>added</small>
             {{}}
@@ -141,41 +134,3 @@ function onRandomDelete(id: number) {
     </div>
   </div>
 </template>
-
-<style scoped>
-.error {
-  background-color: pink;
-  color: black;
-}
-
-.random-picked {
-  border: 1px solid lightgray;
-  @media (prefers-color-scheme: dark) {
-    border: 1px solid white;
-  }
-  padding: 0.6rem;
-  margin: 0.6rem 0;
-  .title {
-    margin: 0;
-  }
-}
-
-.bookmark {
-  .title {
-    margin-bottom: 0;
-    small {
-      color: lightgray;
-    }
-  }
-  .metadata,
-  .description {
-    margin: 0 0 0.6rem;
-  }
-}
-
-.actions {
-  @media (max-width: 640px) {
-    text-align: right;
-  }
-}
-</style>
