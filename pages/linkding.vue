@@ -57,7 +57,7 @@ function onRandomDelete(id: number) {
     <h1>Microflux - Linkding</h1>
     <Navigation />
     <div v-if="error">
-      <pre><code class="error">{{ error }}</code></pre>
+      <pre><code>{{ error }}</code></pre>
     </div>
     <h2>
       <span v-if="pending">...</span>
@@ -66,37 +66,35 @@ function onRandomDelete(id: number) {
       <small>bookmarks on server</small>
     </h2>
     <div>
-      <div class="actions">
-        <small>actions</small>
-        {{}}
-        <span v-if="pending">loading...</span>
-        <span v-else>
-          <a href="#" @click.prevent="refresh">refresh</a>
-        </span>
-        |
-        <a href="#" @click.prevent="onRandom">random</a>
+      <div text-right md:flex md:space-x-2 md:text-left>
+        <div><small>actions</small></div>
+        <div>
+          <span v-if="pending">loading...</span>
+          <span v-else>
+            <a href="#" @click.prevent="refresh">refresh</a>
+          </span>
+        </div>
+        <div>
+          <a href="#" @click.prevent="onRandom">random</a>
+        </div>
       </div>
       <h3 v-if="randomPicked">random picked</h3>
-      <div v-if="randomPicked" class="bookmark random-picked">
-        <h3 class="title">
+      <div v-if="randomPicked" border-1 border-solid border-white px-2 py-4>
+        <h2 m-0>
           <a :href="randomPicked.url" target="_blank" rel="nofollow noopener">
             {{ getLinkdingTitle(randomPicked) }}
-            <small>#{{ randomPicked.id }}</small>
+            <small text-gray-300>#{{ randomPicked.id }}</small>
           </a>
-        </h3>
-        <div class="metadata">
+        </h2>
+        <div mb-2>
           <small>{{ randomPicked.url }}</small>
         </div>
-        <blockquote
-          v-if="getLinkdingDescription(randomPicked)"
-          class="description"
-        >
+        <blockquote v-if="getLinkdingDescription(randomPicked)" my-4>
           {{ getLinkdingDescription(randomPicked) }}
         </blockquote>
-        <div class="metadata">
+        <div>
           <ClientOnly>
-            <small>added</small>
-            {{}}
+            <small pr-2>added</small>
             <span>{{ formatDate(randomPicked.date_added) }}</span>
           </ClientOnly>
         </div>
@@ -108,74 +106,32 @@ function onRandomDelete(id: number) {
           @delete-and-next="onDeleteAndNext(randomPicked.id)"
         />
       </div>
-      <div
-        v-for="(bookmark, index) in bookmarks"
-        :key="bookmark.id"
-        class="bookmark"
-      >
-        <h3 class="title">
+      <div v-for="(bookmark, index) in bookmarks" :key="bookmark.id">
+        <h2 mb-0>
           <a :href="bookmark.url" target="_blank" rel="nofollow noopener">
             {{ getLinkdingTitle(bookmark) }}
-            <small>#{{ bookmark.id }}</small>
+            <small text-gray-300>#{{ bookmark.id }}</small>
           </a>
-        </h3>
-        <div class="metadata">
+        </h2>
+        <div>
           <small>{{ bookmark.url }}</small>
         </div>
-        <blockquote v-if="getLinkdingDescription(bookmark)" class="description">
+        <blockquote v-if="getLinkdingDescription(bookmark)" my-4>
           {{ getLinkdingDescription(bookmark) }}
         </blockquote>
-        <div class="metadata">
+        <div>
           <ClientOnly>
-            <small>added</small>
-            {{}}
+            <small pr-2>added</small>
             <span>{{ formatDate(bookmark.date_added) }}</span>
           </ClientOnly>
         </div>
         <BookmarkAction
           :key="bookmark.id"
           v-model="bookmarks[index]"
+          :enable-next="false"
           @deleted="onBookmarksDelete"
         />
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.error {
-  background-color: pink;
-  color: black;
-}
-
-.random-picked {
-  border: 1px solid lightgray;
-  @media (prefers-color-scheme: dark) {
-    border: 1px solid white;
-  }
-  padding: 0.6rem;
-  margin: 0.6rem 0;
-  .title {
-    margin: 0;
-  }
-}
-
-.bookmark {
-  .title {
-    margin-bottom: 0;
-    small {
-      color: lightgray;
-    }
-  }
-  .metadata,
-  .description {
-    margin: 0 0 0.6rem;
-  }
-}
-
-.actions {
-  @media (max-width: 640px) {
-    text-align: right;
-  }
-}
-</style>

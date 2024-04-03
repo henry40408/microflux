@@ -22,7 +22,7 @@ onConfirm(() => emit("confirmed"));
   <span v-if="isRevealed">
     <span>{{ question }}</span>
     {{}}
-    <a class="confirm" href="#" @click.prevent="confirm">confirm</a>
+    <a text-red href="#" @click.prevent="confirm">confirm</a>
     {{}}
     <a href="#" @click.prevent="cancel">cancel</a>
   </span>
@@ -30,9 +30,3 @@ onConfirm(() => emit("confirmed"));
     <a href="#" @click.prevent="reveal"><slot /></a>
   </span>
 </template>
-
-<style scoped>
-.confirm {
-  color: red;
-}
-</style>

@@ -1,18 +1,17 @@
 <template>
-  <div>
-    <small>navigation</small>
-    {{}}
-    <NuxtLink to="/">miniflux</NuxtLink>
-    |
-    <NuxtLink to="/linkding">linkding</NuxtLink>
+  <div space-x-2 space-y-2 text-right md:flex md:space-y-0 md:text-left>
+    <div>
+      <small>navigation</small>
+    </div>
+    <div>
+      <NuxtLink to="/" exact-active-class="text-black dark:text-white">
+        miniflux
+      </NuxtLink>
+    </div>
+    <div>
+      <NuxtLink to="/linkding" exact-active-class="text-black dark:text-white">
+        linkding
+      </NuxtLink>
+    </div>
   </div>
 </template>
-
-<style scoped>
-.router-link-exact-active {
-  color: black;
-  @media (prefers-color-scheme: dark) {
-    color: white;
-  }
-}
-</style>

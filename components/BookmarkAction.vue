@@ -5,7 +5,9 @@ import { useClipboard } from "@vueuse/core";
 
 const model = defineModel<LinkdingBookmark>();
 
-defineProps<{ enableNext: { type: Boolean; default: false } }>();
+defineProps<{
+  enableNext: boolean;
+}>();
 
 const emit = defineEmits<{
   deleted: [ids: number[]];
@@ -51,60 +53,53 @@ async function onDeleteAndNext() {
 </script>
 
 <template>
-  <div class="actions">
-    <small>actions</small>
-    {{}}
-    <span v-if="deleteStatus === 'pending'">deleting...</span>
-    <span v-else-if="deleteStatus === 'error'">failed!</span>
-    <span v-else>
-      <Confirm @confirmed="onDelete()">delete</Confirm>
-    </span>
-    <span v-if="enableNext">
-      |
+  <div text-right md:flex md:space-x-2 md:text-left>
+    <div>
+      <small>actions</small>
+    </div>
+    <div>
+      <span v-if="deleteStatus === 'pending'">deleting...</span>
+      <span v-else-if="deleteStatus === 'error'">failed!</span>
+      <span v-else>
+        <Confirm @confirmed="onDelete()">delete</Confirm>
+      </span>
+    </div>
+    <div v-if="enableNext">
       <span v-if="deleteStatus === 'pending'">deleting...</span>
       <span v-else-if="deleteStatus === 'error'">failed!</span>
       <span v-else>
         <Confirm @confirmed="onDeleteAndNext()">delete and next</Confirm>
       </span>
-    </span>
-    |
-    <span v-if="summarizeStatus === 'pending'">summarizing...</span>
-    <span v-else-if="summarizeStatus === 'error'">
-      <a href="#" @click.prevent="executeSummarize">failed, try again</a>
-    </span>
-    <span v-else-if="summarizeStatus === 'success'">summarized!</span>
-    <a v-else href="#" @click.prevent="executeSummarize">summarize</a>
+    </div>
+    <div>
+      <span v-if="summarizeStatus === 'pending'">summarizing...</span>
+      <span v-else-if="summarizeStatus === 'error'">
+        <a href="#" @click.prevent="executeSummarize">failed, try again</a>
+      </span>
+      <span v-else-if="summarizeStatus === 'success'">summarized!</span>
+      <a v-else href="#" @click.prevent="executeSummarize">summarize</a>
+    </div>
+  </div>
+  <div>
     <div v-if="summarizeData">
-      <pre><code class="summary">{{ getLinkdingTitle(model) }}
+      <pre><code text-wrap>{{ getLinkdingTitle(model) }}
 
 {{ model.url }}
 
 {{ summarizeData.summary }}</code></pre>
-      <small>token usage</small>
-      {{}}
-      <span>{{ summarizeData.tokens }}</span>
-      {{}}
-      <small>summary actions</small>
-      {{}}
-      <span v-if="copied">copied!</span>
-      <span v-else>
-        <a href="#" @click.prevent="copy(copyable)">copy</a>
-      </span>
+      <div text-right md:text-left>
+        <div>
+          <small pr-2>token usage</small>
+          <span>{{ summarizeData.tokens }}</span>
+        </div>
+        <div>
+          <small pr-2>summary actions</small>
+          <span v-if="copied">copied!</span>
+          <span v-else>
+            <a href="#" @click.prevent="copy(copyable)">copy</a>
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.summary {
-  text-wrap: wrap;
-}
-
-.actions {
-  @media (max-width: 640px) {
-    text-align: right;
-  }
-  .summary {
-    text-align: left;
-  }
-}
-</style>
