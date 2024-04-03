@@ -1,7 +1,3 @@
-import type { H3Event, EventHandlerRequest } from "h3";
-
-export type H3RequestEvent = H3Event<EventHandlerRequest>;
-
 export interface KaigSummary {
   meta: {
     id: string;
@@ -28,11 +24,14 @@ export interface LinkdingBookmark {
   website_title: string;
 }
 
+export type MinifluxEntryStatus = "read" | "unread";
+
 export interface MinifluxEntry {
   content: string;
   id: number;
   title: string;
   url: string;
+  status: MinifluxEntryStatus;
 }
 
 export interface MinifluxEntries {

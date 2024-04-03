@@ -1,8 +1,8 @@
+import type { H3Event } from "h3";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
 import { sendRequest } from "~/server/linkding";
-import { H3RequestEvent } from "~/types";
 
 const deleteSchema = z.discriminatedUnion("op", [
   z.object({
@@ -11,7 +11,7 @@ const deleteSchema = z.discriminatedUnion("op", [
   }),
 ]);
 
-async function deleteBookmark(event: H3RequestEvent, id: number) {
+async function deleteBookmark(event: H3Event, id: number) {
   await sendRequest(event, {
     path: `/api/bookmarks/${id}`,
     method: "DELETE",

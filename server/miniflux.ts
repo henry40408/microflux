@@ -1,4 +1,4 @@
-import type { H3RequestEvent } from "~/types";
+import type { H3Event } from "h3";
 
 interface Options {
   path: string;
@@ -9,7 +9,7 @@ interface Options {
 }
 
 export async function sendRequest<T>(
-  event: H3RequestEvent,
+  event: H3Event,
   options: Options,
 ): Promise<T> {
   const { minifluxUrl, minifluxToken } = useRuntimeConfig(event);

@@ -1,9 +1,11 @@
+import type { H3Event } from "h3";
+
 import { createError } from "h3";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
-import { H3RequestEvent } from "~/types";
 import { sendRequest } from "~/server/miniflux";
+import type { MinifluxEntryStatus } from "~/types";
 
 const entrySchema = z.discriminatedUnion("op", [
   z.object({
@@ -22,9 +24,9 @@ const entrySchema = z.discriminatedUnion("op", [
 ]);
 
 async function toggleRead(
-  event: H3RequestEvent,
+  event: H3Event,
   ids: number[],
-  status: "read" | "unread",
+  status: MinifluxEntryStatus,
 ) {
   try {
     await sendRequest(event, {
@@ -42,7 +44,7 @@ async function toggleRead(
   }
 }
 
-async function save(event: H3RequestEvent, id: number) {
+async function save(event: H3Event, id: number) {
   try {
     await sendRequest(event, {
       path: `/v1/entries/${id}/save`,
