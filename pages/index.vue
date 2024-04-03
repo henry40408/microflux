@@ -123,9 +123,9 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
     </div>
     <h2>
       {{ entries.length }}
-      <small text-gray-300>on page</small>
+      <small text-gray-400>on page</small>
       / {{ pending ? "..." : unread }}
-      <small text-gray-300>on server</small>
+      <small text-gray-400>on server</small>
     </h2>
     <div>
       <div
@@ -157,13 +157,13 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
     <div v-for="(entry, index) in entries" :key="entry.id">
       <h2>
         <a
-          :class="{ 'text-gray-300': entry.status === 'read' }"
+          :class="{ 'text-gray-400': entry.status === 'read' }"
           :href="entry.url"
           target="_blank"
           rel="nofollow noopener"
         >
           {{ entry.title }}
-          <small text-gray-300> #{{ entry.id }}</small>
+          <small text-gray-400> #{{ entry.id }}</small>
         </a>
       </h2>
       <div pb-2 space-x-2 space-y-2 text-right md:flex md:space-y-0>
@@ -181,7 +181,7 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
         </div>
       </div>
       <EntryAction v-model="entries[index]" />
-      <EntryContent :content="entry.content">
+      <EntryContent v-model:content="entry.content" v-model:url="entry.url">
         <EntryAction v-model="entries[index]" pb-2 />
       </EntryContent>
     </div>
@@ -202,6 +202,7 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
           <Confirm @confirmed="executeMarkAllAsRead">
             <span>mark all as read</span>
           </Confirm>
+          <span v-if="markAllAsReadStatus === 'error'" pl-1>failed!</span>
         </span>
       </div>
       <div>

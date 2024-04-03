@@ -65,10 +65,14 @@ const { copy, copied } = useClipboard({ source: copyable });
       <div>
         <span v-if="toggleReadStatus === 'pending'">marking...</span>
         <span v-else>
-          <a href="#" @click.prevent="executeToggleRead()">
+          <a
+            href="#"
+            :class="{ 'text-gray-400': model.status === 'read' }"
+            @click.prevent="executeToggleRead()"
+          >
             mark as {{ model.status === "unread" ? "read" : "unread" }}
           </a>
-          <span v-if="toggleReadStatus === 'error'">failed!</span>
+          <span v-if="toggleReadStatus === 'error'" pl-1>failed!</span>
         </span>
       </div>
       <div>
@@ -76,7 +80,7 @@ const { copy, copied } = useClipboard({ source: copyable });
         <span v-else-if="saveStatus === 'success'">saved!</span>
         <span v-else>
           <a href="#" @click.prevent="executeSave()">save</a>
-          <span v-if="saveStatus === 'error'">failed!</span>
+          <span v-if="saveStatus === 'error'" pl-1>failed!</span>
         </span>
       </div>
       <div>
@@ -84,7 +88,7 @@ const { copy, copied } = useClipboard({ source: copyable });
         <span v-else-if="summarizeStatus === 'success'">summarized!</span>
         <span v-else>
           <a href="#" @click.prevent="executeSummarize()">summarize</a>
-          <span v-if="summarizeStatus === 'error'">failed!</span>
+          <span v-if="summarizeStatus === 'error'" pl-1>failed!</span>
         </span>
       </div>
     </div>
@@ -94,9 +98,9 @@ const { copy, copied } = useClipboard({ source: copyable });
 {{ model.url }}
 
 {{ summarizeData.summary }}</code></pre>
-      <div text-right md:text-left md:flex md:space-x-2>
+      <div text-right md:text-left md:flex md:space-x-1>
         <div>
-          <small pr-2>token usage</small>
+          <small pr-1>token usage</small>
           <span>{{ summarizeData.tokens }}</span>
         </div>
         <div>

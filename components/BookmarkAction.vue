@@ -59,14 +59,14 @@ async function onDeleteAndNext() {
     </div>
     <div>
       <span v-if="deleteStatus === 'pending'">deleting...</span>
-      <span v-else-if="deleteStatus === 'error'">failed!</span>
+      <span v-else-if="deleteStatus === 'error'" pl-1>failed!</span>
       <span v-else>
         <Confirm @confirmed="onDelete()">delete</Confirm>
       </span>
     </div>
     <div v-if="enableNext">
       <span v-if="deleteStatus === 'pending'">deleting...</span>
-      <span v-else-if="deleteStatus === 'error'">failed!</span>
+      <span v-else-if="deleteStatus === 'error'" pl-1>failed!</span>
       <span v-else>
         <Confirm @confirmed="onDeleteAndNext()">delete and next</Confirm>
       </span>

@@ -63,7 +63,7 @@ function onRandomDelete(id: number) {
       <span v-if="pending">...</span>
       <span v-else>{{ count }}</span>
       {{}}
-      <small text-gray-300>bookmarks on server</small>
+      <small text-gray-400>bookmarks on server</small>
     </h2>
     <div pb-2>
       <div text-right md:flex md:space-x-2 md:text-left>
@@ -83,7 +83,7 @@ function onRandomDelete(id: number) {
         <h2 m-0>
           <a :href="randomPicked.url" target="_blank" rel="nofollow noopener">
             {{ getLinkdingTitle(randomPicked) }}
-            <small text-gray-300>#{{ randomPicked.id }}</small>
+            <small text-gray-400>#{{ randomPicked.id }}</small>
           </a>
         </h2>
         <div mb-2>
@@ -110,7 +110,7 @@ function onRandomDelete(id: number) {
         <h2 mb-0>
           <a :href="bookmark.url" target="_blank" rel="nofollow noopener">
             {{ getLinkdingTitle(bookmark) }}
-            <small text-gray-300>#{{ bookmark.id }}</small>
+            <small text-gray-400>#{{ bookmark.id }}</small>
           </a>
         </h2>
         <div>
