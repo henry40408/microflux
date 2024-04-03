@@ -1,27 +1,20 @@
 <script setup lang="ts">
 import uniqBy from "lodash/uniqBy";
 
-const { query } = useRoute();
+const route = useRoute();
 
 // fitler by category / feed
-const category = ref(query.category ? Number(query.category) : null);
+const category = computed(() =>
+  route.query.category ? Number(route.query.category) : undefined,
+);
 const categoryTitle = computed(
   () => categories.value.find((c) => c.id === category.value)?.title,
 );
-const feed = ref(query.feed ? Number(query.feed) : null);
+const feed = computed(() =>
+  route.query.feed ? Number(route.query.feed) : undefined,
+);
 const feedTitle = computed(
   () => feeds.value.find((f) => f.id === feed.value)?.title,
-);
-
-watch(
-  () => [category.value || undefined, feed.value || undefined],
-  async (next) => {
-    const [category, feed] = next;
-    await navigateTo({
-      path: "/",
-      query: { category, feed },
-    });
-  },
 );
 
 const filter = computed(() => {
@@ -72,22 +65,25 @@ useHead({ titleTemplate });
 async function fallbackIfEmpty() {
   if (unreadEntries.value.length <= 0) {
     // fallback to category when no entries listed
-    feed.value = null;
+    await navigateTo({ path: "/", query: { category: category.value } });
   }
   await nextTick(); // wait for entries are computed
   if (unreadEntries.value.length <= 0) {
     // fallback to all when no entries listed
-    category.value = null;
+    await navigateTo({ path: "/" });
   }
 }
 
 async function filterByCategory(id) {
-  category.value = id;
+  await navigateTo({ path: "/", query: { category: id, feed: feed.value } });
   await fallbackIfEmpty();
 }
 
 async function filterByFeed(id) {
-  feed.value = id;
+  await navigateTo({
+    path: "/",
+    query: { category: category.value, feed: id },
+  });
   await fallbackIfEmpty();
 }
 
@@ -140,13 +136,13 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
           <div v-else><a href="#" @click.prevent="onRefresh">refresh</a></div>
         </div>
         <div v-if="category">
-          <small pr-2>selected category</small>
-          <span pr-2>{{ categoryTitle }}</span>
+          <small pr-1>selected category</small>
+          <span pr-1>{{ categoryTitle }}</span>
           <a href="#" @click.prevent="filterByCategory(null)">clear</a>
         </div>
         <div v-if="feed">
-          <small pr-2>selected feed</small>
-          <span pr-2>{{ feedTitle }}</span>
+          <small pr-1>selected feed</small>
+          <span pr-1>{{ feedTitle }}</span>
           <a href="#" @click.prevent="filterByFeed(null)">clear</a>
         </div>
       </div>

@@ -80,12 +80,12 @@ function onRandomDelete(id: number) {
       </div>
       <h3 v-if="randomPicked">random picked</h3>
       <div v-if="randomPicked" border-1 border-solid border-white px-2 py-4>
-        <h3 m-0>
+        <h2 m-0>
           <a :href="randomPicked.url" target="_blank" rel="nofollow noopener">
             {{ getLinkdingTitle(randomPicked) }}
             <small text-gray-300>#{{ randomPicked.id }}</small>
           </a>
-        </h3>
+        </h2>
         <div mb-2>
           <small>{{ randomPicked.url }}</small>
         </div>
@@ -107,12 +107,12 @@ function onRandomDelete(id: number) {
         />
       </div>
       <div v-for="(bookmark, index) in bookmarks" :key="bookmark.id">
-        <h3 mb-0>
+        <h2 mb-0>
           <a :href="bookmark.url" target="_blank" rel="nofollow noopener">
             {{ getLinkdingTitle(bookmark) }}
             <small text-gray-300>#{{ bookmark.id }}</small>
           </a>
-        </h3>
+        </h2>
         <div>
           <small>{{ bookmark.url }}</small>
         </div>

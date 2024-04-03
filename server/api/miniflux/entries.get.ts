@@ -7,7 +7,21 @@ import { sendRequest } from "~/server/miniflux";
 import type { MinifluxEntries, MinifluxUnreadCounters } from "~/types";
 
 const HEADINGS = ["h1", "h2", "h3", "h4", "h5", "h6"];
-const ALLOWED_TAGS = HEADINGS.concat(["a", "br", "img", "li", "ol", "p", "ul"]);
+const ALLOWED_TAGS = HEADINGS.concat([
+  "a",
+  "b",
+  "blockquote",
+  "br",
+  "em",
+  "i",
+  "img",
+  "li",
+  "ol",
+  "p",
+  "strong",
+  "u",
+  "ul",
+]);
 const ALLOWED_ATTRIBS = { a: ["href", "rel", "target"], img: ["src"] };
 
 const convert = OpenCC.Converter({ from: "cn", to: "tw" });
