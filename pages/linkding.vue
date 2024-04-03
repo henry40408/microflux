@@ -119,6 +119,7 @@ function onRandomDelete(id: number) {
         <blockquote v-if="getLinkdingDescription(bookmark)" my-4>
           {{ getLinkdingDescription(bookmark) }}
         </blockquote>
+        <div v-else my-4 />
         <div>
           <ClientOnly>
             <small pr-2>added</small>
