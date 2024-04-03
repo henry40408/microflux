@@ -39,8 +39,8 @@ export default defineEventHandler(async (event) => {
         statusMessage: "web page is not readable",
       });
 
-    const { title, textContent } = readable;
-    return { title, textContent };
+    const { length, content } = readable;
+    return { length, content };
   } catch (err) {
     console.error("failed to fetch readable content", err);
     throw createError({

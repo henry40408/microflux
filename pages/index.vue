@@ -122,9 +122,9 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
       <pre><code>{{ error }}</code></pre>
     </div>
     <h2>
-      {{ entries.length }}
+      {{ formatNumber(entries.length) }}
       <small text-gray-400>on page</small>
-      / {{ pending ? "..." : unread }}
+      / {{ pending ? "..." : formatNumber(unread) }}
       <small text-gray-400>on server</small>
     </h2>
     <div>

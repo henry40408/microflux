@@ -41,6 +41,20 @@ const {
   immediate: false,
 });
 
+function useReadability() {
+  const { data, status, execute } = useFetch("/api/miniflux/readability", {
+    method: "POST",
+    body: { url: model.value.url },
+    immediate: false,
+  });
+  return { data, status, execute };
+}
+const {
+  data: readabilityData,
+  status: readabilityStatus,
+  execute: executeReadability,
+} = useReadability();
+
 async function onDelete() {
   await executeDelete();
   emit("deleted", [model.value.id]);
@@ -53,32 +67,47 @@ async function onDeleteAndNext() {
 </script>
 
 <template>
-  <div text-right md:flex md:space-x-2 md:text-left>
+  <div pb-2 text-right md:flex md:space-x-2 md:text-left>
     <div>
       <small>actions</small>
     </div>
     <div>
+      <span v-if="readabilityStatus === 'pending'">reading...</span>
+      <span v-else-if="readabilityStatus === 'success'">readable!</span>
+      <a v-else href="#" @click.prevent="executeReadability">
+        readability
+        <span v-if="readabilityStatus === 'error'">failed!</span>
+      </a>
+    </div>
+    <div>
+      <span v-if="summarizeStatus === 'pending'">summarizing...</span>
+      <span v-else-if="summarizeStatus === 'success'">summarized!</span>
+      <a v-else href="#" @click.prevent="executeSummarize">
+        summarize
+        <span v-if="summarizeStatus === 'error'" pl-1>failed!</span>
+      </a>
+    </div>
+    <div>
       <span v-if="deleteStatus === 'pending'">deleting...</span>
-      <span v-else-if="deleteStatus === 'error'" pl-1>failed!</span>
       <span v-else>
         <Confirm @confirmed="onDelete()">delete</Confirm>
+        <span v-if="deleteStatus === 'error'" pl-1>failed!</span>
       </span>
     </div>
     <div v-if="enableNext">
       <span v-if="deleteStatus === 'pending'">deleting...</span>
-      <span v-else-if="deleteStatus === 'error'" pl-1>failed!</span>
       <span v-else>
         <Confirm @confirmed="onDeleteAndNext()">delete and next</Confirm>
+        <span v-if="deleteStatus === 'error'" pl-1>failed!</span>
       </span>
     </div>
-    <div>
-      <span v-if="summarizeStatus === 'pending'">summarizing...</span>
-      <span v-else-if="summarizeStatus === 'error'">
-        <a href="#" @click.prevent="executeSummarize">failed, try again</a>
-      </span>
-      <span v-else-if="summarizeStatus === 'success'">summarized!</span>
-      <a v-else href="#" @click.prevent="executeSummarize">summarize</a>
-    </div>
+  </div>
+  <div v-if="readabilityData">
+    <h3 mb-2 mt-0>
+      readable ({{ formatNumber(readabilityData.length) }} chars)
+    </h3>
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <div px-2 v-html="readabilityData.content" />
   </div>
   <div>
     <div v-if="summarizeData">

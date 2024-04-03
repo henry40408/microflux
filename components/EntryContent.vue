@@ -27,11 +27,12 @@ const {
     <!-- eslint-disable-next-line vue/no-v-html -->
     <div v-if="opened" pb-2 v-html="content" />
     <div v-if="readabilityData">
-      <h3 my-2>readable</h3>
-      <p>{{ readabilityData.textContent }}</p>
+      <h3 my-2>readable ({{ formatNumber(readabilityData.length) }} chars)</h3>
+      <!-- eslint-disable-next-line vue/no-v-html -->
+      <div v-html="readabilityData.content" />
     </div>
     <slot />
-    <div text-right space-y-2 md:flex md:space-x-2 md:text-left>
+    <div text-right space-y-0 md:flex md:space-x-2 md:text-left>
       <div>
         <span v-if="readabilityStatus === 'pending'">reading...</span>
         <span v-else-if="readabilityStatus === 'success'">readable!</span>

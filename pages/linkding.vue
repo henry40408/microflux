@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import sample from "lodash/sample";
-import pangu from "pangu";
 
 const { data, pending, error, refresh } = await useLazyFetch(
   "/api/linkding/bookmarks",
@@ -19,14 +18,6 @@ const randomPicked = ref(null);
 
 const titleTemplate = computed(() => `%s - Linkding (${count.value})`);
 useHead({ titleTemplate });
-
-function formatDate(date) {
-  const formatter = new Intl.DateTimeFormat(navigator.language, {
-    dateStyle: "medium",
-    timeStyle: "medium",
-  });
-  return pangu.spacing(formatter.format(new Date(date)));
-}
 
 function onBookmarksDelete(ids: number[]) {
   data.value.bookmarks = data.value.bookmarks.filter(
@@ -61,9 +52,8 @@ function onRandomDelete(id: number) {
     </div>
     <h2>
       <span v-if="pending">...</span>
-      <span v-else>{{ count }}</span>
-      {{}}
-      <small text-gray-400>bookmarks on server</small>
+      <span v-else>{{ formatNumber(count) }}</span>
+      <small text-gray-400 pl-1>bookmarks on server</small>
     </h2>
     <div pb-2>
       <div text-right md:flex md:space-x-2 md:text-left>
@@ -93,10 +83,8 @@ function onRandomDelete(id: number) {
           {{ getLinkdingDescription(randomPicked) }}
         </blockquote>
         <div>
-          <ClientOnly>
-            <small pr-2>added</small>
-            <span>{{ formatDate(randomPicked.date_added) }}</span>
-          </ClientOnly>
+          <small pr-2>added</small>
+          <span>{{ formatDate(randomPicked.date_added) }}</span>
         </div>
         <BookmarkAction
           :key="randomPicked.id"
