@@ -66,34 +66,35 @@ function onRandomDelete(id: number) {
       <small>bookmarks on server</small>
     </h2>
     <div>
-      <div>
-        <small>actions</small>
-        {{}}
-        <span v-if="pending">loading...</span>
-        <span v-else>
-          <a href="#" @click.prevent="refresh">refresh</a>
-        </span>
-        |
-        <a href="#" @click.prevent="onRandom">random</a>
+      <div text-right md:flex md:space-x-2 md:text-left>
+        <div><small>actions</small></div>
+        <div>
+          <span v-if="pending">loading...</span>
+          <span v-else>
+            <a href="#" @click.prevent="refresh">refresh</a>
+          </span>
+        </div>
+        <div>
+          <a href="#" @click.prevent="onRandom">random</a>
+        </div>
       </div>
       <h3 v-if="randomPicked">random picked</h3>
-      <div v-if="randomPicked">
-        <h3>
+      <div v-if="randomPicked" border-1 border-solid border-white px-2 py-4>
+        <h3 m-0>
           <a :href="randomPicked.url" target="_blank" rel="nofollow noopener">
             {{ getLinkdingTitle(randomPicked) }}
-            <small>#{{ randomPicked.id }}</small>
+            <small text-gray-300>#{{ randomPicked.id }}</small>
           </a>
         </h3>
-        <div>
+        <div mb-2>
           <small>{{ randomPicked.url }}</small>
         </div>
-        <blockquote v-if="getLinkdingDescription(randomPicked)">
+        <blockquote v-if="getLinkdingDescription(randomPicked)" my-4>
           {{ getLinkdingDescription(randomPicked) }}
         </blockquote>
         <div>
           <ClientOnly>
-            <small>added</small>
-            {{}}
+            <small pr-2>added</small>
             <span>{{ formatDate(randomPicked.date_added) }}</span>
           </ClientOnly>
         </div>
@@ -106,28 +107,28 @@ function onRandomDelete(id: number) {
         />
       </div>
       <div v-for="(bookmark, index) in bookmarks" :key="bookmark.id">
-        <h3>
+        <h3 mb-0>
           <a :href="bookmark.url" target="_blank" rel="nofollow noopener">
             {{ getLinkdingTitle(bookmark) }}
-            <small>#{{ bookmark.id }}</small>
+            <small text-gray-300>#{{ bookmark.id }}</small>
           </a>
         </h3>
         <div>
           <small>{{ bookmark.url }}</small>
         </div>
-        <blockquote v-if="getLinkdingDescription(bookmark)">
+        <blockquote v-if="getLinkdingDescription(bookmark)" my-4>
           {{ getLinkdingDescription(bookmark) }}
         </blockquote>
         <div>
           <ClientOnly>
-            <small>added</small>
-            {{}}
+            <small pr-2>added</small>
             <span>{{ formatDate(bookmark.date_added) }}</span>
           </ClientOnly>
         </div>
         <BookmarkAction
           :key="bookmark.id"
           v-model="bookmarks[index]"
+          :enable-next="false"
           @deleted="onBookmarksDelete"
         />
       </div>
