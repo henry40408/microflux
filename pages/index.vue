@@ -139,7 +139,7 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
       >
         <div><small>actions</small></div>
         <div>
-          <div v-if="pending">refreshing...</div>
+          <div v-if="pending">...</div>
           <div v-else><a href="#" @click.prevent="onRefresh">refresh</a></div>
         </div>
         <div v-if="category">
@@ -208,7 +208,7 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
         </span>
       </div>
       <div>
-        <span v-if="pending">refreshing...</span>
+        <span v-if="pending">...</span>
         <a v-else href="#" @click.prevent="onRefresh">refresh</a>
       </div>
     </div>
