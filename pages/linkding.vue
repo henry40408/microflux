@@ -69,7 +69,15 @@ function onRandomDelete(id: number) {
         </div>
       </div>
       <h3 v-if="randomPicked">random picked</h3>
-      <div v-if="randomPicked" border-1 border-solid border-white px-2 py-4>
+      <div
+        v-if="randomPicked"
+        border-1
+        border-solid
+        border-black
+        px-2
+        py-4
+        dark:border-white
+      >
         <h2 m-0>
           <a :href="randomPicked.url" target="_blank" rel="nofollow noopener">
             {{ getLinkdingTitle(randomPicked) }}
