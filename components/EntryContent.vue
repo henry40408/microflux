@@ -32,7 +32,7 @@ const {
       <div v-html="readabilityData.content" />
     </div>
     <slot />
-    <div text-right space-y-0 md:flex md:space-x-2 md:text-left>
+    <div text-right space-y-2 md:flex md:space-x-2 md:space-y-0 md:text-left>
       <div>
         <span v-if="readabilityStatus === 'pending'">reading...</span>
         <span v-else-if="readabilityStatus === 'success'">readable!</span>
