@@ -42,6 +42,7 @@ function useSummarize() {
     method: "POST",
     body: { url: model.value.url },
     immediate: false,
+    timeout: 30000,
   });
   return { data, status, execute };
 }
