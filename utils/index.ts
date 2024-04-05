@@ -1,3 +1,4 @@
+import { useInterval } from "@vueuse/core";
 import pangu from "pangu";
 
 import type { LinkdingBookmark } from "@/types";
@@ -43,8 +44,10 @@ export function useReadability(url) {
 export function useSummarize(url) {
   const status = ref("idle");
   const data = ref(null);
+  const { counter, reset } = useInterval(1000, { controls: true });
   const execute = async () => {
     try {
+      reset();
       status.value = "pending";
       data.value = await $fetch("/api/kagi/summarize", {
         method: "POST",
@@ -57,5 +60,5 @@ export function useSummarize(url) {
       status.value = "error";
     }
   };
-  return { data, status, execute };
+  return { data, status, execute, seconds: counter };
 }

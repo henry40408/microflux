@@ -50,6 +50,7 @@ const {
   data: summarizeData,
   status: summarizeStatus,
   execute: executeSummarize,
+  seconds: summarizeSeconds,
 } = useSummarize(url);
 
 async function onDelete() {
@@ -77,7 +78,9 @@ async function onDeleteAndNext() {
       </a>
     </div>
     <div>
-      <span v-if="summarizeStatus === 'pending'">summarizing...</span>
+      <span v-if="summarizeStatus === 'pending'">
+        summarizing... {{ summarizeSeconds }}
+      </span>
       <span v-else-if="summarizeStatus === 'success'">summarized!</span>
       <a v-else href="#" @click.prevent="executeSummarize">
         summarize
