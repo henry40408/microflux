@@ -59,7 +59,7 @@ function onRandomDelete(id: number) {
       <div text-right space-y-2 md:flex md:space-x-2 md:space-y-0 md:text-left>
         <div><small>actions</small></div>
         <div>
-          <span v-if="pending">loading...</span>
+          <span v-if="pending">...</span>
           <span v-else>
             <a href="#" @click.prevent="refresh">refresh</a>
           </span>
@@ -90,7 +90,7 @@ function onRandomDelete(id: number) {
         <blockquote v-if="getLinkdingDescription(randomPicked)" my-4>
           {{ getLinkdingDescription(randomPicked) }}
         </blockquote>
-        <div>
+        <div pb-2>
           <small pr-2>added</small>
           <span>{{ formatDate(randomPicked.date_added) }}</span>
         </div>
