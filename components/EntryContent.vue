@@ -13,6 +13,28 @@ const {
   status: readabilityStatus,
   execute: executeReadability,
 } = useReadability(url);
+
+function useReadAndCollapse() {
+  const status = ref("idle");
+  const execute = async () => {
+    try {
+      status.value = "pending";
+      await $fetch("/api/miniflux/entry", {
+        method: "POST",
+        body: { op: "toggle-read", id: model.value.id, status: "read" },
+      });
+      toggle(false);
+      model.value.status = "read";
+      status.value = "success";
+    } catch (err) {
+      console.error("failed to mark as read and collapse", err);
+      status.value = "error";
+    }
+  };
+  return { status, execute };
+}
+const { status: readAndCollapseStatus, execute: executeReadAndCollapse } =
+  useReadAndCollapse();
 </script>
 
 <template>
@@ -39,6 +61,12 @@ const {
       </div>
       <div>
         <a href="#" @click.prevent="toggle(false)">collapse</a>
+        (<span>
+          <span v-if="readAndCollapseStatus === 'pending'">marking..</span>
+          <a v-else href="#" @click.prevent="executeReadAndCollapse"
+            >and mark as read</a
+          ></span
+        >)
       </div>
     </div>
   </details>
