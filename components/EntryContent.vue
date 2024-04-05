@@ -6,6 +6,10 @@ import type { MinifluxEntry } from "~/types";
 const model = defineModel<MinifluxEntry>();
 const url = computed(() => model.value.url);
 
+const emit = defineEmits<{
+  collapsed: [id: number];
+}>();
+
 const [opened, toggle] = useToggle(false);
 
 const {
@@ -23,7 +27,7 @@ function useReadAndCollapse() {
         method: "POST",
         body: { op: "toggle-read", id: model.value.id, status: "read" },
       });
-      toggle(false);
+      onCollapse();
       model.value.status = "read";
       status.value = "success";
     } catch (err) {
@@ -35,6 +39,11 @@ function useReadAndCollapse() {
 }
 const { status: readAndCollapseStatus, execute: executeReadAndCollapse } =
   useReadAndCollapse();
+
+function onCollapse() {
+  toggle(false);
+  emit("collapsed", model.value.id);
+}
 </script>
 
 <template>
@@ -60,7 +69,7 @@ const { status: readAndCollapseStatus, execute: executeReadAndCollapse } =
         </span>
       </div>
       <div>
-        <a href="#" @click.prevent="toggle(false)">collapse</a>
+        <a href="#" @click.prevent="onCollapse()">collapse</a>
         (<span>
           <span v-if="readAndCollapseStatus === 'pending'">marking..</span>
           <a v-else href="#" @click.prevent="executeReadAndCollapse"

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import uniqBy from "lodash/uniqBy";
 
+const entriesRefs = ref([]);
+
 const route = useRoute();
 
 // fitler by category / feed
@@ -154,7 +156,7 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
         </div>
       </div>
     </div>
-    <div v-for="(entry, index) in entries" :key="entry.id">
+    <div v-for="(entry, index) in entries" :key="entry.id" ref="entriesRefs">
       <h2>
         <a
           :class="{ 'text-gray-400': entry.status === 'read' }"
@@ -181,7 +183,10 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
         </div>
       </div>
       <EntryAction v-model="entries[index]" />
-      <EntryContent v-model="entries[index]">
+      <EntryContent
+        v-model="entries[index]"
+        @collapsed="entriesRefs[index].scrollIntoView()"
+      >
         <EntryAction v-model="entries[index]" pb-2 />
       </EntryContent>
     </div>
