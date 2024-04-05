@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { useToggle } from "@vueuse/core";
 
-const content = defineModel<string>("content");
-const url = defineModel<string>("url");
+import type { MinifluxEntry } from "~/types";
+
+const model = defineModel<MinifluxEntry>();
+const url = computed(() => model.value.url);
 
 const [opened, toggle] = useToggle(false);
 
@@ -17,11 +19,13 @@ const {
   <details :open="opened">
     <summary @click.prevent="toggle()">content</summary>
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div v-if="opened" pb-2 v-html="content" />
+    <div v-if="opened" pb-2 v-html="model.content" />
     <div v-if="readabilityData">
       <h3 my-2>readable ({{ formatNumber(readabilityData.length) }} chars)</h3>
-      <!-- eslint-disable-next-line vue/no-v-html -->
-      <div v-html="readabilityData.content" />
+      <div border-1 border-dashed border-black p-2 dark:border-white>
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <span v-html="readabilityData.content" />
+      </div>
     </div>
     <slot />
     <div text-right space-y-2 md:flex md:space-x-2 md:space-y-0 md:text-left>

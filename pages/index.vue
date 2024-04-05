@@ -181,7 +181,7 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
         </div>
       </div>
       <EntryAction v-model="entries[index]" />
-      <EntryContent v-model:content="entry.content" v-model:url="entry.url">
+      <EntryContent v-model="entries[index]">
         <EntryAction v-model="entries[index]" pb-2 />
       </EntryContent>
     </div>
