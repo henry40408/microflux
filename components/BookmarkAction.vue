@@ -4,6 +4,7 @@ import type { LinkdingBookmark } from "@/types";
 import { useClipboard } from "@vueuse/core";
 
 const model = defineModel<LinkdingBookmark>();
+const url = computed(() => model.value.url);
 
 defineProps<{
   enableNext: boolean;
@@ -20,41 +21,36 @@ const copyable = computed(
 );
 const { copy, copied } = useClipboard({ source: "" });
 
-const { status: deleteStatus, refresh: executeDelete } = await useLazyFetch(
-  "/api/linkding/bookmark",
-  {
-    key: `delete-${model.value.id}`,
-    method: "POST",
-    body: { op: "delete", id: model.value.id },
-    immediate: false,
-  },
-);
-
-const {
-  data: summarizeData,
-  status: summarizeStatus,
-  refresh: executeSummarize,
-} = await useLazyFetch("/api/kagi/summarize", {
-  key: `summarize-${model.value.id}`,
-  method: "POST",
-  body: { url: model.value.url },
-  immediate: false,
-  timeout: 30000,
-});
-
-function useReadability() {
-  const { data, status, execute } = useFetch("/api/miniflux/readability", {
-    method: "POST",
-    body: { url: model.value.url },
-    immediate: false,
-  });
-  return { data, status, execute };
+function useDelete() {
+  const status = ref("idle");
+  const execute = async () => {
+    try {
+      status.value = "pending";
+      await $fetch("/api/linkding/bookmark", {
+        method: "POST",
+        body: { op: "delete", id: model.value.id },
+      });
+      status.value = "success";
+    } catch (err) {
+      console.error("failed to delete bookmark", err);
+      status.value = "error";
+    }
+  };
+  return { status, execute };
 }
+const { status: deleteStatus, execute: executeDelete } = useDelete();
+
 const {
   data: readabilityData,
   status: readabilityStatus,
   execute: executeReadability,
-} = useReadability();
+} = useReadability(url);
+
+const {
+  data: summarizeData,
+  status: summarizeStatus,
+  execute: executeSummarize,
+} = useSummarize(url);
 
 async function onDelete() {
   await executeDelete();
@@ -92,13 +88,9 @@ async function onDeleteAndNext() {
       <span v-if="deleteStatus === 'pending'">deleting...</span>
       <span v-else>
         <Confirm @confirmed="onDelete()">delete</Confirm>
-        <span v-if="deleteStatus === 'error'" pl-1>failed!</span>
-      </span>
-    </div>
-    <div v-if="enableNext">
-      <span v-if="deleteStatus === 'pending'">deleting...</span>
-      <span v-else>
-        <Confirm @confirmed="onDeleteAndNext()">delete and next</Confirm>
+        <span v-if="enableNext">
+          (<Confirm @confirmed="onDeleteAndNext()">and next</Confirm>)
+        </span>
         <span v-if="deleteStatus === 'error'" pl-1>failed!</span>
       </span>
     </div>
@@ -113,7 +105,7 @@ async function onDeleteAndNext() {
       <div text-right md:text-left>
         <div>
           <small pr-2>token usage</small>
-          <span>{{ summarizeData.tokens }}</span>
+          <span>{{ formatNumber(summarizeData.tokens) }}</span>
         </div>
         <div>
           <small pr-2>summary actions</small>
@@ -126,15 +118,10 @@ async function onDeleteAndNext() {
     </div>
     <div v-if="readabilityData">
       <h3 my-4>readable ({{ formatNumber(readabilityData.length) }} chars)</h3>
-      <!-- eslint-disable-next-line vue/no-v-html -->
-      <div
-        border-1
-        border-dashed
-        border-black
-        dark:border-white
-        px-2
-        v-html="readabilityData.content"
-      />
+      <div border-1 border-dashed border-black dark:border-white px-2>
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <span v-html="readabilityData.content" />
+      </div>
     </div>
   </div>
 </template>

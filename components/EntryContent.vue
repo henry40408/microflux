@@ -6,19 +6,11 @@ const url = defineModel<string>("url");
 
 const [opened, toggle] = useToggle(false);
 
-function useReadability() {
-  const { data, status, execute } = useFetch("/api/miniflux/readability", {
-    method: "POST",
-    body: { url: url.value },
-    immediate: false,
-  });
-  return { data, status, execute };
-}
 const {
   data: readabilityData,
   status: readabilityStatus,
   execute: executeReadability,
-} = useReadability();
+} = useReadability(url);
 </script>
 
 <template>

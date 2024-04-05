@@ -4,6 +4,7 @@ import type { MinifluxEntry } from "@/types";
 import { useClipboard } from "@vueuse/core";
 
 const model = defineModel<MinifluxEntry>();
+const url = computed(() => model.value.url);
 
 function useToggleRead() {
   const status = ref("idle");
@@ -28,29 +29,29 @@ const { status: toggleReadStatus, execute: executeToggleRead } =
   useToggleRead();
 
 function useSave() {
-  const { status, execute } = useFetch("/api/miniflux/entry", {
-    method: "POST",
-    body: { op: "save", id: model.value.id },
-    immediate: false,
-  });
+  const status = ref("idle");
+  const execute = async () => {
+    try {
+      status.value = "pending";
+      await $fetch("/api/miniflux/entry", {
+        method: "POST",
+        body: { op: "save", id: model.value.id },
+      });
+      status.value = "success";
+    } catch (err) {
+      console.error("failed to save entry", err);
+      status.value = "error";
+    }
+  };
   return { status, execute };
 }
 const { status: saveStatus, execute: executeSave } = useSave();
 
-function useSummarize() {
-  const { data, status, execute } = useFetch("/api/kagi/summarize", {
-    method: "POST",
-    body: { url: model.value.url },
-    immediate: false,
-    timeout: 30000,
-  });
-  return { data, status, execute };
-}
 const {
   data: summarizeData,
   status: summarizeStatus,
   execute: executeSummarize,
-} = useSummarize();
+} = useSummarize(url);
 
 const copyable = computed(
   () =>

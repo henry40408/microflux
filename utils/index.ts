@@ -19,3 +19,43 @@ export function formatDate(date: Date) {
   });
   return pangu.spacing(formatter.format(new Date(date)));
 }
+
+export function useReadability(url) {
+  const status = ref("idle");
+  const data = ref(null);
+  const execute = async () => {
+    try {
+      status.value = "pending";
+      data.value = await $fetch("/api/miniflux/readability", {
+        method: "POST",
+        body: { url: toValue(url) },
+        timeout: 30000,
+      });
+      status.value = "success";
+    } catch (err) {
+      console.error("failed to fetch readable content", err);
+      status.value = "error";
+    }
+  };
+  return { data, status, execute };
+}
+
+export function useSummarize(url) {
+  const status = ref("idle");
+  const data = ref(null);
+  const execute = async () => {
+    try {
+      status.value = "pending";
+      data.value = await $fetch("/api/kagi/summarize", {
+        method: "POST",
+        body: { url: toValue(url) },
+        timeout: 30000,
+      });
+      status.value = "success";
+    } catch (err) {
+      console.error("failed to summarize", err);
+      status.value = "error";
+    }
+  };
+  return { data, status, execute };
+}
