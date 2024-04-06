@@ -119,7 +119,7 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
 <template>
   <div>
     <h1>Microflux - Miniflux</h1>
-    <Navigation />
+    <NavigationLine />
     <div v-if="error">
       <pre><code>{{ error }}</code></pre>
     </div>
@@ -206,9 +206,9 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
       <div>
         <span v-if="markAllAsReadStatus === 'pending'">marking...</span>
         <span v-else>
-          <Confirm @confirmed="executeMarkAllAsRead">
+          <ConfirmButton @confirmed="executeMarkAllAsRead">
             <span>mark {{ formatNumber(entries.length) }} as read</span>
-          </Confirm>
+          </ConfirmButton>
           <span v-if="markAllAsReadStatus === 'error'" pl-1>failed!</span>
         </span>
       </div>

@@ -46,7 +46,7 @@ function onRandomDelete(id: number) {
 <template>
   <div>
     <h1>Microflux - Linkding</h1>
-    <Navigation />
+    <NavigationLine />
     <div v-if="error">
       <pre><code>{{ error }}</code></pre>
     </div>
