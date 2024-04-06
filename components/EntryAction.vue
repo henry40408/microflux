@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { MinifluxEntry } from "@/types";
 
-import { useClipboard } from "@vueuse/core";
+import { useClipboard, useLocalStorage } from "@vueuse/core";
 
 const model = defineModel<MinifluxEntry>();
 const url = computed(() => model.value.url);
+
+const rbs = useLocalStorage("readability-before-summarization", false);
 
 function useToggleRead() {
   const status = ref("idle");
@@ -52,7 +54,7 @@ const {
   status: summarizeStatus,
   execute: executeSummarize,
   seconds: summarizeSeconds,
-} = useSummarize(url);
+} = useSummarize(url, rbs);
 
 const copyable = computed(
   () =>
@@ -90,7 +92,9 @@ const { copy, copied } = useClipboard({ source: copyable });
         <span v-if="summarizeStatus === 'pending'">
           summarizing... {{ summarizeSeconds }}
         </span>
-        <span v-else-if="summarizeStatus === 'success'">summarized!</span>
+        <span v-else-if="summarizeStatus === 'success'">
+          summarized in {{ summarizeSeconds }}s!
+        </span>
         <span v-else>
           <a href="#" @click.prevent="executeSummarize()">summarize</a>
           <span v-if="summarizeStatus === 'error'" pl-1>failed!</span>

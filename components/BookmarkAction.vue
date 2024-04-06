@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import type { LinkdingBookmark } from "@/types";
 
-import { useClipboard } from "@vueuse/core";
+import { useClipboard, useLocalStorage } from "@vueuse/core";
+
+const rdbContent = useLocalStorage("readability-content", "content");
+const rbs = useLocalStorage("readability-before-summarization", false);
 
 const model = defineModel<LinkdingBookmark>();
 const url = computed(() => model.value.url);
@@ -41,7 +44,7 @@ function useDelete() {
 const { status: deleteStatus, execute: executeDelete } = useDelete();
 
 const {
-  data: readabilityData,
+  data: rdbData,
   status: readabilityStatus,
   execute: executeReadability,
 } = useReadability(url);
@@ -51,7 +54,7 @@ const {
   status: summarizeStatus,
   execute: executeSummarize,
   seconds: summarizeSeconds,
-} = useSummarize(url);
+} = useSummarize(url, rbs);
 
 async function onDelete() {
   await executeDelete();
@@ -81,11 +84,13 @@ async function onDeleteAndNext() {
       <span v-if="summarizeStatus === 'pending'">
         summarizing... {{ summarizeSeconds }}
       </span>
-      <span v-else-if="summarizeStatus === 'success'">summarized!</span>
-      <a v-else href="#" @click.prevent="executeSummarize">
-        summarize
+      <span v-else-if="summarizeStatus === 'success'">
+        summarized in {{ summarizeSeconds }}s!
+      </span>
+      <span v-else>
+        <a href="#" @click.prevent="executeSummarize">summarize</a>
         <span v-if="summarizeStatus === 'error'" pl-1>failed!</span>
-      </a>
+      </span>
     </div>
     <div>
       <span v-if="deleteStatus === 'pending'">deleting...</span>
@@ -120,11 +125,14 @@ async function onDeleteAndNext() {
         </div>
       </div>
     </div>
-    <div v-if="readabilityData">
-      <h3 my-4>readable ({{ formatNumber(readabilityData.length) }} chars)</h3>
+    <div v-if="rdbData">
+      <h3 my-4>readable ({{ formatNumber(rdbData.length) }} chars)</h3>
       <div border-1 border-dashed border-black dark:border-white px-2>
         <!-- eslint-disable-next-line vue/no-v-html -->
-        <span v-html="readabilityData.content" />
+        <span v-if="rdbContent === 'content'" v-html="rdbData.content" />
+        <span v-if="rdbContent === 'textContent'">
+          {{ rdbData.textContent }}
+        </span>
       </div>
     </div>
   </div>

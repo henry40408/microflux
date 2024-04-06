@@ -1,4 +1,10 @@
-export interface KaigSummary {
+export interface KagiSummaryRequest {
+  target_language?: string;
+  text?: string;
+  url?: string;
+}
+
+export interface KagiSummary {
   meta: {
     id: string;
     ms: number;

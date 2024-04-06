@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { useToggle } from "@vueuse/core";
+import { useToggle, useLocalStorage } from "@vueuse/core";
 
 import type { MinifluxEntry } from "~/types";
+
+const rdbContent = useLocalStorage("readability-content", "content");
 
 const model = defineModel<MinifluxEntry>();
 const url = computed(() => model.value.url);
@@ -13,7 +15,7 @@ const emit = defineEmits<{
 const [opened, toggle] = useToggle(false);
 
 const {
-  data: readabilityData,
+  data: rdbData,
   status: readabilityStatus,
   execute: executeReadability,
 } = useReadability(url);
@@ -51,11 +53,14 @@ function onCollapse() {
     <summary @click.prevent="toggle()">content</summary>
     <!-- eslint-disable-next-line vue/no-v-html -->
     <div v-if="opened" pb-2 v-html="model.content" />
-    <div v-if="readabilityData">
-      <h3 my-2>readable ({{ formatNumber(readabilityData.length) }} chars)</h3>
+    <div v-if="rdbData">
+      <h3 my-2>readable ({{ formatNumber(rdbData.length) }} chars)</h3>
       <div border-1 border-dashed border-black p-2 dark:border-white>
         <!-- eslint-disable-next-line vue/no-v-html -->
-        <span v-html="readabilityData.content" />
+        <span v-if="rdbContent === 'content'" v-html="rdbData.content" />
+        <span v-if="rdbContent === 'textContent'">
+          {{ rdbData.textContent }}
+        </span>
       </div>
     </div>
     <slot />

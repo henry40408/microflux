@@ -13,5 +13,10 @@
         linkding
       </NuxtLink>
     </div>
+    <div>
+      <NuxtLink to="/options" exact-active-class="text-black dark:text-white">
+        options
+      </NuxtLink>
+    </div>
   </div>
 </template>

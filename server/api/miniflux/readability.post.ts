@@ -1,5 +1,3 @@
-import { Readability } from "@mozilla/readability";
-import { JSDOM } from "jsdom";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
@@ -19,23 +17,10 @@ export default defineEventHandler(async (event) => {
         statusMessage: validationError.toString(),
       });
     }
-    const html = await $fetch<string>(result.data.url, {
-      headers: { "user-agent": "Microflux/1.0" },
-    });
-    const sanitized = sanitizeContent(html);
-    const dom = new JSDOM(sanitized);
-    const document = dom.window.document;
-
-    const reader = new Readability(document);
-    const readable = reader.parse();
-    if (!readable)
-      throw createError({
-        status: 400,
-        statusMessage: "web page is not readable",
-      });
-
-    const { length, content } = readable;
-    return { length, content };
+    const { content, length, textContent } = await fetchReadability(
+      result.data.url,
+    );
+    return { content, length, textContent };
   } catch (err) {
     console.error("failed to fetch readable content", err);
     throw createError({

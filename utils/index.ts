@@ -21,7 +21,7 @@ export function formatDate(date: Date) {
   return pangu.spacing(formatter.format(new Date(date)));
 }
 
-export function useReadability(url) {
+export function useReadability(url: string | Ref<string>) {
   const status = ref("idle");
   const data = ref(null);
   const execute = async () => {
@@ -41,20 +41,24 @@ export function useReadability(url) {
   return { data, status, execute };
 }
 
-export function useSummarize(url) {
+export function useSummarize(
+  url: string | Ref<string>,
+  readability: boolean | Ref<boolean>,
+) {
   const status = ref("idle");
   const data = ref(null);
-  const { counter, reset } = useInterval(1000, { controls: true });
+  const { counter, pause, reset } = useInterval(1000, { controls: true });
   const execute = async () => {
     try {
       reset();
       status.value = "pending";
       data.value = await $fetch("/api/kagi/summarize", {
         method: "POST",
-        body: { url: toValue(url) },
+        body: { url: toValue(url), readability: toValue(readability) },
         timeout: 30000,
       });
       status.value = "success";
+      pause();
     } catch (err) {
       console.error("failed to summarize", err);
       status.value = "error";
