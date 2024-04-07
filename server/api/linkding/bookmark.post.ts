@@ -1,8 +1,8 @@
 import type { H3Event } from "h3";
 import { z } from "zod";
-import { fromZodError } from "zod-validation-error";
 
 import { sendRequest } from "~/server/linkding";
+import { parseBody } from "~/server/utils";
 
 const deleteSchema = z.discriminatedUnion("op", [
   z.object({
@@ -20,19 +20,9 @@ async function deleteBookmark(event: H3Event, id: number) {
 }
 
 export default defineEventHandler(async (event) => {
-  const result = await readValidatedBody(event, (body) =>
-    deleteSchema.safeParse(body),
-  );
-  if (!result.success) {
-    const validationError = fromZodError(result.error);
-    throw createError({
-      status: 400,
-      statusMessage: validationError.toString(),
-    });
-  }
-
-  switch (result.data.op) {
+  const data = await parseBody(event, deleteSchema);
+  switch (data.op) {
     case "delete":
-      return deleteBookmark(event, result.data.id);
+      return deleteBookmark(event, data.id);
   }
 });

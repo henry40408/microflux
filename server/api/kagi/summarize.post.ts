@@ -1,9 +1,8 @@
 import * as OpenCC from "opencc-js";
 import pangu from "pangu";
 import { z } from "zod";
-import { fromZodError } from "zod-validation-error";
-import { fetchReadability } from "~/server/utils";
 
+import { fetchReadability, parseBody } from "~/server/utils";
 import type { KagiSummary, KagiSummaryRequest } from "~/types";
 
 const convert = OpenCC.Converter({ from: "cn", to: "tw" });
@@ -14,19 +13,9 @@ const summarizeSchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-  const result = await readValidatedBody(event, (body) =>
-    summarizeSchema.safeParse(body),
-  );
-  if (!result.success) {
-    const validationError = fromZodError(result.error);
-    throw createError({
-      status: 400,
-      statusMessage: validationError.toString(),
-    });
-  }
-
+  const data = await parseBody(event, summarizeSchema);
   try {
-    const { url, readability } = result.data;
+    const { url, readability } = data;
     const { kagiToken, kagiLanguage } = useRuntimeConfig(event);
 
     const body: KagiSummaryRequest = { target_language: kagiLanguage };

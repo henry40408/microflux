@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { fromZodError } from "zod-validation-error";
+import { parseBody } from "~/server/utils";
 
 const readabilitySchema = z.object({
   url: z.string(),
@@ -7,19 +7,8 @@ const readabilitySchema = z.object({
 
 export default defineEventHandler(async (event) => {
   try {
-    const result = await readValidatedBody(event, (body) =>
-      readabilitySchema.safeParse(body),
-    );
-    if (!result.success) {
-      const validationError = fromZodError(result.error);
-      throw createError({
-        status: 400,
-        statusMessage: validationError.toString(),
-      });
-    }
-    const { content, length, textContent } = await fetchReadability(
-      result.data.url,
-    );
+    const data = await parseBody(event, readabilitySchema);
+    const { content, length, textContent } = await fetchReadability(data.url);
     return { content, length, textContent };
   } catch (err) {
     console.error("failed to fetch readable content", err);
