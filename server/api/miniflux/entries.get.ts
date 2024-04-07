@@ -1,5 +1,5 @@
 import { getQuery } from "h3";
-import pick from "lodash/pick";
+import lodash from "lodash";
 import * as OpenCC from "opencc-js";
 
 import { sendRequest } from "~/server/miniflux";
@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
       count: entries.entries.length,
     });
 
-    const pickedCounter = pick(counters, ["unreads"]);
+    const pickedCounter = lodash.pick(counters, ["unreads"]);
     console.debug("%j", {
       action: "fetch_unread_counters",
       counters: pickedCounter,

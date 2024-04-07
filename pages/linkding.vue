@@ -81,22 +81,10 @@ function onRandomDelete(id: number) {
         py-4
         dark:border-white
       >
-        <h2 m-0>
-          <a :href="randomPicked.url" target="_blank" rel="nofollow noopener">
-            {{ getLinkdingTitle(randomPicked) }}
-            <small text-gray-400>#{{ randomPicked.id }}</small>
-          </a>
-        </h2>
-        <div mb-2>
-          <small>{{ randomPicked.url }}</small>
-        </div>
-        <blockquote v-if="getLinkdingDescription(randomPicked)" my-4>
-          {{ getLinkdingDescription(randomPicked) }}
-        </blockquote>
-        <div pb-2>
-          <small pr-2>added</small>
-          <span>{{ formatDate(randomPicked.date_added) }}</span>
-        </div>
+        <BookmarkTitle v-model="randomPicked" />
+        <BookmarkSubtitle v-model="randomPicked" />
+        <BookmarkDescription v-model="randomPicked" />
+        <BookmarkMetadata v-model="randomPicked" />
         <BookmarkAction
           :key="randomPicked.id"
           v-model="randomPicked"
@@ -106,25 +94,10 @@ function onRandomDelete(id: number) {
         />
       </div>
       <div v-for="(bookmark, index) in bookmarks" :key="bookmark.id">
-        <h2 mb-0>
-          <a :href="bookmark.url" target="_blank" rel="nofollow noopener">
-            {{ getLinkdingTitle(bookmark) }}
-            <small text-gray-400>#{{ bookmark.id }}</small>
-          </a>
-        </h2>
-        <div>
-          <small>{{ bookmark.url }}</small>
-        </div>
-        <blockquote v-if="getLinkdingDescription(bookmark)" my-4>
-          {{ getLinkdingDescription(bookmark) }}
-        </blockquote>
-        <div v-else my-4 />
-        <div>
-          <ClientOnly>
-            <small pr-2>added</small>
-            <span>{{ formatDate(bookmark.date_added) }}</span>
-          </ClientOnly>
-        </div>
+        <BookmarkTitle v-model="bookmarks[index]" mt-6 />
+        <BookmarkSubtitle v-model="bookmarks[index]" />
+        <BookmarkDescription v-model="bookmarks[index]" />
+        <BookmarkMetadata v-model="bookmarks[index]" />
         <BookmarkAction
           :key="bookmark.id"
           v-model="bookmarks[index]"

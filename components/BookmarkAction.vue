@@ -127,7 +127,7 @@ async function onDeleteAndNext() {
     </div>
     <div v-if="rdbData">
       <h3 my-4>readable ({{ formatNumber(rdbData.length) }} chars)</h3>
-      <div border-1 border-dashed border-black dark:border-white px-2>
+      <div border-1 border-dashed border-black dark:border-white p-2>
         <!-- eslint-disable-next-line vue/no-v-html -->
         <span v-if="rdbContent === 'content'" v-html="rdbData.content" />
         <span v-if="rdbContent === 'textContent'">
