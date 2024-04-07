@@ -1,5 +1,5 @@
 <template>
-  <NuxtLoadingIndicator color="white" :height="4" />
+  <NuxtLoadingIndicator />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
