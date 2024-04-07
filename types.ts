@@ -69,7 +69,7 @@ export interface MinifluxEntry {
   share_code: string;
   starred: boolean;
   reading_time: number;
-  enclosures: any;
+  enclosures: unknown;
   feed: {
     id: number;
     user_id: number;
