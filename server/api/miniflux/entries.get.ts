@@ -32,15 +32,18 @@ export default defineEventHandler(async (event) => {
         path: "/v1/feeds/counters",
       }),
     ]);
+    const count = entries.entries.length;
     console.debug("%j", {
+      tag: "entries",
       action: "fetch_unread_entries",
-      count: entries.entries.length,
+      count,
     });
 
-    const pickedCounter = lodash.pick(counters, ["unreads"]);
+    const picked = lodash.pick(counters, ["unreads"]);
     console.debug("%j", {
+      tag: "entries",
       action: "fetch_unread_counters",
-      counters: pickedCounter,
+      counters: picked,
     });
 
     for (const entry of entries.entries) {
@@ -49,10 +52,7 @@ export default defineEventHandler(async (event) => {
       entry.content = converted;
     }
 
-    return {
-      entries: entries.entries,
-      counters: pickedCounter,
-    };
+    return { entries: entries.entries, counters: picked };
   } catch (err) {
     console.error("failed to fetch unread entries from Miniflux", err);
     throw createError({

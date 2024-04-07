@@ -3,6 +3,6 @@ export default defineNitroPlugin((app) => {
     const { path } = event;
     const query = getQuery(event);
     const body = await readBody(event);
-    console.log("request %j", { path, query, body });
+    console.log("%j", { tag: "request", action: "start", path, query, body });
   });
 });

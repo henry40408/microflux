@@ -2,9 +2,9 @@ import type { H3Event } from "h3";
 
 import { createError } from "h3";
 import { z } from "zod";
-import { fromZodError } from "zod-validation-error";
 
 import { sendRequest } from "~/server/miniflux";
+import { parseBody } from "~/server/utils";
 import type { MinifluxEntryStatus } from "~/types";
 
 const entrySchema = z.discriminatedUnion("op", [
@@ -52,7 +52,7 @@ async function save(event: H3Event, id: number) {
     });
     return { id };
   } catch (err) {
-    console.error("failed to save %d", id);
+    console.error("failed to save %d", id, err);
     throw createError({
       status: 502,
       statusMessage: "failed to save",
@@ -61,26 +61,17 @@ async function save(event: H3Event, id: number) {
 }
 
 export default defineEventHandler(async (event) => {
-  const result = await readValidatedBody(event, (body) =>
-    entrySchema.safeParse(body),
-  );
-  if (!result.success) {
-    const validationError = fromZodError(result.error);
-    throw createError({
-      status: 400,
-      statusMessage: validationError.toString(),
-    });
-  }
-  switch (result.data.op) {
+  const data = await parseBody(event, entrySchema);
+  switch (data.op) {
     case "toggle-read": {
-      const { id, status } = result.data;
+      const { id, status } = data;
       return toggleRead(event, [id], status);
     }
     case "mark-many-as-read": {
-      const { ids } = result.data;
+      const { ids } = data;
       return toggleRead(event, ids, "read");
     }
     case "save":
-      return save(event, result.data.id);
+      return save(event, data.id);
   }
 });

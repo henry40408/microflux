@@ -1,6 +1,9 @@
+import type { H3Event } from "h3";
 import { JSDOM } from "jsdom";
 import { Readability } from "@mozilla/readability";
 import sanitizeHtml from "sanitize-html";
+import type z from "zod";
+import { fromZodError } from "zod-validation-error";
 
 const HEADINGS = ["h1", "h2", "h3", "h4", "h5", "h6"];
 const ALLOWED_TAGS = HEADINGS.concat([
@@ -22,23 +25,6 @@ const ALLOWED_TAGS = HEADINGS.concat([
 ]);
 const ALLOWED_ATTRIBS = { a: ["href", "rel", "target"], img: ["src"] };
 
-export function sanitizeContent(content: string): string {
-  return sanitizeHtml(content, {
-    allowedTags: ALLOWED_TAGS,
-    allowedAttributes: ALLOWED_ATTRIBS,
-    transformTags: {
-      a: (tagName, attribs) => ({
-        tagName,
-        attribs: {
-          ...attribs,
-          rel: "nofollow noopener",
-          target: "_blank",
-        },
-      }),
-    },
-  });
-}
-
 export async function fetchReadability(url: string) {
   const html = await $fetch<string>(url, {
     headers: { "user-agent": "Microflux/1.0" },
@@ -57,4 +43,38 @@ export async function fetchReadability(url: string) {
 
   const { content, length, textContent } = readable;
   return { content, length, textContent };
+}
+
+export function sanitizeContent(content: string): string {
+  return sanitizeHtml(content, {
+    allowedTags: ALLOWED_TAGS,
+    allowedAttributes: ALLOWED_ATTRIBS,
+    transformTags: {
+      a: (tagName, attribs) => ({
+        tagName,
+        attribs: {
+          ...attribs,
+          rel: "nofollow noopener",
+          target: "_blank",
+        },
+      }),
+    },
+  });
+}
+
+export async function parseBody<T extends z.ZodTypeAny>(
+  event: H3Event,
+  schema: T,
+) {
+  const result = await readValidatedBody(event, (body) =>
+    schema.safeParse(body),
+  );
+  if (!result.success) {
+    const validationError = fromZodError(result.error);
+    throw createError({
+      status: 400,
+      statusMessage: validationError.toString(),
+    });
+  }
+  return result.data as z.infer<T>;
 }
