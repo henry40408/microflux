@@ -18,7 +18,7 @@ const count = computed(() => {
 });
 const randomPicked = ref<LinkdingBookmark | undefined>();
 
-const titleTemplate = computed(() => `%s - Linkding (${count.value})`);
+const titleTemplate = computed(() => `(${count.value}) Linkding - %s`);
 useHead({ titleTemplate });
 
 function onBookmarksDelete(ids: number[]) {

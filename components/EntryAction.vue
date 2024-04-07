@@ -90,7 +90,7 @@ const { copy, copied } = useClipboard({ source: copyable });
       </div>
       <div>
         <span v-if="summarizeStatus === 'pending'">
-          summarizing... {{ summarizeSeconds }}
+          summarizing... {{ summarizeSeconds }}s
         </span>
         <span v-else-if="summarizeStatus === 'success'">
           summarized in {{ summarizeSeconds }}s!

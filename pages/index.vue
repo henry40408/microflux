@@ -6,20 +6,18 @@ import type { MinifluxEntriesResponse } from "~/types";
 const entriesRefs = ref<HTMLElement[]>([]);
 
 const route = useRoute();
+const selected = computed(() => ({
+  category: route.query.category ? Number(route.query.category) : undefined,
+  feed: route.query.feed ? Number(route.query.feed) : undefined,
+}));
 
 // fitler by category / feed
-const category = computed(() =>
-  route.query.category ? Number(route.query.category) : undefined,
-);
-const feed = computed(() =>
-  route.query.feed ? Number(route.query.feed) : undefined,
-);
 const filter = computed(() => {
-  if (category.value) {
-    return `category:${category.value}`;
+  if (selected.value.category) {
+    return `category:${selected.value.category}`;
   }
-  if (feed.value) {
-    return `feed:${feed.value}`;
+  if (selected.value.feed) {
+    return `feed:${selected.value.feed}`;
   }
   return "";
 });
@@ -35,8 +33,8 @@ const { data, error, pending, refresh } =
 
 const entries = computed(() => {
   if (!data.value) return [];
-  if (category.value && feed.value) {
-    return data.value.entries.filter((e) => e.feed.id === feed.value);
+  if (selected.value.category && selected.value.feed) {
+    return data.value.entries.filter((e) => e.feed.id === selected.value.feed);
   }
   return data.value.entries;
 });
@@ -46,7 +44,7 @@ const feeds = computed(() =>
 const categories = computed(() =>
   uniqBy(feeds.value.map((f) => f.category).flat(), (c) => c.id),
 );
-const unread = computed(() => {
+const unreadOnServer = computed(() => {
   if (!data.value) return 0;
   return Object.values(data.value.counters.unreads).reduce(
     (acc, v) => acc + v,
@@ -56,20 +54,26 @@ const unread = computed(() => {
 const unreadEntries = computed(() =>
   entries.value.filter((e) => e.status === "unread"),
 );
-const categoryTitle = computed(
-  () => categories.value.find((c) => c.id === category.value)?.title,
-);
-const feedTitle = computed(
-  () => feeds.value.find((f) => f.id === feed.value)?.title,
-);
+const titles = computed(() => {
+  const s = selected.value;
+  return {
+    category: categories.value.find((c) => c.id === s.category)?.title,
+    feed: feeds.value.find((f) => f.id === s.feed)?.title,
+  };
+});
 
-const titleTemplate = computed(() => `%s - Miniflux (${unread.value})`);
+const titleTemplate = computed(
+  () => `(${unreadEntries.value.length}) Miniflux - %s`,
+);
 useHead({ titleTemplate });
 
 async function fallbackIfEmpty() {
   if (unreadEntries.value.length <= 0) {
     // fallback to category when no entries listed
-    await navigateTo({ path: "/", query: { category: category.value } });
+    await navigateTo({
+      path: "/",
+      query: { category: selected.value.category },
+    });
   }
   if (unreadEntries.value.length <= 0) {
     // fallback to all when no entries listed
@@ -78,19 +82,22 @@ async function fallbackIfEmpty() {
 }
 
 async function filterByCategory(id?: number) {
-  await navigateTo({ path: "/", query: { category: id, feed: feed.value } });
+  await navigateTo({
+    path: "/",
+    query: { category: id, feed: selected.value.feed },
+  });
   await fallbackIfEmpty();
 }
 
 async function filterByFeed(id?: number) {
   await navigateTo({
     path: "/",
-    query: { category: category.value, feed: id },
+    query: { category: selected.value.category, feed: id },
   });
   await fallbackIfEmpty();
 }
 
-async function onRefresh() {
+async function refreshAndFallback() {
   await refresh();
   await fallbackIfEmpty();
 }
@@ -105,7 +112,7 @@ function useMarkAllAsRead() {
         method: "POST",
         body: { op: "mark-many-as-read", ids },
       });
-      onRefresh();
+      refreshAndFallback();
       status.value = "success";
     } catch (err) {
       console.error("failed to mark all as read");
@@ -126,9 +133,9 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
       <pre><code>{{ error }}</code></pre>
     </div>
     <h2>
-      {{ formatNumber(entries.length) }}
+      {{ formatNumber(unreadEntries.length) }}
       <small text-gray-400>on page</small>
-      {{ pending ? "..." : formatNumber(unread) }}
+      {{ pending ? "..." : formatNumber(unreadOnServer) }}
       <small text-gray-400>on server</small>
     </h2>
     <div>
@@ -144,16 +151,18 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
         <div><small>actions</small></div>
         <div>
           <div v-if="pending">...</div>
-          <div v-else><a href="#" @click.prevent="onRefresh">refresh</a></div>
+          <div v-else>
+            <a href="#" @click.prevent="refreshAndFallback">refresh</a>
+          </div>
         </div>
-        <div v-if="category">
+        <div v-if="selected.category">
           <small pr-1>selected category</small>
-          <span pr-1>{{ categoryTitle }}</span>
+          <span pr-1>{{ titles.category }}</span>
           <a href="#" @click.prevent="filterByCategory()">clear</a>
         </div>
-        <div v-if="feed">
+        <div v-if="selected.feed">
           <small pr-1>selected feed</small>
-          <span pr-1>{{ feedTitle }}</span>
+          <span pr-1>{{ titles.feed }}</span>
           <a href="#" @click.prevent="filterByFeed()">clear</a>
         </div>
       </div>
@@ -200,23 +209,23 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
       text-right
       md:flex
       md:pb-5
-      md:space-x-2
+      md:space-x-1
       md:space-y-0
       md:text-left
     >
       <div><small>actions</small></div>
-      <div>
+      <div v-if="unreadEntries.length > 0">
         <span v-if="markAllAsReadStatus === 'pending'">marking...</span>
         <span v-else>
           <ConfirmButton @confirmed="executeMarkAllAsRead">
-            <span>mark {{ formatNumber(entries.length) }} as read</span>
+            <span>mark {{ formatNumber(unreadEntries.length) }} as read</span>
           </ConfirmButton>
           <span v-if="markAllAsReadStatus === 'error'" pl-1>failed!</span>
         </span>
       </div>
       <div>
         <span v-if="pending">...</span>
-        <a v-else href="#" @click.prevent="onRefresh">refresh</a>
+        <a v-else href="#" @click.prevent="refreshAndFallback">refresh</a>
       </div>
     </div>
   </div>
