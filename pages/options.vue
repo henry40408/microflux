@@ -6,12 +6,17 @@ const readabilityBeforeSummarization = useLocalStorage(
   "readability-before-summarization",
   false,
 );
+
+useHead({
+  titleTemplate: `Options - %s`,
+});
 </script>
 
 <template>
   <div>
     <h1>Microflux - Options</h1>
     <NavigationLine />
+    <blockquote>Note: These options are saved in local storage.</blockquote>
     <h2>Readability</h2>
     <div>
       <h3>Content type</h3>
