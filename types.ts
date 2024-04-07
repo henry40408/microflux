@@ -1,14 +1,21 @@
+// external interfaces
+
+// https://help.kagi.com/kagi/api/summarizer.html#summarize-document
 export interface KagiSummaryRequest {
-  target_language?: string;
-  text?: string;
-  url?: string;
+  url?: string; // URL to a document to summarize. Exclusive with text.
+  text?: string; // Text to summarize. Exclusive with url.
+  engine?: string; // Summarization engine
+  summary_type?: string; // Type of summary
+  target_language?: string; // Desired output language
+  cache?: boolean; // Whether to allow cached requests & responses. Default is true.
 }
 
+// https://help.kagi.com/kagi/api/summarizer.html#summarize-document
 export interface KagiSummary {
   meta: {
     id: string;
-    ms: number;
     node: string;
+    ms: number;
   };
   data: {
     output: string;
@@ -16,11 +23,7 @@ export interface KagiSummary {
   };
 }
 
-export interface KagiSummarizeResponse {
-  summary: string;
-  tokens: number;
-}
-
+// https://github.com/sissbruecker/linkding/blob/bb6c5ca29e3b66a70c2ff1751ea6183c7011d4ae/docs/API.md#bookmarks
 export interface LinkdingBookmark {
   id: number;
   url: string;
@@ -38,6 +41,7 @@ export interface LinkdingBookmark {
   date_modified: string;
 }
 
+// https://github.com/sissbruecker/linkding/blob/bb6c5ca29e3b66a70c2ff1751ea6183c7011d4ae/docs/API.md#bookmarks
 export interface LinkdingBookmarks {
   count: number;
   results: LinkdingBookmark[];
@@ -48,8 +52,7 @@ export interface LinkdingBookmarksResponse {
   count: number;
 }
 
-export type MinifluxEntryStatus = "read" | "unread";
-
+// https://miniflux.app/docs/api.html#endpoint-get-entries
 export interface MinifluxEntry {
   id: number;
   user_id: number;
@@ -62,7 +65,7 @@ export interface MinifluxEntry {
   hash: string;
   published_at: string;
   created_at: string;
-  status: string;
+  status: MinifluxEntryStatus;
   share_code: string;
   starred: boolean;
   reading_time: number;
@@ -101,15 +104,13 @@ export interface MinifluxEntry {
   };
 }
 
+// https://miniflux.app/docs/api.html#endpoint-get-entries
 export interface MinifluxEntries {
+  total: number;
   entries: MinifluxEntry[];
 }
 
-export interface MinifluxEntriesResponse {
-  entries: MinifluxEntry[];
-  counters: { unreads: Record<string, number> };
-}
-
+// https://miniflux.app/docs/api.html#endpoint-counters
 export interface MinifluxUnreadCounters {
   reads: {
     [key: string]: number;
@@ -117,6 +118,20 @@ export interface MinifluxUnreadCounters {
   unreads: {
     [key: string]: number;
   };
+}
+
+// internal interfaces
+
+export type MinifluxEntryStatus = "read" | "unread";
+
+export interface KagiSummarizeResponse {
+  summary: string;
+  tokens: number;
+}
+
+export interface MinifluxEntriesResponse {
+  entries: MinifluxEntry[];
+  counters: { unreads: Record<string, number> };
 }
 
 export interface ReadabilityResponse {
