@@ -4,7 +4,7 @@ import sample from "lodash/sample";
 import type { LinkdingBookmark, LinkdingBookmarksResponse } from "~/types";
 
 const { data, pending, error, refresh } =
-  await useLazyFetch<LinkdingBookmarksResponse>("/api/linkding/bookmarks", {
+  await useFetch<LinkdingBookmarksResponse>("/api/linkding/bookmarks", {
     key: "bookmarks",
   });
 
@@ -48,7 +48,7 @@ function onRandomDelete(id: number) {
 
 <template>
   <div>
-    <h1>Microflux - Linkding</h1>
+    <PageTitle>Linkding</PageTitle>
     <NavigationLine />
     <div v-if="error">
       <pre><code>{{ error }}</code></pre>

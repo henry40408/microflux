@@ -7,6 +7,8 @@ const model = defineModel<LinkdingBookmark>({ required: true });
 <template>
   <div pb-2>
     <small pr-2>added</small>
-    <span>{{ formatDate(model.date_added) }}</span>
+    <ClientOnly>
+      <span>{{ formatDate(model.date_added) }}</span>
+    </ClientOnly>
   </div>
 </template>

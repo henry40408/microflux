@@ -14,7 +14,7 @@ useHead({
 
 <template>
   <div>
-    <h1>Microflux - Options</h1>
+    <PageTitle>Options</PageTitle>
     <NavigationLine />
     <blockquote>Note: These options are saved in local storage.</blockquote>
     <h2>Readability</h2>

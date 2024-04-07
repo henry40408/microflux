@@ -27,7 +27,7 @@ const entriesUrl = computed(() => {
   return "/api/miniflux/entries";
 });
 const { data, error, pending, refresh } =
-  await useLazyFetch<MinifluxEntriesResponse>(entriesUrl, {
+  await useFetch<MinifluxEntriesResponse>(entriesUrl, {
     key: "unread-entries-counters",
   });
 
@@ -127,7 +127,7 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
 
 <template>
   <div>
-    <h1>Microflux - Miniflux</h1>
+    <PageTitle>Miniflux</PageTitle>
     <NavigationLine />
     <div v-if="error">
       <pre><code>{{ error }}</code></pre>
