@@ -3,7 +3,7 @@ import type { MinifluxEntry } from "@/types";
 
 import { useClipboard, useLocalStorage } from "@vueuse/core";
 
-const model = defineModel<MinifluxEntry>();
+const model = defineModel<MinifluxEntry>({ required: true });
 const url = computed(() => model.value.url);
 
 const rbs = useLocalStorage("readability-before-summarization", false);
@@ -56,10 +56,10 @@ const {
   seconds: summarizeSeconds,
 } = useSummarize(url, rbs);
 
-const copyable = computed(
-  () =>
-    `${model.value.title}\n\n${model.value.url}\n\n${summarizeData.value.summary}`,
-);
+const copyable = computed(() => {
+  if (!summarizeData.value) return "";
+  return `${model.value.title}\n\n${model.value.url}\n\n${summarizeData.value.summary}`;
+});
 const { copy, copied } = useClipboard({ source: copyable });
 </script>
 

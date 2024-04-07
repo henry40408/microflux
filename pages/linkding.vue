@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import sample from "lodash/sample";
 
-const { data, pending, error, refresh } = await useLazyFetch(
-  "/api/linkding/bookmarks",
-  { key: "bookmarks" },
-);
+import type { LinkdingBookmark, LinkdingBookmarksResponse } from "~/types";
+
+const { data, pending, error, refresh } =
+  await useLazyFetch<LinkdingBookmarksResponse>("/api/linkding/bookmarks", {
+    key: "bookmarks",
+  });
 
 const bookmarks = computed(() => {
   if (data.value) return data.value.bookmarks;
@@ -14,12 +16,13 @@ const count = computed(() => {
   if (data.value) return data.value.count;
   return 0;
 });
-const randomPicked = ref(null);
+const randomPicked = ref<LinkdingBookmark | undefined>();
 
 const titleTemplate = computed(() => `%s - Linkding (${count.value})`);
 useHead({ titleTemplate });
 
 function onBookmarksDelete(ids: number[]) {
+  if (!data.value) return;
   data.value.bookmarks = data.value.bookmarks.filter(
     (b) => !ids.includes(b.id),
   );
@@ -27,9 +30,9 @@ function onBookmarksDelete(ids: number[]) {
 }
 
 function onDeleteAndNext(id: number) {
-  randomPicked.value = null;
+  randomPicked.value = undefined;
   onBookmarksDelete([id]);
-  randomPicked.value = sample(data.value.bookmarks);
+  if (data.value) randomPicked.value = sample(data.value.bookmarks);
 }
 
 function onRandom() {
@@ -38,7 +41,7 @@ function onRandom() {
 }
 
 function onRandomDelete(id: number) {
-  randomPicked.value = null;
+  randomPicked.value = undefined;
   onBookmarksDelete([id]);
 }
 </script>
@@ -61,7 +64,7 @@ function onRandomDelete(id: number) {
         <div>
           <span v-if="pending">...</span>
           <span v-else>
-            <a href="#" @click.prevent="refresh">refresh</a>
+            <a href="#" @click.prevent="refresh()">refresh</a>
           </span>
         </div>
         <div>

@@ -5,7 +5,7 @@ import type { MinifluxEntry } from "~/types";
 
 const rdbContent = useLocalStorage("readability-content", "content");
 
-const model = defineModel<MinifluxEntry>();
+const model = defineModel<MinifluxEntry>({ required: true });
 const url = computed(() => model.value.url);
 
 const emit = defineEmits<{
