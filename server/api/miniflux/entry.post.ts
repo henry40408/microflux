@@ -52,7 +52,7 @@ async function save(event: H3Event, id: number) {
     });
     return { id };
   } catch (err) {
-    console.error("failed to save %d", id);
+    console.error("failed to save %d", id, err);
     throw createError({
       status: 502,
       statusMessage: "failed to save",

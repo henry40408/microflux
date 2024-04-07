@@ -20,8 +20,14 @@ export default defineEventHandler(async (event) => {
 
     const body: KagiSummaryRequest = { target_language: kagiLanguage };
     if (readability) {
-      const readable = await fetchReadability(url);
-      body.text = readable.textContent;
+      const { textContent } = await fetchReadability(url);
+      const length = textContent.length;
+      console.log("%j", {
+        tag: "summarization",
+        action: "readability",
+        length,
+      });
+      body.text = textContent;
     } else {
       body.url = url;
     }
@@ -36,7 +42,13 @@ export default defineEventHandler(async (event) => {
     );
 
     const tokens = resp.data.tokens;
-    console.log("%j", { action: "summarize", url, tokens });
+    console.log("%j", {
+      tag: "summarization",
+      action: "summarize",
+      url,
+      readability,
+      tokens,
+    });
 
     return {
       summary: pangu.spacing(convert(resp.data.output)),
