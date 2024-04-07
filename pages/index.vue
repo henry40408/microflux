@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import uniqBy from "lodash/uniqBy";
 
-const entriesRefs = ref([]);
+import type { MinifluxEntriesResponse } from "~/types";
+
+const entriesRefs = ref<HTMLElement[]>([]);
 
 const route = useRoute();
 
@@ -9,16 +11,9 @@ const route = useRoute();
 const category = computed(() =>
   route.query.category ? Number(route.query.category) : undefined,
 );
-const categoryTitle = computed(
-  () => categories.value.find((c) => c.id === category.value)?.title,
-);
 const feed = computed(() =>
   route.query.feed ? Number(route.query.feed) : undefined,
 );
-const feedTitle = computed(
-  () => feeds.value.find((f) => f.id === feed.value)?.title,
-);
-
 const filter = computed(() => {
   if (category.value) {
     return `category:${category.value}`;
@@ -28,14 +23,15 @@ const filter = computed(() => {
   }
   return "";
 });
+
 const entriesUrl = computed(() => {
   if (filter.value) return `/api/miniflux/entries?filter=${filter.value}`;
   return "/api/miniflux/entries";
 });
-const { data, error, pending, refresh } = await useLazyFetch(entriesUrl, {
-  key: "unread-entries-counters",
-  refetch: true,
-});
+const { data, error, pending, refresh } =
+  await useLazyFetch<MinifluxEntriesResponse>(entriesUrl, {
+    key: "unread-entries-counters",
+  });
 
 const entries = computed(() => {
   if (!data.value) return [];
@@ -60,6 +56,12 @@ const unread = computed(() => {
 const unreadEntries = computed(() =>
   entries.value.filter((e) => e.status === "unread"),
 );
+const categoryTitle = computed(
+  () => categories.value.find((c) => c.id === category.value)?.title,
+);
+const feedTitle = computed(
+  () => feeds.value.find((f) => f.id === feed.value)?.title,
+);
 
 const titleTemplate = computed(() => `%s - Miniflux (${unread.value})`);
 useHead({ titleTemplate });
@@ -75,12 +77,12 @@ async function fallbackIfEmpty() {
   }
 }
 
-async function filterByCategory(id) {
+async function filterByCategory(id?: number) {
   await navigateTo({ path: "/", query: { category: id, feed: feed.value } });
   await fallbackIfEmpty();
 }
 
-async function filterByFeed(id) {
+async function filterByFeed(id?: number) {
   await navigateTo({
     path: "/",
     query: { category: category.value, feed: id },
@@ -147,12 +149,12 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
         <div v-if="category">
           <small pr-1>selected category</small>
           <span pr-1>{{ categoryTitle }}</span>
-          <a href="#" @click.prevent="filterByCategory(null)">clear</a>
+          <a href="#" @click.prevent="filterByCategory()">clear</a>
         </div>
         <div v-if="feed">
           <small pr-1>selected feed</small>
           <span pr-1>{{ feedTitle }}</span>
-          <a href="#" @click.prevent="filterByFeed(null)">clear</a>
+          <a href="#" @click.prevent="filterByFeed()">clear</a>
         </div>
       </div>
     </div>

@@ -6,7 +6,7 @@ import { useClipboard, useLocalStorage } from "@vueuse/core";
 const rdbContent = useLocalStorage("readability-content", "content");
 const rbs = useLocalStorage("readability-before-summarization", false);
 
-const model = defineModel<LinkdingBookmark>();
+const model = defineModel<LinkdingBookmark>({ required: true });
 const url = computed(() => model.value.url);
 
 defineProps<{
@@ -17,12 +17,6 @@ const emit = defineEmits<{
   deleted: [ids: number[]];
   deleteAndNext: [ids: number[]];
 }>();
-
-const copyable = computed(
-  () =>
-    `${getLinkdingTitle(model.value)}\n\n${model.value.url}\n\n${summarizeData.value.summary}`,
-);
-const { copy, copied } = useClipboard({ source: "" });
 
 function useDelete() {
   const status = ref("idle");
@@ -55,6 +49,12 @@ const {
   execute: executeSummarize,
   seconds: summarizeSeconds,
 } = useSummarize(url, rbs);
+
+const copyable = computed(() => {
+  if (!summarizeData.value) return "";
+  return `${getLinkdingTitle(model.value)}\n\n${model.value.url}\n\n${summarizeData.value.summary}`;
+});
+const { copy, copied } = useClipboard({ source: "" });
 
 async function onDelete() {
   await executeDelete();

@@ -1,7 +1,11 @@
 import { useInterval } from "@vueuse/core";
 import pangu from "pangu";
 
-import type { LinkdingBookmark } from "@/types";
+import type {
+  ReadabilityResponse,
+  KagiSummarizeResponse,
+  LinkdingBookmark,
+} from "@/types";
 
 export function getLinkdingTitle(bookmark: LinkdingBookmark): string {
   return bookmark.title || bookmark.website_title;
@@ -11,9 +15,13 @@ export function getLinkdingDescription(bookmark: LinkdingBookmark): string {
   return bookmark.description || bookmark.website_description;
 }
 
-export const { format: formatNumber } = Intl.NumberFormat("en-US");
+export function formatNumber(n: number | undefined): string {
+  if (typeof n === "undefined") return "";
+  const formatter = new Intl.NumberFormat("en-US");
+  return formatter.format(n);
+}
 
-export function formatDate(date: Date) {
+export function formatDate(date: string) {
   const formatter = new Intl.DateTimeFormat(navigator.language, {
     dateStyle: "medium",
     timeStyle: "medium",
@@ -23,7 +31,7 @@ export function formatDate(date: Date) {
 
 export function useReadability(url: string | Ref<string>) {
   const status = ref("idle");
-  const data = ref(null);
+  const data = ref<ReadabilityResponse | undefined>(undefined);
   const execute = async () => {
     try {
       status.value = "pending";
@@ -46,13 +54,13 @@ export function useSummarize(
   readability: boolean | Ref<boolean>,
 ) {
   const status = ref("idle");
-  const data = ref(null);
+  const data = ref<KagiSummarizeResponse | undefined>(undefined);
   const { counter, pause, reset } = useInterval(1000, { controls: true });
   const execute = async () => {
     try {
       reset();
       status.value = "pending";
-      data.value = await $fetch("/api/kagi/summarize", {
+      data.value = await $fetch<KagiSummarizeResponse>("/api/kagi/summarize", {
         method: "POST",
         body: { url: toValue(url), readability: toValue(readability) },
         timeout: 30000,
