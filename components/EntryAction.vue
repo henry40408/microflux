@@ -96,7 +96,9 @@ const { copy, copied } = useClipboard({ source: copyable });
           summarized in {{ summarizeSeconds }}s!
         </span>
         <span v-else>
-          <a href="#" @click.prevent="executeSummarize()">summarize</a>
+          <ConfirmButton @confirmed="executeSummarize()">
+            summarize
+          </ConfirmButton>
           <span v-if="summarizeStatus === 'error'" pl-1>failed!</span>
         </span>
       </div>
@@ -107,7 +109,7 @@ const { copy, copied } = useClipboard({ source: copyable });
 {{ model.url }}
 
 {{ summarizeData.summary }}</code></pre>
-      <div text-right md:text-left md:flex md:space-x-1>
+      <div text-right space-y-2 md:text-left md:flex md:space-x-2 md:space-y-0>
         <div>
           <small pr-1>token usage</small>
           <span>{{ summarizeData.tokens }}</span>

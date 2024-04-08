@@ -55,7 +55,7 @@ function onCollapse() {
     <div v-if="opened" pb-2 v-html="model.content" />
     <div v-if="rdbData">
       <h3 my-2>readable ({{ formatNumber(rdbData.length) }} chars)</h3>
-      <div border-1 border-dashed border-black p-2 dark:border-white>
+      <div border-1 border-dashed border-black mb-2 p-2 dark:border-white>
         <!-- eslint-disable-next-line vue/no-v-html -->
         <span v-if="rdbContent === 'content'" v-html="rdbData.content" />
         <span v-if="rdbContent === 'textContent'">
