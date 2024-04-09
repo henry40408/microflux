@@ -3,7 +3,8 @@ import uniqBy from "lodash/uniqBy";
 
 import type { MinifluxEntriesResponse } from "~/types";
 
-const entriesRefs = ref<HTMLElement[]>([]);
+const entryRefs = ref<Record<number, Element>>({});
+const headOfEntryList = ref<Element | null>(null);
 
 const route = useRoute();
 const selected = computed(() => ({
@@ -38,6 +39,11 @@ const entries = computed(() => {
   }
   return data.value.entries;
 });
+watch(entries, () => {
+  // reset refs when entries changes
+  entryRefs.value = {};
+});
+
 const feeds = computed(() =>
   uniqBy(entries.value.map((e) => e.feed).flat(), (f) => f.id),
 );
@@ -78,6 +84,9 @@ async function fallbackIfEmpty() {
   if (unreadEntries.value.length <= 0) {
     // fallback to all when no entries listed
     await navigateTo({ path: "/" });
+  }
+  if (selected.value.category || selected.value.feed) {
+    headOfEntryList.value?.scrollIntoView();
   }
 }
 
@@ -123,6 +132,12 @@ function useMarkAllAsRead() {
 }
 const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
   useMarkAllAsRead();
+
+function setEntryRef(id: number, el: unknown) {
+  if (el instanceof Element) {
+    entryRefs.value[id] = el;
+  }
+}
 </script>
 
 <template>
@@ -167,8 +182,9 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
         </div>
       </div>
     </div>
-    <div v-for="(entry, index) in entries" :key="entry.id" ref="entriesRefs">
-      <h2>
+    <span ref="headOfEntryList" />
+    <div v-for="(entry, index) in entries" :key="entry.id">
+      <h2 :ref="(el) => setEntryRef(entry.id, el)">
         <a
           :class="{ 'text-gray-400': entry.status === 'read' }"
           :href="entry.url"
@@ -196,7 +212,7 @@ const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
       <EntryAction v-model="entries[index]" />
       <EntryContent
         v-model="entries[index]"
-        @collapsed="entriesRefs[index].scrollIntoView()"
+        @collapsed="entryRefs[entry.id].scrollIntoView()"
       >
         <EntryAction v-model="entries[index]" pb-2 />
       </EntryContent>
