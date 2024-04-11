@@ -88,7 +88,7 @@ async function onDeleteAndNext() {
         summarized in {{ summarizeSeconds }}s!
       </span>
       <span v-else>
-        <a href="#" @click.prevent="executeSummarize">summarize</a>
+        <ConfirmButton @confirmed="executeSummarize()">summarize</ConfirmButton>
         <span v-if="summarizeStatus === 'error'" pl-1>failed!</span>
       </span>
     </div>

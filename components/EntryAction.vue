@@ -65,42 +65,54 @@ const { copy, copied } = useClipboard({ source: copyable });
 
 <template>
   <div>
-    <div text-right space-y-2 md:flex md:space-x-2 md:space-y-0>
+    <div space-y-2 text-right md:flex md:space-x-2 md:space-y-0>
       <div><small>actions</small></div>
-      <div>
-        <span v-if="toggleReadStatus === 'pending'">marking...</span>
-        <span v-else>
-          <a
-            href="#"
-            :class="{ 'text-gray-400': model.status === 'read' }"
-            @click.prevent="executeToggleRead()"
-          >
-            mark as {{ model.status === "unread" ? "read" : "unread" }}
-          </a>
-          <span v-if="toggleReadStatus === 'error'" pl-1>failed!</span>
-        </span>
-      </div>
-      <div>
-        <span v-if="saveStatus === 'pending'">saving...</span>
-        <span v-else-if="saveStatus === 'success'">saved!</span>
-        <span v-else>
-          <a href="#" @click.prevent="executeSave()">save</a>
-          <span v-if="saveStatus === 'error'" pl-1>failed!</span>
-        </span>
-      </div>
-      <div>
-        <span v-if="summarizeStatus === 'pending'">
-          summarizing... {{ summarizeSeconds }}s
-        </span>
-        <span v-else-if="summarizeStatus === 'success'">
-          summarized in {{ summarizeSeconds }}s!
-        </span>
-        <span v-else>
-          <ConfirmButton @confirmed="executeSummarize()">
-            summarize
-          </ConfirmButton>
-          <span v-if="summarizeStatus === 'error'" pl-1>failed!</span>
-        </span>
+      <div
+        flex
+        flex-col-reverse
+        space-y-2
+        space-y-reverse
+        text-right
+        md:flex
+        md:flex-row
+        md:space-x-2
+        md:space-y-0
+      >
+        <div>
+          <span v-if="toggleReadStatus === 'pending'">marking...</span>
+          <span v-else>
+            <a
+              href="#"
+              :class="{ 'text-gray-400': model.status === 'read' }"
+              @click.prevent="executeToggleRead()"
+            >
+              mark as {{ model.status === "unread" ? "read" : "unread" }}
+            </a>
+            <span v-if="toggleReadStatus === 'error'" pl-1>failed!</span>
+          </span>
+        </div>
+        <div>
+          <span v-if="saveStatus === 'pending'">saving...</span>
+          <span v-else-if="saveStatus === 'success'">saved!</span>
+          <span v-else>
+            <a href="#" @click.prevent="executeSave()">save</a>
+            <span v-if="saveStatus === 'error'" pl-1>failed!</span>
+          </span>
+        </div>
+        <div>
+          <span v-if="summarizeStatus === 'pending'">
+            summarizing... {{ summarizeSeconds }}s
+          </span>
+          <span v-else-if="summarizeStatus === 'success'">
+            summarized in {{ summarizeSeconds }}s!
+          </span>
+          <span v-else>
+            <ConfirmButton @confirmed="executeSummarize()">
+              summarize
+            </ConfirmButton>
+            <span v-if="summarizeStatus === 'error'" pl-1>failed!</span>
+          </span>
+        </div>
       </div>
     </div>
     <div v-if="summarizeData">
@@ -109,7 +121,7 @@ const { copy, copied } = useClipboard({ source: copyable });
 {{ model.url }}
 
 {{ summarizeData.summary }}</code></pre>
-      <div text-right space-y-2 md:text-left md:flex md:space-x-2 md:space-y-0>
+      <div space-y-2 text-right md:flex md:space-x-2 md:space-y-0 md:text-left>
         <div>
           <small pr-1>token usage</small>
           <span>{{ summarizeData.tokens }}</span>

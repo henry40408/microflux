@@ -56,10 +56,10 @@ function onRandomDelete(id: number) {
     <h2>
       <span v-if="pending">...</span>
       <span v-else>{{ formatNumber(count) }}</span>
-      <small text-gray-400 pl-1>bookmarks on server</small>
+      <small pl-1 text-gray-400>bookmarks on server</small>
     </h2>
     <div pb-2>
-      <div text-right space-y-2 md:flex md:space-x-2 md:space-y-0 md:text-left>
+      <div space-y-2 text-right md:flex md:space-x-2 md:space-y-0 md:text-left>
         <div><small>actions</small></div>
         <div>
           <span v-if="pending">...</span>

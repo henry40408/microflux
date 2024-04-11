@@ -21,7 +21,7 @@ onConfirm(() => emit("confirmed"));
 <template>
   <span v-if="isRevealed">
     <span>{{ question }}</span>
-    <a text-red href="#" pl-1 @click.prevent="confirm">confirm</a>
+    <a href="#" pl-1 text-red @click.prevent="confirm">confirm</a>
     <a href="#" pl-1 @click.prevent="cancel">cancel</a>
   </span>
   <span v-else>

@@ -64,15 +64,17 @@ function onCollapse() {
       </div>
     </div>
     <slot />
-    <div text-right space-y-2 md:flex md:space-x-2 md:space-y-0 md:text-left>
-      <div>
-        <span v-if="readabilityStatus === 'pending'">reading...</span>
-        <span v-else-if="readabilityStatus === 'success'">readable!</span>
-        <span v-else>
-          <a href="#" @click.prevent="executeReadability">readability</a>
-          <span v-if="readabilityStatus === 'error'" pl-1>failed!</span>
-        </span>
-      </div>
+    <div
+      flex
+      flex-col-reverse
+      space-y-2
+      space-y-reverse
+      text-right
+      md:flex-row
+      md:space-x-2
+      md:space-y-0
+      md:text-left
+    >
       <div>
         <a href="#" @click.prevent="onCollapse()">collapse</a>
         (<span>
@@ -81,6 +83,14 @@ function onCollapse() {
             >and mark as read</a
           ></span
         >)
+      </div>
+      <div>
+        <span v-if="readabilityStatus === 'pending'">reading...</span>
+        <span v-else-if="readabilityStatus === 'success'">readable!</span>
+        <span v-else>
+          <a href="#" @click.prevent="executeReadability">readability</a>
+          <span v-if="readabilityStatus === 'error'" pl-1>failed!</span>
+        </span>
       </div>
     </div>
   </details>

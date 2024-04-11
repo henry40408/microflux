@@ -81,6 +81,7 @@ async function fallbackIfEmpty() {
       query: { category: selected.value.category },
     });
   }
+  await nextTick(); // ensure that unread entries is re-computed
   if (unreadEntries.value.length <= 0) {
     // fallback to all when no entries listed
     await navigateTo({ path: "/" });
@@ -147,6 +148,7 @@ function setEntryRef(id: number, el: unknown) {
     <div v-if="error">
       <pre><code>{{ error }}</code></pre>
     </div>
+    <span ref="headOfEntryList" />
     <h2>
       {{ formatNumber(unreadEntries.length) }}
       <small text-gray-400>on page</small>
@@ -159,7 +161,7 @@ function setEntryRef(id: number, el: unknown) {
         space-y-2
         text-right
         md:flex
-        md:space-x-1
+        md:space-x-2
         md:space-y-0
         md:text-left
       >
@@ -182,7 +184,6 @@ function setEntryRef(id: number, el: unknown) {
         </div>
       </div>
     </div>
-    <span ref="headOfEntryList" />
     <div v-for="(entry, index) in entries" :key="entry.id">
       <h2 :ref="(el) => setEntryRef(entry.id, el)">
         <a
@@ -225,7 +226,7 @@ function setEntryRef(id: number, el: unknown) {
       text-right
       md:flex
       md:pb-5
-      md:space-x-1
+      md:space-x-2
       md:space-y-0
       md:text-left
     >
