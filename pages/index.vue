@@ -148,6 +148,7 @@ function setEntryRef(id: number, el: unknown) {
     <div v-if="error">
       <pre><code>{{ error }}</code></pre>
     </div>
+    <OptionsPane />
     <span ref="headOfEntryList" />
     <h2>
       {{ formatNumber(unreadEntries.length) }}

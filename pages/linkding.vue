@@ -53,6 +53,7 @@ function onRandomDelete(id: number) {
     <div v-if="error">
       <pre><code>{{ error }}</code></pre>
     </div>
+    <OptionsPane />
     <h2>
       <span v-if="pending">...</span>
       <span v-else>{{ formatNumber(count) }}</span>

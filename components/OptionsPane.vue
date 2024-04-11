@@ -6,16 +6,11 @@ const readabilityBeforeSummarization = useLocalStorage(
   "readability-before-summarization",
   false,
 );
-
-useHead({
-  titleTemplate: `Options - %s`,
-});
 </script>
 
 <template>
-  <div>
-    <PageTitle>Options</PageTitle>
-    <NavigationLine />
+  <details>
+    <summary>options</summary>
     <blockquote>Note: These options are saved in local storage.</blockquote>
     <h2>Readability</h2>
     <div>
@@ -55,5 +50,5 @@ useHead({
         version might lead to a less accurate summary.
       </label>
     </div>
-  </div>
+  </details>
 </template>
