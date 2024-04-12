@@ -23,9 +23,8 @@ function useDelete() {
   const execute = async () => {
     try {
       status.value = "pending";
-      await $fetch("/api/linkding/bookmark", {
-        method: "POST",
-        body: { op: "delete", id: model.value.id },
+      await $fetch<string>(`/api/linkding/bookmarks/${model.value.id}`, {
+        method: "DELETE",
       });
       status.value = "success";
     } catch (err) {

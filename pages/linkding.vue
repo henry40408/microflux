@@ -60,6 +60,7 @@ function onRandomDelete(id: number) {
       <small pl-1 text-gray-400>bookmarks on server</small>
     </h2>
     <div pb-2>
+      <NewBookmark @created="refresh()" />
       <div space-y-2 text-right md:flex md:space-x-2 md:space-y-0 md:text-left>
         <div><small>actions</small></div>
         <div>
