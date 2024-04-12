@@ -1,11 +1,12 @@
 import { getQuery } from "h3";
 import lodash from "lodash";
+import pangu from "pangu";
 import * as OpenCC from "opencc-js";
 
 import { sendRequest } from "~/server/miniflux";
 import type { MinifluxEntries, MinifluxUnreadCounters } from "~/types";
 
-const convert = OpenCC.Converter({ from: "cn", to: "tw" });
+const convertToTChinese = OpenCC.Converter({ from: "cn", to: "tw" });
 
 export default defineEventHandler(async (event) => {
   try {
@@ -47,9 +48,10 @@ export default defineEventHandler(async (event) => {
     });
 
     for (const entry of entries.entries) {
+      entry.title = pangu.spacing(entry.title);
       const sanitized = sanitizeContent(entry.content);
-      const converted = convert(sanitized);
-      entry.content = converted;
+      const converted = convertToTChinese(sanitized);
+      entry.content = pangu.spacing(converted);
     }
 
     return { entries: entries.entries, counters: picked };
