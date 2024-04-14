@@ -50,8 +50,7 @@ export default defineEventHandler(async (event) => {
     for (const entry of entries.entries) {
       entry.title = pangu.spacing(entry.title);
       const sanitized = sanitizeContent(entry.content);
-      const converted = convertToTChinese(sanitized);
-      entry.content = pangu.spacing(converted);
+      entry.content = convertToTChinese(sanitized);
     }
 
     return { entries: entries.entries, counters: picked };
