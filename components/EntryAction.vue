@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { MinifluxEntry } from "@/types";
+import type { PartialMinifluxEntry } from "@/types";
 
 import { useClipboard, useLocalStorage } from "@vueuse/core";
 
-const model = defineModel<MinifluxEntry>({ required: true });
+const model = defineModel<PartialMinifluxEntry>({ required: true });
 const url = computed(() => model.value.url);
 
 const rbs = useLocalStorage("readability-before-summarization", false);

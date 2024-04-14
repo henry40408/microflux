@@ -4,7 +4,11 @@ import pangu from "pangu";
 import * as OpenCC from "opencc-js";
 
 import { sendRequest } from "~/server/miniflux";
-import type { MinifluxEntries, MinifluxUnreadCounters } from "~/types";
+import type {
+  MinifluxEntries,
+  MinifluxUnreadCounters,
+  PartialMinifluxEntry,
+} from "~/types";
 
 const convertToTChinese = OpenCC.Converter({ from: "cn", to: "tw" });
 
@@ -33,6 +37,7 @@ export default defineEventHandler(async (event) => {
         path: "/v1/feeds/counters",
       }),
     ]);
+
     const count = entries.entries.length;
     console.debug("%j", {
       tag: "entries",
@@ -40,11 +45,29 @@ export default defineEventHandler(async (event) => {
       count,
     });
 
-    const picked = lodash.pick(counters, ["unreads"]);
+    const pickedEntries: PartialMinifluxEntry[] = entries.entries.map(
+      ({ content, feed, id, status, title, url }) => ({
+        content,
+        feed: {
+          category: {
+            id: feed.category.id,
+            title: feed.category.title,
+          },
+          id: feed.id,
+          title: feed.title,
+        },
+        id,
+        status,
+        title,
+        url,
+      }),
+    );
+
+    const pickedCounters = lodash.pick(counters, ["unreads"]);
     console.debug("%j", {
       tag: "entries",
       action: "fetch_unread_counters",
-      counters: picked,
+      counters: pickedCounters,
     });
 
     for (const entry of entries.entries) {
@@ -53,7 +76,7 @@ export default defineEventHandler(async (event) => {
       entry.content = convertToTChinese(sanitized);
     }
 
-    return { entries: entries.entries, counters: picked };
+    return { entries: pickedEntries, counters: pickedCounters };
   } catch (err) {
     console.error("failed to fetch unread entries from Miniflux", err);
     throw createError({

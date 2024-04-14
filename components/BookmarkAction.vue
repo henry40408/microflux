@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { LinkdingBookmark } from "@/types";
+import type { PartialLinkdingBookmark } from "@/types";
 
 import { useClipboard, useLocalStorage } from "@vueuse/core";
 
 const rdbContent = useLocalStorage("readability-content", "content");
 const rbs = useLocalStorage("readability-before-summarization", false);
 
-const model = defineModel<LinkdingBookmark>({ required: true });
+const model = defineModel<PartialLinkdingBookmark>({ required: true });
 const url = computed(() => model.value.url);
 
 defineProps<{

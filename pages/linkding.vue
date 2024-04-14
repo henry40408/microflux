@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import sample from "lodash/sample";
 
-import type { LinkdingBookmark, LinkdingBookmarksResponse } from "~/types";
+import type {
+  PartialLinkdingBookmark,
+  LinkdingBookmarksResponse,
+} from "~/types";
 
 const { data, pending, error, refresh } =
   await useFetch<LinkdingBookmarksResponse>("/api/linkding/bookmarks", {
@@ -16,7 +19,7 @@ const count = computed(() => {
   if (data.value) return data.value.count;
   return 0;
 });
-const randomPicked = ref<LinkdingBookmark | undefined>();
+const randomPicked = ref<PartialLinkdingBookmark | undefined>();
 
 const titleTemplate = computed(() => `(${count.value}) Linkding - %s`);
 useHead({ titleTemplate });

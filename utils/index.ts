@@ -2,16 +2,18 @@ import { useInterval } from "@vueuse/core";
 import pangu from "pangu";
 
 import type {
+  PartialLinkdingBookmark,
   ReadabilityResponse,
   KagiSummarizeResponse,
-  LinkdingBookmark,
 } from "@/types";
 
-export function getLinkdingTitle(bookmark: LinkdingBookmark): string {
+export function getLinkdingTitle(bookmark: PartialLinkdingBookmark): string {
   return bookmark.title || bookmark.website_title;
 }
 
-export function getLinkdingDescription(bookmark: LinkdingBookmark): string {
+export function getLinkdingDescription(
+  bookmark: PartialLinkdingBookmark,
+): string {
   return bookmark.description || bookmark.website_description;
 }
 

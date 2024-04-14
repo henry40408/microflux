@@ -6,5 +6,5 @@ export default defineEventHandler(async (event) => {
     path: `/api/bookmarks/${id}`,
     method: "DELETE",
   });
-  return setResponseStatus(event, 204, "");
+  return sendNoContent(event);
 });

@@ -8,7 +8,25 @@ export default defineEventHandler(async (event) => {
     });
     return {
       count: data.count,
-      bookmarks: data.results,
+      bookmarks: data.results.map(
+        ({
+          date_added,
+          description,
+          id,
+          title,
+          url,
+          website_description,
+          website_title,
+        }) => ({
+          date_added,
+          description,
+          id,
+          title,
+          url,
+          website_description,
+          website_title,
+        }),
+      ),
     };
   } catch (err) {
     console.error("failed to fetch bookmarks", err);

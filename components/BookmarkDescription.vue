@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { LinkdingBookmark } from "~/types";
+import type { PartialLinkdingBookmark } from "~/types";
 
-const model = defineModel<LinkdingBookmark>({ required: true });
+const model = defineModel<PartialLinkdingBookmark>({ required: true });
 </script>
 
 <template>

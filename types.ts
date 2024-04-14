@@ -47,11 +47,6 @@ export interface LinkdingBookmarks {
   results: LinkdingBookmark[];
 }
 
-export interface LinkdingBookmarksResponse {
-  bookmarks: LinkdingBookmark[];
-  count: number;
-}
-
 // https://miniflux.app/docs/api.html#endpoint-get-entries
 export interface MinifluxEntry {
   id: number;
@@ -129,8 +124,35 @@ export interface KagiSummarizeResponse {
   tokens: number;
 }
 
+export type PartialLinkdingBookmark = Pick<
+  LinkdingBookmark,
+  | "date_added"
+  | "description"
+  | "id"
+  | "title"
+  | "url"
+  | "website_description"
+  | "website_title"
+>;
+export interface LinkdingBookmarksResponse {
+  bookmarks: PartialLinkdingBookmark[];
+  count: number;
+}
+
+export type PartialMinifluxCategory = Pick<
+  MinifluxEntry["feed"]["category"],
+  "id" | "title"
+>;
+export type PartialMinifluxFeed = Pick<
+  MinifluxEntry["feed"],
+  "id" | "title"
+> & { category: PartialMinifluxCategory };
+export type PartialMinifluxEntry = Pick<
+  MinifluxEntry,
+  "content" | "id" | "status" | "title" | "url"
+> & { feed: PartialMinifluxFeed };
 export interface MinifluxEntriesResponse {
-  entries: MinifluxEntry[];
+  entries: PartialMinifluxEntry[];
   counters: { unreads: Record<string, number> };
 }
 
