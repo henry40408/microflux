@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import uniqBy from "lodash/uniqBy";
+import pangu from "pangu";
 
 import type { MinifluxEntriesResponse } from "~/types";
 
@@ -193,7 +194,7 @@ function setEntryRef(id: number, el: unknown) {
           target="_blank"
           rel="nofollow noopener"
         >
-          {{ entry.title }}
+          {{ pangu.spacing(entry.title) }}
           <small text-gray-400> #{{ entry.id }}</small>
         </a>
       </h2>
@@ -219,7 +220,7 @@ function setEntryRef(id: number, el: unknown) {
         <EntryAction v-model="entries[index]" pb-2 />
       </EntryContent>
     </div>
-    <div v-if="entries.length <= 0" font-italic>(no entries)</div>
+    <div v-if="entries.length <= 0" font-italic py-2>(no entries)</div>
     <div
       v-if="entries.length > 0"
       pb-10
