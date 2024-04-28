@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
       body.url = url;
     }
 
-    const resp: KagiSummary = await $fetch(
+    const resp = await $fetch<KagiSummary>(
       "https://kagi.com/api/v0/summarize",
       {
         method: "POST",

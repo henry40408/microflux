@@ -37,11 +37,14 @@ export function useReadability(url: string | Ref<string>) {
   const execute = async () => {
     try {
       status.value = "pending";
-      data.value = await $fetch("/api/miniflux/readability", {
-        method: "POST",
-        body: { url: toValue(url) },
-        timeout: 30000,
-      });
+      data.value = await $fetch<ReadabilityResponse>(
+        "/api/miniflux/readability",
+        {
+          method: "POST",
+          body: { url: toValue(url) },
+          timeout: 30000,
+        },
+      );
       status.value = "success";
     } catch (err) {
       console.error("failed to fetch readable content", err);

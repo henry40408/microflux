@@ -3,15 +3,9 @@
     <div>
       <small>navigation</small>
     </div>
-    <div>
-      <NuxtLink to="/" exact-active-class="text-black dark:text-white">
-        miniflux
-      </NuxtLink>
-    </div>
-    <div>
-      <NuxtLink to="/linkding" exact-active-class="text-black dark:text-white">
-        linkding
-      </NuxtLink>
-    </div>
+    <StyledNuxtLink to="/">miniflux</StyledNuxtLink>
+    <StyledNuxtLink to="/linkding">linkding</StyledNuxtLink>
+    <StyledNuxtLink to="/filter">filter</StyledNuxtLink>
+    <StyledNuxtLink to="/database">database</StyledNuxtLink>
   </div>
 </template>
