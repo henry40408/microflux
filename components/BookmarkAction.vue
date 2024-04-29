@@ -67,7 +67,7 @@ async function onDeleteAndNext() {
 </script>
 
 <template>
-  <div space-y-2 text-right md:flex md:space-x-2 md:space-y-0 md:text-left>
+  <div space-y-2 text-right md:flex md:space-x-1 md:space-y-0 md:text-left>
     <div>
       <small>actions</small>
     </div>
@@ -75,7 +75,7 @@ async function onDeleteAndNext() {
       <span v-if="readabilityStatus === 'pending'">reading...</span>
       <span v-else-if="readabilityStatus === 'success'">readable!</span>
       <a v-else href="#" @click.prevent="executeReadability">
-        readability
+        &#x1F4D6;readability
         <span v-if="readabilityStatus === 'error'">failed!</span>
       </a>
     </div>
@@ -87,14 +87,16 @@ async function onDeleteAndNext() {
         summarized in {{ summarizeSeconds }}s!
       </span>
       <span v-else>
-        <ConfirmButton @confirmed="executeSummarize()">summarize</ConfirmButton>
+        <ConfirmButton @confirmed="executeSummarize()">
+          &#x1F4D1;summarize
+        </ConfirmButton>
         <span v-if="summarizeStatus === 'error'" pl-1>failed!</span>
       </span>
     </div>
     <div>
       <span v-if="deleteStatus === 'pending'">deleting...</span>
       <span v-else>
-        <ConfirmButton @confirmed="onDelete()">delete</ConfirmButton>
+        <ConfirmButton @confirmed="onDelete()">&#x274C;delete</ConfirmButton>
         <span v-if="enableNext">
           (<ConfirmButton @confirmed="onDeleteAndNext()">and next</ConfirmButton
           >)
