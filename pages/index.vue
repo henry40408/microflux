@@ -140,6 +140,19 @@ function setEntryRef(id: number, el: unknown) {
     entryRefs.value[id] = el;
   }
 }
+
+// redirect when no entries found with current filter
+if (unreadEntries.value.length <= 0) {
+  if (selected.value.feed) {
+    await navigateTo({
+      path: "/",
+      query: { category: selected.value.category },
+    });
+  }
+  if (selected.value.category) {
+    await navigateTo({ path: "/" });
+  }
+}
 </script>
 
 <template>
