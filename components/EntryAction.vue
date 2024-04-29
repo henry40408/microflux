@@ -4,6 +4,12 @@ import type { PartialMinifluxEntry } from "@/types";
 import { useClipboard, useLocalStorage } from "@vueuse/core";
 
 const model = defineModel<PartialMinifluxEntry>({ required: true });
+const targetEmoji = computed(() =>
+  model.value.status === "read" ? "&#x1F4E9;" : "&#x2705;",
+);
+const targetStatus = computed(() =>
+  model.value.status === "read" ? "unread" : "read",
+);
 const url = computed(() => model.value.url);
 
 const rbs = useLocalStorage("readability-before-summarization", false);
@@ -86,7 +92,8 @@ const { copy, copied } = useClipboard({ source: copyable });
               :class="{ 'text-gray-400': model.status === 'read' }"
               @click.prevent="executeToggleRead()"
             >
-              mark as {{ model.status === "unread" ? "read" : "unread" }}
+              <!-- eslint-disable-next-line vue/no-v-html -->
+              <span v-html="targetEmoji" />mark as {{ targetStatus }}
             </a>
             <span v-if="toggleReadStatus === 'error'" pl-1>failed!</span>
           </span>
@@ -95,7 +102,7 @@ const { copy, copied } = useClipboard({ source: copyable });
           <span v-if="saveStatus === 'pending'">saving...</span>
           <span v-else-if="saveStatus === 'success'">saved!</span>
           <span v-else>
-            <a href="#" @click.prevent="executeSave()">save</a>
+            <a href="#" @click.prevent="executeSave()">&#x1F4BE;save</a>
             <span v-if="saveStatus === 'error'" pl-1>failed!</span>
           </span>
         </div>
@@ -108,7 +115,7 @@ const { copy, copied } = useClipboard({ source: copyable });
           </span>
           <span v-else>
             <ConfirmButton @confirmed="executeSummarize()">
-              summarize
+              &#x1F4D1;summarize
             </ConfirmButton>
             <span v-if="summarizeStatus === 'error'" pl-1>failed!</span>
           </span>

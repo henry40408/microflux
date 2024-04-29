@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import orderBy from "lodash/orderBy";
 import uniqBy from "lodash/uniqBy";
 import pangu from "pangu";
 
@@ -50,6 +51,17 @@ const feeds = computed(() =>
 );
 const categories = computed(() =>
   uniqBy(feeds.value.map((f) => f.category).flat(), (c) => c.id),
+);
+const categoryUnreads = computed(() =>
+  orderBy(
+    categories.value.map((c) => ({
+      ...c,
+      count: unreadEntries.value.filter((e) => e.feed.category.id === c.id)
+        .length,
+    })),
+    ["count"],
+    ["desc"],
+  ),
 );
 const unreadOnServer = computed(() => {
   if (!data.value) return 0;
@@ -160,16 +172,16 @@ if (unreadEntries.value.length <= 0) {
     <PageTitle>Miniflux</PageTitle>
     <NavigationLine />
     <div v-if="error">
-      <pre><code>{{ error }}</code></pre>
+      <pre><code bg-pink-300 text-black>&#x274C;{{ error }}</code></pre>
     </div>
     <OptionsPane />
     <span ref="headOfEntryList" />
-    <h2>
+    <h3>
       {{ formatNumber(unreadEntries.length) }}
       <small text-gray-400>on page</small>
       {{ pending ? "..." : formatNumber(unreadOnServer) }}
       <small text-gray-400>on server</small>
-    </h2>
+    </h3>
     <div>
       <div
         pb-2
@@ -184,7 +196,9 @@ if (unreadEntries.value.length <= 0) {
         <div>
           <div v-if="pending">...</div>
           <div v-else>
-            <a href="#" @click.prevent="refreshAndFallback">refresh</a>
+            <a href="#" @click.prevent="refreshAndFallback">
+              &#x1F504;refresh
+            </a>
           </div>
         </div>
         <div v-if="selected.category">
@@ -197,6 +211,22 @@ if (unreadEntries.value.length <= 0) {
           <span pr-1>{{ titles.feed }}</span>
           <a href="#" @click.prevent="filterByFeed()">clear</a>
         </div>
+      </div>
+    </div>
+    <div text-right md:flex md:flex-wrap>
+      <div mb-2 md:mr-2 md:mb-0><small>count by category</small></div>
+      <div
+        v-for="category in categoryUnreads"
+        :key="category.id"
+        my-1
+        md:mr-1
+        md:my-0
+        text-nowrap
+      >
+        ({{ category.count }})
+        <a href="#" @click.prevent="filterByCategory(category.id)">
+          {{ category.title }}
+        </a>
       </div>
     </div>
     <div v-for="(entry, index) in entries" :key="entry.id">
@@ -250,14 +280,20 @@ if (unreadEntries.value.length <= 0) {
         <span v-if="markAllAsReadStatus === 'pending'">marking...</span>
         <span v-else>
           <ConfirmButton @confirmed="executeMarkAllAsRead">
-            <span>mark {{ formatNumber(unreadEntries.length) }} as read</span>
+            <span>
+              &#x2705;mark
+              {{ formatNumber(unreadEntries.length) }}
+              as read
+            </span>
           </ConfirmButton>
           <span v-if="markAllAsReadStatus === 'error'" pl-1>failed!</span>
         </span>
       </div>
       <div>
         <span v-if="pending">...</span>
-        <a v-else href="#" @click.prevent="refreshAndFallback">refresh</a>
+        <a v-else href="#" @click.prevent="refreshAndFallback">
+          &#x1F504;refresh
+        </a>
       </div>
     </div>
   </div>
