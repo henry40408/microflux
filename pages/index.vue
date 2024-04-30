@@ -188,12 +188,13 @@ if (unreadEntries.value.length <= 0) {
         space-y-2
         text-right
         md:flex
-        md:space-x-2
+        md:flex-wrap
         md:space-y-0
         md:text-left
+        md:text-nowrap
       >
-        <div><small>actions</small></div>
-        <div>
+        <div mr-2><small>actions</small></div>
+        <div mr-2>
           <div v-if="pending">...</div>
           <div v-else>
             <a href="#" @click.prevent="refreshAndFallback">
@@ -201,12 +202,12 @@ if (unreadEntries.value.length <= 0) {
             </a>
           </div>
         </div>
-        <div v-if="selected.category">
+        <div v-if="selected.category" mr-2>
           <small pr-1>selected category</small>
           <span pr-1>{{ titles.category }}</span>
           <a href="#" @click.prevent="filterByCategory()">clear</a>
         </div>
-        <div v-if="selected.feed">
+        <div v-if="selected.feed" mr-2>
           <small pr-1>selected feed</small>
           <span pr-1>{{ titles.feed }}</span>
           <a href="#" @click.prevent="filterByFeed()">clear</a>
@@ -241,14 +242,22 @@ if (unreadEntries.value.length <= 0) {
           <small text-gray-400> #{{ entry.id }}</small>
         </a>
       </h2>
-      <div pb-2 space-x-2 space-y-2 text-right md:flex md:space-y-0>
-        <div>
+      <div
+        pb-2
+        space-y-2
+        text-right
+        md:flex
+        md:flex-wrap
+        md:space-y-0
+        md:text-nowrap
+      >
+        <div mr-2>
           <small pr-2>feed</small>
           <a href="#" @click.prevent="filterByFeed(entry.feed.id)">
             {{ entry.feed.title }}
           </a>
         </div>
-        <div>
+        <div mr-2>
           <small pr-2>category</small>
           <a href="#" @click.prevent="filterByCategory(entry.feed.category.id)">
             {{ entry.feed.category.title }}
