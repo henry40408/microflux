@@ -59,8 +59,8 @@ const categoryUnreads = computed(() =>
       count: unreadEntries.value.filter((e) => e.feed.category.id === c.id)
         .length,
     })),
-    ["count"],
-    ["desc"],
+    ["count", "title"],
+    ["desc", "asc"],
   ),
 );
 const unreadOnServer = computed(() => {
@@ -193,8 +193,8 @@ if (unreadEntries.value.length <= 0) {
         md:text-left
         md:text-nowrap
       >
-        <div mr-2><small>actions</small></div>
-        <div mr-2>
+        <div md:mr-2><small>actions</small></div>
+        <div md:mr-2>
           <div v-if="pending">...</div>
           <div v-else>
             <a href="#" @click.prevent="refreshAndFallback">
@@ -202,12 +202,12 @@ if (unreadEntries.value.length <= 0) {
             </a>
           </div>
         </div>
-        <div v-if="selected.category" mr-2>
+        <div v-if="selected.category" md:mr-2>
           <small pr-1>selected category</small>
           <span pr-1>{{ titles.category }}</span>
           <a href="#" @click.prevent="filterByCategory()">clear</a>
         </div>
-        <div v-if="selected.feed" mr-2>
+        <div v-if="selected.feed" md:mr-2>
           <small pr-1>selected feed</small>
           <span pr-1>{{ titles.feed }}</span>
           <a href="#" @click.prevent="filterByFeed()">clear</a>
@@ -251,13 +251,13 @@ if (unreadEntries.value.length <= 0) {
         md:space-y-0
         md:text-nowrap
       >
-        <div mr-2>
+        <div md:mr-2>
           <small pr-2>feed</small>
           <a href="#" @click.prevent="filterByFeed(entry.feed.id)">
             {{ entry.feed.title }}
           </a>
         </div>
-        <div mr-2>
+        <div md:mr-2>
           <small pr-2>category</small>
           <a href="#" @click.prevent="filterByCategory(entry.feed.category.id)">
             {{ entry.feed.category.title }}
