@@ -215,13 +215,12 @@ if (unreadEntries.value.length <= 0) {
       </div>
     </div>
     <div text-right md:flex md:flex-wrap>
-      <div mb-2 md:mr-2 md:mb-0><small>count by category</small></div>
+      <div mb-2 md:mr-2><small>count by category</small></div>
       <div
         v-for="category in categoryUnreads"
         :key="category.id"
-        my-1
+        mb-2
         md:mr-1
-        md:my-0
         text-nowrap
       >
         ({{ category.count }})
