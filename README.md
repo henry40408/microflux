@@ -7,11 +7,13 @@
 ![GitHub](https://img.shields.io/github/license/henry40408/microflux)
 ![GitHub tag (latest SemVer pre-release)](https://img.shields.io/github/v/tag/henry40408/microflux)
 
-# WARNING: Authentication or authorization not included
+## WARNING: Authentication or authorization not included
 
-Since this project is in its very early stages, it currently lacks an authentication or authorization mechanism. If you plan to host it, you should consider securing it with tools like [Authelia](https://www.authelia.com) or [Authentik](https://goauthentik.io).
+Since this project is in its very early stages, it currently lacks an
+authentication or authorization mechanism. If you plan to host it, you should
+consider securing it with tools like [Authelia](https://www.authelia.com) or [Authentik](https://goauthentik.io).
 
-# Getting started
+## Getting started
 
 ```bash
 cp .env.example .env
@@ -19,6 +21,6 @@ $EDITOR .env # add your configuration
 docker run --rm -it --env-file .env -p 3000:3000 ghcr.io/henry40408/microflux:latest
 ```
 
-# License
+## License
 
 MIT
