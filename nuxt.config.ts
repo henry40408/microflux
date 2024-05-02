@@ -27,5 +27,5 @@ export default defineNuxtConfig({
     linkdingUrl: "",
     linkdingToken: "",
   },
-  typescript: { typeCheck: true, strict: true },
+  typescript: { typeCheck: true },
 });
