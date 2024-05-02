@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useToggle, useLocalStorage } from "@vueuse/core";
 
-import type { PartialMinifluxEntry } from "~/types";
+import type { CompactMinifluxEntry } from "~/types";
 
 const rdbContent = useLocalStorage("readability-content", "content");
 
-const model = defineModel<PartialMinifluxEntry>({ required: true });
+const model = defineModel<CompactMinifluxEntry>({ required: true });
 const url = computed(() => model.value.url);
 
 const emit = defineEmits<{

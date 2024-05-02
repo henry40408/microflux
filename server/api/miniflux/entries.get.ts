@@ -7,7 +7,7 @@ import { sendRequest } from "~/server/miniflux";
 import type {
   MinifluxEntries,
   MinifluxUnreadCounters,
-  PartialMinifluxEntry,
+  CompactMinifluxEntry,
 } from "~/types";
 
 const logger = createLogger({ name: "miniflux" });
@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
     const count = entries.entries.length;
     logger.debug({ count }, "fetch unread entries");
 
-    const pickedEntries: PartialMinifluxEntry[] = entries.entries.map(
+    const pickedEntries: CompactMinifluxEntry[] = entries.entries.map(
       ({ content, feed, id, status, title, url }) => ({
         content,
         feed: {
