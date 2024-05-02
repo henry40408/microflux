@@ -6,6 +6,7 @@ import { fetchReadability, parseBody } from "~/server/utils";
 import type { KagiSummary, KagiSummaryRequest } from "~/types";
 
 const convert = OpenCC.Converter({ from: "cn", to: "tw" });
+const logger = createLogger({ name: "kagi" });
 
 const summarizeSchema = z.object({
   url: z.string(),
@@ -22,11 +23,7 @@ export default defineEventHandler(async (event) => {
     if (readability) {
       const { textContent } = await fetchReadability(url);
       const length = textContent.length;
-      console.log("%j", {
-        tag: "summarization",
-        action: "readability",
-        length,
-      });
+      logger.debug({ length }, "readability for summarization");
       body.text = textContent;
     } else {
       body.url = url;
@@ -42,20 +39,14 @@ export default defineEventHandler(async (event) => {
     );
 
     const tokens = resp.data.tokens;
-    console.log("%j", {
-      tag: "summarization",
-      action: "summarize",
-      url,
-      readability,
-      tokens,
-    });
+    logger.info({ url, readability, tokens }, "summarize");
 
     return {
       summary: pangu.spacing(convert(resp.data.output)),
       tokens,
     };
   } catch (err) {
-    console.error("failed to summarize", err);
+    logger.error(err, "failed to summarize");
     throw createError({
       status: 502,
       statusMessage: "failed to summarize",

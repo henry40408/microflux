@@ -7,6 +7,8 @@ import { sendRequest } from "~/server/miniflux";
 import { parseBody } from "~/server/utils";
 import type { MinifluxEntryStatus } from "~/types";
 
+const logger = createLogger({ name: "miniflux" });
+
 const entrySchema = z.discriminatedUnion("op", [
   z.object({
     op: z.literal("toggle-read"),
@@ -36,7 +38,7 @@ async function toggleRead(
     });
     return { ids };
   } catch (err) {
-    console.error("failed to mark %j as read", ids, err);
+    logger.error(err, "failed to makrk as read %j", ids);
     throw createError({
       status: 502,
       statusMessage: "failed to mark as read",
@@ -52,7 +54,7 @@ async function save(event: H3Event, id: number) {
     });
     return { id };
   } catch (err) {
-    console.error("failed to save %d", id, err);
+    logger.error(err, "failed to save %d", id);
     throw createError({
       status: 502,
       statusMessage: "failed to save",

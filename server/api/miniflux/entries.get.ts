@@ -10,6 +10,7 @@ import type {
   PartialMinifluxEntry,
 } from "~/types";
 
+const logger = createLogger({ name: "miniflux" });
 const convertToTChinese = OpenCC.Converter({ from: "cn", to: "tw" });
 
 export default defineEventHandler(async (event) => {
@@ -39,11 +40,7 @@ export default defineEventHandler(async (event) => {
     ]);
 
     const count = entries.entries.length;
-    console.debug("%j", {
-      tag: "entries",
-      action: "fetch_unread_entries",
-      count,
-    });
+    logger.debug({ count }, "fetch unread entries");
 
     const pickedEntries: PartialMinifluxEntry[] = entries.entries.map(
       ({ content, feed, id, status, title, url }) => ({
@@ -64,11 +61,7 @@ export default defineEventHandler(async (event) => {
     );
 
     const pickedCounters = lodash.pick(counters, ["unreads"]);
-    console.debug("%j", {
-      tag: "entries",
-      action: "fetch_unread_counters",
-      counters: pickedCounters,
-    });
+    logger.debug({ counters: pickedCounters }, "fetch unread counters");
 
     for (const entry of entries.entries) {
       entry.title = pangu.spacing(entry.title);
@@ -78,7 +71,7 @@ export default defineEventHandler(async (event) => {
 
     return { entries: pickedEntries, counters: pickedCounters };
   } catch (err) {
-    console.error("failed to fetch unread entries from Miniflux", err);
+    logger.error(err, "failed to fetch unread entries from Miniflux");
     throw createError({
       status: 502,
       statusMessage: "failed to fetch unread entries from Miniflux",

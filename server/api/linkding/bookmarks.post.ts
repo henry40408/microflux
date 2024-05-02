@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import { sendRequest } from "~/server/linkding";
 
+const logger = createLogger({ name: "linkding" });
+
 const bodySchema = z.object({
   url: z.string().url(),
   title: z.string().optional(),
@@ -20,6 +22,6 @@ export default defineEventHandler(async (event) => {
     method: "POST",
     body: data,
   });
-  console.log("%j", { tag: "bookmarks", action: "create", response });
+  logger.info(response, "create bookmark");
   return data;
 });

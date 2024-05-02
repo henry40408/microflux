@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { PartialLinkdingBookmark } from "@/types";
-
 import { useClipboard, useLocalStorage } from "@vueuse/core";
+import type { PartialLinkdingBookmark } from "@/types";
 
 const rdbContent = useLocalStorage("readability-content", "content");
 const rbs = useLocalStorage("readability-before-summarization", false);

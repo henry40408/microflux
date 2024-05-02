@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { PartialMinifluxEntry } from "@/types";
-
 import { useClipboard, useLocalStorage } from "@vueuse/core";
+import type { PartialMinifluxEntry } from "@/types";
 
 const model = defineModel<PartialMinifluxEntry>({ required: true });
 const targetEmoji = computed(() =>
