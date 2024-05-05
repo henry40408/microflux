@@ -39,7 +39,7 @@ export async function fetchReadability(url: string) {
   const readable = reader.parse();
   if (!readable)
     throw createError({
-      status: 400,
+      status: 502,
       statusMessage: "web page is not readable",
     });
 

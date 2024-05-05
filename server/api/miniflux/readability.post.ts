@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   } catch (err) {
     logger.error(err, "failed to fetch readable content");
     throw createError({
-      status: 400,
+      status: 502,
       statusMessage: "failed to fetch readable content",
     });
   }

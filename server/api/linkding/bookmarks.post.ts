@@ -16,12 +16,20 @@ const bodySchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-  const data = await parseBody(event, bodySchema);
-  const response = await sendRequest(event, {
-    path: `/api/bookmarks/`,
-    method: "POST",
-    body: data,
-  });
-  logger.info(response, "create bookmark");
-  return data;
+  try {
+    const data = await parseBody(event, bodySchema);
+    const response = await sendRequest(event, {
+      path: `/api/bookmarks/`,
+      method: "POST",
+      body: data,
+    });
+    logger.info(response, "create bookmark");
+    return data;
+  } catch (err) {
+    logger.error(err, "failed to create bookmark");
+    throw createError({
+      status: 502,
+      message: "failed to create bookmark",
+    });
+  }
 });
