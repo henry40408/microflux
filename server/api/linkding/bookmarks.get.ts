@@ -1,6 +1,8 @@
 import { sendRequest } from "~/server/linkding";
 import type { LinkdingBookmarks } from "~/types";
 
+const logger = createLogger({ name: "linkding" });
+
 export default defineEventHandler(async (event) => {
   try {
     const data: LinkdingBookmarks = await sendRequest(event, {
@@ -29,7 +31,7 @@ export default defineEventHandler(async (event) => {
       ),
     };
   } catch (err) {
-    console.error("failed to fetch bookmarks", err);
+    logger.error(err, "failed to fetch bookmarks");
     throw createError({
       status: 502,
       statusMessage: "failed to fetch bookmarks from Linkding",

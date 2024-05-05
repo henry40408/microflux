@@ -4,6 +4,8 @@ import { Readability } from "@mozilla/readability";
 import sanitizeHtml from "sanitize-html";
 import type z from "zod";
 import { fromZodError } from "zod-validation-error";
+import createPinoLogger from "pino";
+import type { LoggerOptions } from "pino";
 
 const HEADINGS = ["h1", "h2", "h3", "h4", "h5", "h6"];
 const ALLOWED_TAGS = HEADINGS.concat([
@@ -37,7 +39,7 @@ export async function fetchReadability(url: string) {
   const readable = reader.parse();
   if (!readable)
     throw createError({
-      status: 400,
+      status: 502,
       statusMessage: "web page is not readable",
     });
 
@@ -77,4 +79,9 @@ export async function parseBody<T extends z.ZodTypeAny>(
     });
   }
   return result.data as z.infer<T>;
+}
+
+export function createLogger(opts: LoggerOptions) {
+  opts = { ...opts, level: process.env.LOG_LEVEL || "info" };
+  return createPinoLogger(opts);
 }

@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import { sendRequest } from "~/server/linkding";
 
+const logger = createLogger({ name: "linkding" });
+
 const bodySchema = z.object({
   url: z.string().url(),
   title: z.string().optional(),
@@ -14,12 +16,20 @@ const bodySchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-  const data = await parseBody(event, bodySchema);
-  const response = await sendRequest(event, {
-    path: `/api/bookmarks/`,
-    method: "POST",
-    body: data,
-  });
-  console.log("%j", { tag: "bookmarks", action: "create", response });
-  return data;
+  try {
+    const data = await parseBody(event, bodySchema);
+    const response = await sendRequest(event, {
+      path: `/api/bookmarks/`,
+      method: "POST",
+      body: data,
+    });
+    logger.info(response, "create bookmark");
+    return data;
+  } catch (err) {
+    logger.error(err, "failed to create bookmark");
+    throw createError({
+      status: 502,
+      message: "failed to create bookmark",
+    });
+  }
 });

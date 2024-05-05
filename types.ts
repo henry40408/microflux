@@ -124,7 +124,7 @@ export interface KagiSummarizeResponse {
   tokens: number;
 }
 
-export type PartialLinkdingBookmark = Pick<
+export type CompactLinkdingBookmark = Pick<
   LinkdingBookmark,
   | "date_added"
   | "description"
@@ -135,24 +135,24 @@ export type PartialLinkdingBookmark = Pick<
   | "website_title"
 >;
 export interface LinkdingBookmarksResponse {
-  bookmarks: PartialLinkdingBookmark[];
+  bookmarks: CompactLinkdingBookmark[];
   count: number;
 }
 
-export type PartialMinifluxCategory = Pick<
+export type CompactMinifluxCategory = Pick<
   MinifluxEntry["feed"]["category"],
   "id" | "title"
 >;
-export type PartialMinifluxFeed = Pick<
+export type CompactMinifluxFeed = Pick<
   MinifluxEntry["feed"],
   "id" | "title"
-> & { category: PartialMinifluxCategory };
-export type PartialMinifluxEntry = Pick<
+> & { category: CompactMinifluxCategory };
+export type CompactMinifluxEntry = Pick<
   MinifluxEntry,
   "content" | "id" | "status" | "title" | "url"
-> & { feed: PartialMinifluxFeed };
+> & { feed: CompactMinifluxFeed };
 export interface MinifluxEntriesResponse {
-  entries: PartialMinifluxEntry[];
+  entries: CompactMinifluxEntry[];
   counters: { unreads: Record<string, number> };
 }
 

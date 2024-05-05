@@ -2,7 +2,7 @@
 import sample from "lodash/sample";
 
 import type {
-  PartialLinkdingBookmark,
+  CompactLinkdingBookmark,
   LinkdingBookmarksResponse,
 } from "~/types";
 
@@ -19,7 +19,7 @@ const count = computed(() => {
   if (data.value) return data.value.count;
   return 0;
 });
-const randomPicked = ref<PartialLinkdingBookmark | undefined>();
+const randomPicked = ref<CompactLinkdingBookmark | undefined>();
 
 const titleTemplate = computed(() => `(${count.value}) Linkding - %s`);
 useHead({ titleTemplate });
