@@ -23,7 +23,7 @@
     "opencc-js": "^1.0.5",
     "pangu": "^4.0.7",
     "pino": "^9.0.0",
-    "pino-http": "^9.0.0",
+    "pino-http": "^10.1.0",
     "sanitize-html": "^2.13.0",
     "vue": "^3.4.26",
     "vue-router": "^4.3.0"
