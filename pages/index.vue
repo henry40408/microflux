@@ -131,6 +131,9 @@ function useMarkAllAsRead() {
     try {
       status.value = "pending";
       const ids = entries.value.map((e) => e.id);
+      for (const entry of entries.value) {
+        entry.status = "read";
+      }
       await $fetch("/api/miniflux/entry", {
         method: "POST",
         body: { op: "mark-many-as-read", ids },
@@ -138,6 +141,9 @@ function useMarkAllAsRead() {
       refreshAndFallback();
       status.value = "success";
     } catch (err) {
+      for (const entry of entries.value) {
+        entry.status = "unread";
+      }
       console.error("failed to mark all as read");
       status.value = "error";
     }
@@ -177,10 +183,13 @@ if (unreadEntries.value.length <= 0) {
     <OptionsPane />
     <span ref="headOfEntryList" />
     <h3>
-      {{ formatNumber(unreadEntries.length) }}
-      <small text-gray-400>on page</small>
-      {{ pending ? "..." : formatNumber(unreadOnServer) }}
-      <small text-gray-400>on server</small>
+      <span v-if="pending">...</span>
+      <span v-else>
+        {{ formatNumber(unreadEntries.length) }}
+        <small text-gray-400>on page</small>
+        {{ formatNumber(unreadOnServer) }}
+        <small text-gray-400>on server</small>
+      </span>
     </h3>
     <div>
       <div
@@ -284,7 +293,7 @@ if (unreadEntries.value.length <= 0) {
       md:text-left
     >
       <div><small>actions</small></div>
-      <div v-if="unreadEntries.length > 0">
+      <div v-if="!pending && unreadEntries.length > 0">
         <span v-if="markAllAsReadStatus === 'pending'">marking...</span>
         <span v-else>
           <ConfirmButton @confirmed="executeMarkAllAsRead">
