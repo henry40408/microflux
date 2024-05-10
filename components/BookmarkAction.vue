@@ -74,7 +74,7 @@ async function onDeleteAndNext() {
       <span v-if="readabilityStatus === 'pending'">reading...</span>
       <span v-else-if="readabilityStatus === 'success'">readable!</span>
       <a v-else href="#" @click.prevent="executeReadability">
-        &#x1F4D6;readability
+        &#x1F4D6; readability
         <span v-if="readabilityStatus === 'error'">failed!</span>
       </a>
     </div>
@@ -87,7 +87,7 @@ async function onDeleteAndNext() {
       </span>
       <span v-else>
         <ConfirmButton @confirmed="executeSummarize()">
-          &#x1F4D1;summarize
+          &#x1F4D1; summarize
         </ConfirmButton>
         <span v-if="summarizeStatus === 'error'" pl-1>failed!</span>
       </span>
@@ -95,7 +95,7 @@ async function onDeleteAndNext() {
     <div>
       <span v-if="deleteStatus === 'pending'">deleting...</span>
       <span v-else>
-        <ConfirmButton @confirmed="onDelete()">&#x274C;delete</ConfirmButton>
+        <ConfirmButton @confirmed="onDelete()">&#x274C; delete</ConfirmButton>
         <span v-if="enableNext">
           (<ConfirmButton @confirmed="onDeleteAndNext()">and next</ConfirmButton
           >)

@@ -178,7 +178,7 @@ if (unreadEntries.value.length <= 0) {
     <PageTitle>Miniflux</PageTitle>
     <NavigationLine />
     <div v-if="error">
-      <pre><code bg-pink-300 text-black>&#x274C;{{ error }}</code></pre>
+      <pre><code bg-pink-300 text-black>&#x274C; {{ error }}</code></pre>
     </div>
     <OptionsPane />
     <span ref="headOfEntryList" />
@@ -207,7 +207,7 @@ if (unreadEntries.value.length <= 0) {
           <div v-if="pending">...</div>
           <div v-else>
             <a href="#" @click.prevent="refreshAndFallback">
-              &#x1F504;refresh
+              &#x1F504; refresh
             </a>
           </div>
         </div>
@@ -277,7 +277,7 @@ if (unreadEntries.value.length <= 0) {
         v-model="entries[index]"
         @collapsed="entryRefs[entry.id].scrollIntoView()"
       >
-        <EntryAction v-model="entries[index]" pb-2 />
+        <EntryAction v-model="entries[index]" in-content pb-2 />
       </EntryContent>
     </div>
     <div v-if="entries.length <= 0" font-italic py-2>(no entries)</div>
@@ -298,7 +298,7 @@ if (unreadEntries.value.length <= 0) {
         <span v-else>
           <ConfirmButton @confirmed="executeMarkAllAsRead">
             <span>
-              &#x2705;mark
+              &#x2705; mark
               {{ formatNumber(unreadEntries.length) }}
               as read
             </span>
@@ -309,7 +309,7 @@ if (unreadEntries.value.length <= 0) {
       <div>
         <span v-if="pending">...</span>
         <a v-else href="#" @click.prevent="refreshAndFallback">
-          &#x1F504;refresh
+          &#x1F504; refresh
         </a>
       </div>
     </div>

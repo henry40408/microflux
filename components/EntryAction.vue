@@ -2,6 +2,7 @@
 import { useClipboard, useLocalStorage } from "@vueuse/core";
 import type { CompactMinifluxEntry } from "@/types";
 
+const props = defineProps<{ inContent?: boolean }>();
 const model = defineModel<CompactMinifluxEntry>({ required: true });
 const targetEmoji = computed(() =>
   model.value.status === "read" ? "&#x1F4E9;" : "&#x2705;",
@@ -83,7 +84,7 @@ const { copy, copied } = useClipboard({ source: copyable });
         md:space-x-2
         md:space-y-0
       >
-        <div>
+        <div v-if="!props.inContent">
           <span v-if="toggleReadStatus === 'pending'">marking...</span>
           <span v-else>
             <a
@@ -92,7 +93,7 @@ const { copy, copied } = useClipboard({ source: copyable });
               @click.prevent="executeToggleRead()"
             >
               <!-- eslint-disable-next-line vue/no-v-html -->
-              <span v-html="targetEmoji" />mark as {{ targetStatus }}
+              <span v-html="targetEmoji" /> mark as {{ targetStatus }}
             </a>
             <span v-if="toggleReadStatus === 'error'" pl-1>failed!</span>
           </span>
@@ -101,7 +102,7 @@ const { copy, copied } = useClipboard({ source: copyable });
           <span v-if="saveStatus === 'pending'">saving...</span>
           <span v-else-if="saveStatus === 'success'">saved!</span>
           <span v-else>
-            <a href="#" @click.prevent="executeSave()">&#x1F4BE;save</a>
+            <a href="#" @click.prevent="executeSave()">&#x1F4BE; save</a>
             <span v-if="saveStatus === 'error'" pl-1>failed!</span>
           </span>
         </div>
@@ -114,7 +115,7 @@ const { copy, copied } = useClipboard({ source: copyable });
           </span>
           <span v-else>
             <ConfirmButton @confirmed="executeSummarize()">
-              &#x1F4D1;summarize
+              &#x1F4D1; summarize
             </ConfirmButton>
             <span v-if="summarizeStatus === 'error'" pl-1>failed!</span>
           </span>

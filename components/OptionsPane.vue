@@ -10,7 +10,7 @@ const readabilityBeforeSummarization = useLocalStorage(
 
 <template>
   <details>
-    <summary>&#x2699;&#xFE0F;options</summary>
+    <summary>&#x2699;&#xFE0F; options</summary>
     <blockquote>Note: These options are saved in local storage.</blockquote>
     <h2>Readability</h2>
     <div>

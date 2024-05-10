@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@mozilla/readability": "^0.5.0",
-    "@unocss/nuxt": "^0.59.0",
+    "@unocss/nuxt": "^0.60.0",
     "@vueuse/core": "^10.9.0",
     "jsdom": "^24.0.0",
     "lodash": "^4.17.21",
@@ -23,7 +23,7 @@
     "opencc-js": "^1.0.5",
     "pangu": "^4.0.7",
     "pino": "^9.0.0",
-    "pino-http": "^9.0.0",
+    "pino-http": "^10.1.0",
     "sanitize-html": "^2.13.0",
     "vue": "^3.4.26",
     "vue-router": "^4.3.0"
