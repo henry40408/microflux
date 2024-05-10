@@ -69,11 +69,11 @@ function onRandomDelete(id: number) {
         <div>
           <span v-if="pending">...</span>
           <span v-else>
-            <a href="#" @click.prevent="refresh()">&#x1F504;refresh</a>
+            <a href="#" @click.prevent="refresh()">&#x1F504; refresh</a>
           </span>
         </div>
         <div>
-          <a href="#" @click.prevent="onRandom">&#x1F3B2;random</a>
+          <a href="#" @click.prevent="onRandom">&#x1F3B2; random</a>
         </div>
       </div>
       <h3 v-if="randomPicked">random picked</h3>

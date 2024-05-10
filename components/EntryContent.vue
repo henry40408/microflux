@@ -76,11 +76,11 @@ function onCollapse() {
       md:text-left
     >
       <div>
-        <a href="#" @click.prevent="onCollapse()">&#x1F53C;collapse</a>
+        <a href="#" @click.prevent="onCollapse()">&#x1F53C; collapse</a>
         (<span>
           <span v-if="readAndCollapseStatus === 'pending'">marking..</span>
           <a v-else href="#" @click.prevent="executeReadAndCollapse"
-            >and &#x2705;mark as read</a
+            >and &#x2705; mark as read</a
           ></span
         >)
       </div>
@@ -89,7 +89,7 @@ function onCollapse() {
         <span v-else-if="readabilityStatus === 'success'">readable!</span>
         <span v-else>
           <a href="#" @click.prevent="executeReadability">
-            &#x1F4D6;readability
+            &#x1F4D6; readability
           </a>
           <span v-if="readabilityStatus === 'error'" pl-1>failed!</span>
         </span>
