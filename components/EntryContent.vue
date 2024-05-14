@@ -45,6 +45,13 @@ function onCollapse() {
   toggle(false);
   emit("collapsed", model.value.id);
 }
+
+const isContent = computed(
+  () => readabilityContent.value === ReadabilityContent.Content,
+);
+const isTextContent = computed(
+  () => readabilityContent.value === ReadabilityContent.TextContent,
+);
 </script>
 
 <template>
@@ -56,11 +63,8 @@ function onCollapse() {
       <h3 my-2>readable ({{ formatNumber(rdbData.length) }} chars)</h3>
       <div border-1 border-dashed border-black mb-2 p-2 dark:border-white>
         <!-- eslint-disable-next-line vue/no-v-html -->
-        <span
-          v-if="readabilityContent === ReadabilityContent.Content"
-          v-html="rdbData.content"
-        />
-        <span v-if="readabilityContent === ReadabilityContent.TextContent">
+        <span v-if="isContent" v-html="rdbData.content" />
+        <span v-if="isTextContent">
           {{ rdbData.textContent }}
         </span>
       </div>

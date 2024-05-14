@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useClipboard } from "@vueuse/core";
-import type { CompactMinifluxEntry } from "@/types";
+import type { CompactMinifluxEntry } from "~/types";
 
 const { readabilityBeforeSummarization } = useOptions();
 

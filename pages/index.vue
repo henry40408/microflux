@@ -1,12 +1,18 @@
 <script setup lang="ts">
+import { useWindowScroll } from "@vueuse/core";
 import orderBy from "lodash/orderBy";
 import uniqBy from "lodash/uniqBy";
-import pangu from "pangu";
 
 import type { MinifluxEntriesResponse } from "~/types";
 
 const entryRefs = ref<Record<number, Element>>({});
 const headOfEntryList = ref<Element | null>(null);
+
+const scrollingDown = ref(false);
+const { y: windowY } = useWindowScroll();
+watch(windowY, (next, prev) => {
+  scrollingDown.value = next - prev > 0;
+});
 
 const route = useRoute();
 const selected = computed(() => ({
@@ -238,47 +244,17 @@ if (unreadEntries.value.length <= 0) {
         </a>
       </div>
     </div>
-    <div v-for="(entry, index) in entries" :key="entry.id">
-      <h2 :ref="(el) => setEntryRef(entry.id, el)">
-        <a
-          :class="{ 'text-gray-400': entry.status === 'read' }"
-          :href="entry.url"
-          target="_blank"
-          rel="nofollow noopener"
-        >
-          {{ pangu.spacing(entry.title) }}
-          <small text-gray-400> #{{ entry.id }}</small>
-        </a>
-      </h2>
-      <div
-        pb-2
-        space-y-2
-        text-right
-        md:flex
-        md:flex-wrap
-        md:space-y-0
-        md:text-nowrap
-      >
-        <div md:mr-2>
-          <small pr-2>feed</small>
-          <a href="#" @click.prevent="filterByFeed(entry.feed.id)">
-            {{ entry.feed.title }}
-          </a>
-        </div>
-        <div md:mr-2>
-          <small pr-2>category</small>
-          <a href="#" @click.prevent="filterByCategory(entry.feed.category.id)">
-            {{ entry.feed.category.title }}
-          </a>
-        </div>
+    <div>
+      <div v-for="(entry, index) in entries" :key="entry.id">
+        <EntryItem
+          v-model="entries[index]"
+          :scrolling-down="scrollingDown"
+          @category-click="filterByCategory(entry.feed.category.id)"
+          @content-collapsed="entryRefs[entry.id].scrollIntoView()"
+          @feed-click="filterByFeed(entry.feed.id)"
+          @set-model-ref="(el: HTMLElement) => setEntryRef(entry.id, el)"
+        />
       </div>
-      <EntryAction v-model="entries[index]" />
-      <EntryContent
-        v-model="entries[index]"
-        @collapsed="entryRefs[entry.id].scrollIntoView()"
-      >
-        <EntryAction v-model="entries[index]" in-content pb-2 />
-      </EntryContent>
     </div>
     <div v-if="entries.length <= 0" font-italic py-2>(no entries)</div>
     <div

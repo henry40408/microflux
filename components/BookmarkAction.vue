@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useClipboard } from "@vueuse/core";
-import { ReadabilityContent, type CompactLinkdingBookmark } from "@/types";
+import { ReadabilityContent, type CompactLinkdingBookmark } from "~/types";
 
 const { readabilityContent, readabilityBeforeSummarization } = useOptions();
 
@@ -62,6 +62,13 @@ async function onDeleteAndNext() {
   await executeDelete();
   emit("deleteAndNext", [model.value.id]);
 }
+
+const isContent = computed(
+  () => readabilityContent.value === ReadabilityContent.Content,
+);
+const isTextContent = computed(
+  () => readabilityContent.value === ReadabilityContent.TextContent,
+);
 </script>
 
 <template>
@@ -128,11 +135,8 @@ async function onDeleteAndNext() {
       <h3 my-4>readable ({{ formatNumber(rdbData.length) }} chars)</h3>
       <div border-1 border-dashed border-black dark:border-white p-2>
         <!-- eslint-disable-next-line vue/no-v-html -->
-        <span
-          v-if="readabilityContent === ReadabilityContent.Content"
-          v-html="rdbData.content"
-        />
-        <span v-if="readabilityContent === ReadabilityContent.TextContent">
+        <span v-if="isContent" v-html="rdbData.content" />
+        <span v-if="isTextContent">
           {{ rdbData.textContent }}
         </span>
       </div>
