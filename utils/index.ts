@@ -81,6 +81,7 @@ export function useSummarize(
 
 export function useOptions() {
   return {
+    readOnScroll: useLocalStorage<boolean>(OptionNames.ReadOnScroll, false),
     readabilityBeforeSummarization: useLocalStorage<boolean>(
       OptionNames.ReadabilityBeforeSummarization,
       false,

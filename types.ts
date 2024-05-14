@@ -163,8 +163,9 @@ export interface ReadabilityResponse {
 }
 
 export enum OptionNames {
-  ReadabilityContent = "readability-content",
+  ReadOnScroll = "read-on-scorll",
   ReadabilityBeforeSummarization = "readability-before-summarization",
+  ReadabilityContent = "readability-content",
 }
 
 export enum ReadabilityContent {
