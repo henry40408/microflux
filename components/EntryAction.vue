@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { useClipboard, useLocalStorage } from "@vueuse/core";
+import { useClipboard } from "@vueuse/core";
 import type { CompactMinifluxEntry } from "@/types";
+
+const { readabilityBeforeSummarization } = useOptions();
 
 const props = defineProps<{ inContent?: boolean }>();
 const model = defineModel<CompactMinifluxEntry>({ required: true });
@@ -11,8 +13,6 @@ const targetStatus = computed(() =>
   model.value.status === "read" ? "unread" : "read",
 );
 const url = computed(() => model.value.url);
-
-const rbs = useLocalStorage("readability-before-summarization", false);
 
 function useToggleRead() {
   const status = ref("idle");
@@ -60,7 +60,7 @@ const {
   status: summarizeStatus,
   execute: executeSummarize,
   seconds: summarizeSeconds,
-} = useSummarize(url, rbs);
+} = useSummarize(url, readabilityBeforeSummarization);
 
 const copyable = computed(() => {
   if (!summarizeData.value) return "";

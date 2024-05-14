@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { useClipboard, useLocalStorage } from "@vueuse/core";
-import type { CompactLinkdingBookmark } from "@/types";
+import { useClipboard } from "@vueuse/core";
+import { ReadabilityContent, type CompactLinkdingBookmark } from "@/types";
 
-const rdbContent = useLocalStorage("readability-content", "content");
-const rbs = useLocalStorage("readability-before-summarization", false);
+const { readabilityContent, readabilityBeforeSummarization } = useOptions();
 
 const model = defineModel<CompactLinkdingBookmark>({ required: true });
 const url = computed(() => model.value.url);
@@ -46,7 +45,7 @@ const {
   status: summarizeStatus,
   execute: executeSummarize,
   seconds: summarizeSeconds,
-} = useSummarize(url, rbs);
+} = useSummarize(url, readabilityBeforeSummarization);
 
 const copyable = computed(() => {
   if (!summarizeData.value) return "";
@@ -129,8 +128,11 @@ async function onDeleteAndNext() {
       <h3 my-4>readable ({{ formatNumber(rdbData.length) }} chars)</h3>
       <div border-1 border-dashed border-black dark:border-white p-2>
         <!-- eslint-disable-next-line vue/no-v-html -->
-        <span v-if="rdbContent === 'content'" v-html="rdbData.content" />
-        <span v-if="rdbContent === 'textContent'">
+        <span
+          v-if="readabilityContent === ReadabilityContent.Content"
+          v-html="rdbData.content"
+        />
+        <span v-if="readabilityContent === ReadabilityContent.TextContent">
           {{ rdbData.textContent }}
         </span>
       </div>

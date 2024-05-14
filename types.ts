@@ -161,3 +161,13 @@ export interface ReadabilityResponse {
   length: number;
   textContent: string;
 }
+
+export enum OptionNames {
+  ReadabilityContent = "readability-content",
+  ReadabilityBeforeSummarization = "readability-before-summarization",
+}
+
+export enum ReadabilityContent {
+  Content = "content",
+  TextContent = "textContent",
+}

@@ -1,10 +1,12 @@
-import { useInterval } from "@vueuse/core";
+import { useInterval, useLocalStorage } from "@vueuse/core";
 import pangu from "pangu";
 
-import type {
-  CompactLinkdingBookmark,
-  ReadabilityResponse,
-  KagiSummarizeResponse,
+import {
+  type CompactLinkdingBookmark,
+  type ReadabilityResponse,
+  type KagiSummarizeResponse,
+  ReadabilityContent,
+  OptionNames,
 } from "@/types";
 
 export function getLinkdingTitle(bookmark: CompactLinkdingBookmark): string {
@@ -75,4 +77,17 @@ export function useSummarize(
     }
   };
   return { data, status, execute, seconds: counter };
+}
+
+export function useOptions() {
+  return {
+    readabilityBeforeSummarization: useLocalStorage<boolean>(
+      OptionNames.ReadabilityBeforeSummarization,
+      false,
+    ),
+    readabilityContent: useLocalStorage<ReadabilityContent>(
+      OptionNames.ReadabilityContent,
+      ReadabilityContent.Content,
+    ),
+  };
 }

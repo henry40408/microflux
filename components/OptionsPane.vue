@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import { useLocalStorage } from "@vueuse/core";
-
-const readabilityContent = useLocalStorage("readability-content", "content");
-const readabilityBeforeSummarization = useLocalStorage(
-  "readability-before-summarization",
-  false,
-);
+const { readabilityContent, readabilityBeforeSummarization } = useOptions();
 </script>
 
 <template>

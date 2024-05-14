@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { useToggle, useLocalStorage } from "@vueuse/core";
+import { useToggle } from "@vueuse/core";
+import { type CompactMinifluxEntry, ReadabilityContent } from "~/types";
 
-import type { CompactMinifluxEntry } from "~/types";
-
-const rdbContent = useLocalStorage("readability-content", "content");
+const { readabilityContent } = useOptions();
 
 const model = defineModel<CompactMinifluxEntry>({ required: true });
 const url = computed(() => model.value.url);
@@ -57,8 +56,11 @@ function onCollapse() {
       <h3 my-2>readable ({{ formatNumber(rdbData.length) }} chars)</h3>
       <div border-1 border-dashed border-black mb-2 p-2 dark:border-white>
         <!-- eslint-disable-next-line vue/no-v-html -->
-        <span v-if="rdbContent === 'content'" v-html="rdbData.content" />
-        <span v-if="rdbContent === 'textContent'">
+        <span
+          v-if="readabilityContent === ReadabilityContent.Content"
+          v-html="rdbData.content"
+        />
+        <span v-if="readabilityContent === ReadabilityContent.TextContent">
           {{ rdbData.textContent }}
         </span>
       </div>
