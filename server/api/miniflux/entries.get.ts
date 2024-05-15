@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
     logger.debug({ count }, "fetch unread entries");
 
     const pickedEntries: CompactMinifluxEntry[] = entries.entries.map(
-      ({ content, feed, id, status, title, url }) => ({
+      ({ content, feed, id, published_at, status, title, url }) => ({
         content,
         feed: {
           category: {
@@ -54,6 +54,7 @@ export default defineEventHandler(async (event) => {
           title: feed.title,
         },
         id,
+        published_at,
         status,
         title,
         url,

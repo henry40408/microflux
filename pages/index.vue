@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { differenceInDays } from "date-fns";
 import orderBy from "lodash/orderBy";
 import uniqBy from "lodash/uniqBy";
 import pangu from "pangu";
@@ -270,6 +271,23 @@ if (unreadEntries.value.length <= 0) {
           <a href="#" @click.prevent="filterByCategory(entry.feed.category.id)">
             {{ entry.feed.category.title }}
           </a>
+        </div>
+        <div md:mr-1>
+          <small pr-1>published</small>
+          <span
+            :class="{
+              'opacity-50': differenceInDays(
+                new Date(entry.published_at),
+                new Date(),
+              ),
+            }"
+          >
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <span v-html="freshnessEmoji(entry.published_at)" />
+            <time :datetime="entry.published_at" :title="entry.published_at">
+              {{ formatRelativeTime(entry.published_at) }}
+            </time>
+          </span>
         </div>
       </div>
       <EntryAction v-model="entries[index]" />
