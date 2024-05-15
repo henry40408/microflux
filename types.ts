@@ -149,7 +149,7 @@ export type CompactMinifluxFeed = Pick<
 > & { category: CompactMinifluxCategory };
 export type CompactMinifluxEntry = Pick<
   MinifluxEntry,
-  "content" | "id" | "status" | "title" | "url"
+  "content" | "id" | "status" | "title" | "url" | "published_at"
 > & { feed: CompactMinifluxFeed };
 export interface MinifluxEntriesResponse {
   entries: CompactMinifluxEntry[];

@@ -17,6 +17,7 @@
     "@mozilla/readability": "^0.5.0",
     "@unocss/nuxt": "^0.60.0",
     "@vueuse/core": "^10.9.0",
+    "date-fns": "^3.6.0",
     "jsdom": "^24.0.0",
     "lodash": "^4.17.21",
     "nuxt": "^3.11.1",

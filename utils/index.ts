@@ -1,3 +1,4 @@
+import { differenceInDays, intlFormatDistance } from "date-fns";
 import { useInterval } from "@vueuse/core";
 import pangu from "pangu";
 
@@ -29,6 +30,15 @@ export function formatDate(date: string) {
     timeStyle: "medium",
   });
   return pangu.spacing(formatter.format(new Date(date)));
+}
+
+export function formatRelativeTime(date: string) {
+  return intlFormatDistance(new Date(date), new Date());
+}
+
+export function freshnessEmoji(date: string) {
+  const diffInDays = differenceInDays(new Date(), new Date(date));
+  return diffInDays > 0 ? "&#128376;" : "&#127793;";
 }
 
 export function useReadability(url: string | Ref<string>) {
