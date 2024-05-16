@@ -1,4 +1,4 @@
-import { differenceInDays, intlFormatDistance } from "date-fns";
+import { differenceInDays, formatRelative } from "date-fns";
 import { useInterval } from "@vueuse/core";
 import pangu from "pangu";
 
@@ -33,7 +33,7 @@ export function formatDate(date: string) {
 }
 
 export function formatRelativeTime(date: string) {
-  return intlFormatDistance(new Date(date), new Date());
+  return formatRelative(new Date(date), new Date());
 }
 
 export function freshnessEmoji(date: string) {
