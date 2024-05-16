@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { differenceInDays } from "date-fns";
 import orderBy from "lodash/orderBy";
 import uniqBy from "lodash/uniqBy";
-import pangu from "pangu";
 
 import type { MinifluxEntriesResponse } from "~/types";
 
@@ -154,12 +152,6 @@ function useMarkAllAsRead() {
 const { status: markAllAsReadStatus, execute: executeMarkAllAsRead } =
   useMarkAllAsRead();
 
-function setEntryRef(id: number, el: unknown) {
-  if (el instanceof Element) {
-    entryRefs.value[id] = el;
-  }
-}
-
 // redirect when no entries found with current filter
 if (unreadEntries.value.length <= 0) {
   if (selected.value.feed) {
@@ -240,63 +232,13 @@ if (unreadEntries.value.length <= 0) {
       </div>
     </div>
     <div v-for="(entry, index) in entries" :key="entry.id">
-      <h2 :ref="(el) => setEntryRef(entry.id, el)">
-        <a
-          :class="{ 'text-gray-400': entry.status === 'read' }"
-          :href="entry.url"
-          target="_blank"
-          rel="nofollow noopener"
-        >
-          {{ pangu.spacing(entry.title) }}
-          <small text-gray-400> #{{ entry.id }}</small>
-        </a>
-      </h2>
-      <div
-        pb-2
-        space-y-2
-        text-right
-        md:flex
-        md:flex-wrap
-        md:space-y-0
-        md:text-nowrap
-      >
-        <div md:mr-2>
-          <small pr-2>feed</small>
-          <a href="#" @click.prevent="filterByFeed(entry.feed.id)">
-            {{ entry.feed.title }}
-          </a>
-        </div>
-        <div md:mr-2>
-          <small pr-2>category</small>
-          <a href="#" @click.prevent="filterByCategory(entry.feed.category.id)">
-            {{ entry.feed.category.title }}
-          </a>
-        </div>
-        <div md:mr-1>
-          <small pr-1>published</small>
-          <span
-            :class="{
-              'opacity-50': differenceInDays(
-                new Date(entry.published_at),
-                new Date(),
-              ),
-            }"
-          >
-            <!-- eslint-disable-next-line vue/no-v-html -->
-            <span mr-1 v-html="freshnessEmoji(entry.published_at)" />
-            <time :datetime="entry.published_at" :title="entry.published_at">
-              {{ formatRelativeTime(entry.published_at) }}
-            </time>
-          </span>
-        </div>
-      </div>
-      <EntryAction v-model="entries[index]" />
-      <EntryContent
+      <EntryComponent
         v-model="entries[index]"
-        @collapsed="entryRefs[entry.id].scrollIntoView()"
-      >
-        <EntryAction v-model="entries[index]" in-content pb-2 />
-      </EntryContent>
+        v-model:entry-ref="entryRefs[entry.id]"
+        @category-click="filterByCategory(entry.feed.category.id)"
+        @entry-collapsed="entryRefs[entry.id].scrollIntoView()"
+        @feed-click="filterByFeed(entry.feed.id)"
+      />
     </div>
     <div v-if="entries.length <= 0" font-italic py-2>(no entries)</div>
     <div
