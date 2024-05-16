@@ -283,7 +283,7 @@ if (unreadEntries.value.length <= 0) {
             }"
           >
             <!-- eslint-disable-next-line vue/no-v-html -->
-            <span v-html="freshnessEmoji(entry.published_at)" />
+            <span mr-1 v-html="freshnessEmoji(entry.published_at)" />
             <time :datetime="entry.published_at" :title="entry.published_at">
               {{ formatRelativeTime(entry.published_at) }}
             </time>
