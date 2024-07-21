@@ -54,7 +54,7 @@ async function setFeedId(feedId: number | undefined) {
 </script>
 
 <template>
-  <div>
+  <div class="container mx-auto space-y-4">
     <div>
       <MyButton :error="error" :loading="status === 'pending'" @click="execute"
         >reload</MyButton
@@ -68,7 +68,7 @@ async function setFeedId(feedId: number | undefined) {
         <MyButton @click="setCategoryId(undefined)">reset</MyButton>
       </span>
     </div>
-    <div>
+    <div class="space-y-4">
       <Entry
         v-for="(entry, index) in data.entries"
         :key="entry.id"

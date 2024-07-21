@@ -3,6 +3,7 @@ import { secondsToMilliseconds } from "date-fns";
 import { useClipboard } from "@vueuse/core";
 
 const model = defineModel<MinifluxCompactEntry>();
+const isRead = computed(() => model.value.status === "read");
 
 const route = useRoute();
 
@@ -42,11 +43,15 @@ async function setFeedId(feedId: number) {
 </script>
 
 <template>
-  <div>
+  <div class="space-y-2" :class="{ 'text-slate-200': isRead }">
     <div>
-      <a :href="modelValue.url" target="_blank">{{ modelValue.title }}</a> #{{
-        modelValue.id
-      }}
+      <a
+        :class="{ 'text-slate-200': isRead }"
+        :href="modelValue.url"
+        target="_blank"
+        >{{ modelValue.title }}</a
+      >
+      #{{ modelValue.id }}
     </div>
     <div>
       <a href="#" @click.prevent="setFeedId(modelValue.feed.id)">{{
@@ -62,17 +67,26 @@ async function setFeedId(feedId: number) {
       <SummarizeButton v-model="summary" :url="model.url" />
       <SaveButton v-model="model" />
     </div>
-    <div v-if="summary">
-      <code>
-        <pre>{{ source }}</pre>
-      </code>
+    <div v-if="summary" class="space-y-2">
+      <div class="bg-slate-300 p-2">
+        <code>
+          <pre class="text-wrap m-0">{{ source }}</pre>
+        </code>
+      </div>
+      <div>
+        <MyButton :done="copied" @click="copy">
+          copy to clipboard<template #done>copied!</template>
+        </MyButton>
+      </div>
     </div>
-    <div>
+    <div class="border-dotted p-2">
       <details @toggle="onDetailsToggle">
         <summary>content</summary>
-        <span v-if="status === 'pending'">...</span>
-        <span v-if="status === 'error'">{{ error }}</span>
-        <span v-if="data" v-html="data.content"></span>
+        <div class="mt-2">
+          <span v-if="status === 'pending'">...</span>
+          <span v-if="status === 'error'">{{ error }}</span>
+          <span v-if="data" v-html="data.content"></span>
+        </div>
       </details>
     </div>
   </div>
