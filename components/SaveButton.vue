@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { secondsToMilliseconds } from "date-fns";
 
-import type { MinifluxEntry } from "../types";
+import type { MinifluxCompactEntry } from "../server/api/entries.get";
 
-const model = defineModel<MinifluxEntry>({ required: true });
+const model = defineModel<MinifluxCompactEntry>({ required: true });
 
 const { status, error, execute } = await useLazyFetch(
   `/api/entries/${model.value.id}/save`,

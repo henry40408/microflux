@@ -32,6 +32,7 @@ watch(entries, (next) => {
     return;
   }
 });
+const entryIds = computed(() => entries.value.map((e) => e.id));
 const feeds = computed(
   () =>
     Object.values(
@@ -67,7 +68,7 @@ async function setFeedId(feedId: number | undefined) {
 </script>
 
 <template>
-  <div class="container mx-auto space-y-4">
+  <div class="container mx-auto space-y-4 my-8">
     <div>
       <MyButton :error="error" :loading="status === 'pending'" @click="execute"
         >reload</MyButton
@@ -87,6 +88,12 @@ async function setFeedId(feedId: number | undefined) {
         :key="entry.id"
         v-model="data.entries[index]"
       />
+    </div>
+    <div>
+      <MyButton :error="error" :loading="status === 'pending'" @click="execute"
+        >reload</MyButton
+      >
+      <MarkAllAsReadButton :entryIds="entryIds" @mark-all-as-read="execute" />
     </div>
   </div>
 </template>

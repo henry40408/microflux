@@ -17,7 +17,7 @@ const label = computed(() => {
 </script>
 
 <template>
-  <span>
+  <span class="uppercase">
     [
     <a v-if="!done && !loading" href="#" @click.prevent="$emit('click')"
       ><slot
