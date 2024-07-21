@@ -3,10 +3,6 @@ import { secondsToMilliseconds } from "date-fns";
 
 import type { MinifluxGetFeedCompactEntriesResponse } from "../server/api/entries.get";
 
-useHead({
-  title: "Microflux",
-});
-
 const route = useRoute();
 
 const requestPath = computed(() => {
@@ -27,6 +23,10 @@ watch(entries, (next) => {
     navigateTo({ query: { categoryId } });
     return;
   }
+  if (next.length <= 0 && feedId) {
+    navigateTo({ query: {} });
+    return;
+  }
   if (next.length <= 0 && categoryId) {
     navigateTo({ query: {} });
     return;
@@ -35,6 +35,9 @@ watch(entries, (next) => {
 const count = computed(
   () => entries.value.filter((e) => e.status === "unread").length,
 );
+const pageTitle = computed(() => `(${count.value}) Miniflux`);
+useHead({ title: pageTitle });
+
 const entryIds = computed(() => entries.value.map((e) => e.id));
 const feeds = computed(
   () =>
@@ -97,7 +100,11 @@ async function setFeedId(feedId: number | undefined) {
       <MyButton :error="error" :loading="status === 'pending'" @click="execute"
         >reload</MyButton
       >
-      <MarkAllAsReadButton :entryIds="entryIds" @mark-all-as-read="execute" />
+      <MarkAllAsReadButton
+        v-if="count > 0"
+        :entryIds="entryIds"
+        @mark-all-as-read="execute"
+      />
     </div>
   </div>
 </template>

@@ -9,6 +9,8 @@ const isRead = computed(() => model.value.status === "read");
 
 const route = useRoute();
 
+const entryTitle = ref<HTMLElement | null>(null);
+const entryContent = ref<HTMLDetailsElement | null>(null);
 const summary = ref("");
 const source = computed(
   () => `${model.value.title}
@@ -42,14 +44,21 @@ async function setFeedId(feedId: number) {
   const { categoryId } = route.query;
   await navigateTo({ query: { categoryId, feedId } });
 }
+
+function onToggleStatus(s: string) {
+  if (s === "read" && entryContent.value?.open) {
+    entryContent.value?.removeAttribute("open");
+    entryTitle.value?.scrollIntoView();
+  }
+}
 </script>
 
 <template>
   <div
-    class="space-y-2"
+    class="space-y-4"
     :class="{ 'text-slate-300': isRead, 'dark:text-slate-600': isRead }"
   >
-    <div>
+    <div ref="entryTitle">
       <a
         :class="{ 'text-slate-300': isRead, 'dark:text-slate-600': isRead }"
         :href="modelValue.url"
@@ -68,12 +77,12 @@ async function setFeedId(feedId: number) {
       }}</a>
     </div>
     <div>
-      <ToggleStatusButton v-model="model" />
+      <ToggleStatusButton v-model="model" @toggle-status="onToggleStatus" />
       <SummarizeButton v-model="summary" :url="model.url" />
       <SaveButton v-model="model" />
     </div>
     <div v-if="summary" class="space-y-2">
-      <div class="bg-slate-300 p-2">
+      <div class="bg-slate-300 dark:bg-slate-600 p-2">
         <code>
           <pre class="text-wrap m-0">{{ source }}</pre>
         </code>
@@ -85,12 +94,20 @@ async function setFeedId(feedId: number) {
       </div>
     </div>
     <div class="border-dotted p-2">
-      <details @toggle="onDetailsToggle">
+      <details @toggle="onDetailsToggle" ref="entryContent">
         <summary>content</summary>
-        <div class="mt-2">
-          <span v-if="status === 'pending'">...</span>
-          <span v-if="status === 'error'">{{ error }}</span>
-          <span v-if="data" v-html="data.content"></span>
+        <div class="mt-2 space-y-2">
+          <div>
+            <span v-if="status === 'pending'">...</span>
+            <span v-if="status === 'error'">{{ error }}</span>
+            <span v-if="data" v-html="data.content"></span>
+          </div>
+          <div>
+            <ToggleStatusButton
+              v-model="model"
+              @toggle-status="onToggleStatus"
+            />
+          </div>
         </div>
       </details>
     </div>

@@ -4,6 +4,7 @@ import { secondsToMilliseconds } from "date-fns";
 import type { MinifluxCompactEntry } from "../server/api/entries.get";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
+const emit = defineEmits<{ "toggle-status": [status: string] }>();
 
 const nextStatus = computed(() =>
   model.value.status === "unread" ? "read" : "unread",
@@ -25,6 +26,7 @@ async function onClick() {
   const s = nextStatus.value;
   await execute();
   model.value.status = s;
+  emit("toggle-status", s);
 }
 </script>
 
