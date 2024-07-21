@@ -1,3 +1,43 @@
+// kagi
+
+export interface KagiSummarizeResponse {
+  output_text: string;
+  output_data: KagiSummarizeOutputData;
+  tokens: number;
+  type: string;
+}
+
+export interface KagiSummarizeOutputData {
+  status: string;
+  word_stats: KagiSummarizeWordStats;
+  elapsed_seconds: number;
+  markdown: string;
+  citations_json: any[]; // Assuming it's an array, but it's empty in the example
+  citation_snippets: string;
+  references: any[]; // Assuming it's an array, but it's empty in the example
+  md_references: string;
+  references_text: string;
+  response_metadata: KagiSummarizeResponseMetadata;
+  images: any[]; // Assuming it's an array, but it's empty in the example
+}
+
+export interface KagiSummarizeWordStats {
+  n_tokens: number;
+  n_words: number;
+  n_pages: number;
+  time_saved: number;
+  length: null; // Assuming it's always null based on the example
+}
+
+export interface KagiSummarizeResponseMetadata {
+  speed: number;
+  tokens: number;
+  total_time_second: number;
+  model: string;
+}
+
+// miniflux
+
 export interface MinifluxGetFeedEntriesResponse {
   total: number;
   entries: MinifluxEntry[];

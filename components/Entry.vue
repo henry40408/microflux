@@ -1,6 +1,19 @@
 <script setup lang="ts">
-const route = useRoute();
+import { useClipboard } from "@vueuse/core";
+
 const model = defineModel<MinifluxCompactEntry>();
+
+const route = useRoute();
+
+const summary = ref("");
+const source = computed(
+  () => `${model.value.title}
+
+${model.value.url}
+
+${summary.value}`,
+);
+const { copy, copied } = useClipboard({ source });
 
 const { data, error, status, execute } = await useLazyFetch(
   `/api/entries/${model.value.id}`,
@@ -41,7 +54,13 @@ async function setFeedId(feedId: number) {
     </div>
     <div>
       <ToggleStatusButton v-model="model" />
+      <SummarizeButton v-model="summary" :url="model.url" />
       <SaveButton v-model="model" />
+    </div>
+    <div v-if="summary">
+      <code>
+        <pre>{{ source }}</pre>
+      </code>
     </div>
     <div>
       <details @toggle="onDetailsToggle">
