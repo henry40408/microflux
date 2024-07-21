@@ -23,11 +23,6 @@ export interface MinifluxGetFeedCompactEntriesResponse {
 
 export default defineEventHandler(
   async (event): Promise<MinifluxGetFeedCompactEntriesResponse> => {
-    const config = useRuntimeConfig(event);
-
-    if (!config.minifluxUrl || !config.minifluxAuthToken)
-      throw createError({ status: 503, message: "miniflux is not configured" });
-
     const client = minifluxClient(event);
     const json = await client
       .get("v1/entries", {

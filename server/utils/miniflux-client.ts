@@ -5,6 +5,8 @@ let client: Got | null = null;
 
 export default function (event: H3Event): Got {
   const config = useRuntimeConfig(event);
+  if (!config.minifluxUrl || !config.minifluxAuthToken)
+    throw createError({ status: 503, message: "miniflux is not configured" });
   if (!client)
     client = got.extend({
       prefixUrl: config.minifluxUrl,
