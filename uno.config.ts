@@ -3,6 +3,6 @@ import presetWind from "@unocss/preset-wind";
 import transformerDirectives from "@unocss/transformer-directives";
 
 export default defineConfig({
-  presets: [presetWind()],
+  presets: [presetWind({ dark: "media" })],
   transformers: [transformerDirectives()],
 });
