@@ -17,10 +17,10 @@ const label = computed(() => {
 </script>
 
 <template>
-  <div>
+  <span>
     [
     <a v-if="!loading" href="#" @click.prevent="$emit('click')"><slot /></a>
     <span v-if="loading">{{ label }}</span>
     ]
-  </div>
+  </span>
 </template>

@@ -1,5 +1,3 @@
-import { createError } from "h3";
-
 import {
   MinifluxEntry,
   MinifluxFeed,
@@ -24,8 +22,17 @@ export interface MinifluxGetFeedCompactEntriesResponse {
 export default defineEventHandler(
   async (event): Promise<MinifluxGetFeedCompactEntriesResponse> => {
     const client = minifluxClient(event);
+    const { categoryId, feedId } = getQuery(event);
+
+    let path = "v1/entries";
+    if (feedId) {
+      path = `v1/feeds/${feedId}/entries`;
+    } else if (categoryId) {
+      path = `v1/categories/${categoryId}/entries`;
+    }
+
     const json = await client
-      .get("v1/entries", {
+      .get(path, {
         searchParams: { status: "unread", direction: "desc" },
       })
       .json<MinifluxGetFeedEntriesResponse>();
