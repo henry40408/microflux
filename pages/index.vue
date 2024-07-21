@@ -32,6 +32,9 @@ watch(entries, (next) => {
     return;
   }
 });
+const count = computed(
+  () => entries.value.filter((e) => e.status === "unread").length,
+);
 const entryIds = computed(() => entries.value.map((e) => e.id));
 const feeds = computed(
   () =>
@@ -73,6 +76,7 @@ async function setFeedId(feedId: number | undefined) {
       <MyButton :error="error" :loading="status === 'pending'" @click="execute"
         >reload</MyButton
       >
+      <span>/ {{ count }} entries{{ " " }}</span>
       <span v-if="selectedFeed"
         >/ {{ selectedFeed.title }}
         <MyButton @click="setFeedId(undefined)">reset</MyButton>

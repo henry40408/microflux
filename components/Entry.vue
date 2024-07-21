@@ -45,10 +45,13 @@ async function setFeedId(feedId: number) {
 </script>
 
 <template>
-  <div class="space-y-2" :class="{ 'text-slate-200': isRead }">
+  <div
+    class="space-y-2"
+    :class="{ 'text-slate-300': isRead, 'dark:text-slate-600': isRead }"
+  >
     <div>
       <a
-        :class="{ 'text-slate-200': isRead }"
+        :class="{ 'text-slate-300': isRead, 'dark:text-slate-600': isRead }"
         :href="modelValue.url"
         target="_blank"
         >{{ modelValue.title }}</a
