@@ -2,7 +2,7 @@
 const route = useRoute();
 const model = defineModel<MinifluxCompactEntry>();
 
-const { data, error, status, execute } = await useFetch(
+const { data, error, status, execute } = await useLazyFetch(
   `/api/entries/${model.value.id}`,
   { immediate: false, server: false },
 );
