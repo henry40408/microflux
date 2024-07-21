@@ -40,7 +40,8 @@ async function setFeedId(feedId: number) {
       }}</a>
     </div>
     <div>
-      <ToggleStatus v-model="model" />
+      <ToggleStatusButton v-model="model" />
+      <SaveButton v-model="model" />
     </div>
     <div>
       <details @toggle="onDetailsToggle">
