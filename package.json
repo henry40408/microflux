@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@vueuse/core": "^10.11.0",
     "got": "^14.4.1",
     "nuxt": "^3.12.4",
     "sanitize-html": "^2.13.0",
