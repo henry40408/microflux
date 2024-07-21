@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { secondsToMilliseconds } from "date-fns";
 import { useClipboard } from "@vueuse/core";
 
 const model = defineModel<MinifluxCompactEntry>();
@@ -17,7 +18,11 @@ const { copy, copied } = useClipboard({ source });
 
 const { data, error, status, execute } = await useLazyFetch(
   `/api/entries/${model.value.id}`,
-  { immediate: false, server: false },
+  {
+    immediate: false,
+    server: false,
+    timeout: secondsToMilliseconds(30),
+  },
 );
 
 async function onDetailsToggle() {

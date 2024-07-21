@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { secondsToMilliseconds } from "date-fns";
+
 const model = defineModel<MinifluxEntry>();
 
 const nextStatus = computed(() =>
@@ -13,6 +15,7 @@ const { status, error, execute } = await useLazyFetch("/api/entries", {
   body,
   immediate: false,
   server: false,
+  timeout: secondsToMilliseconds(30),
   watch: false,
 });
 

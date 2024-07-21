@@ -1,4 +1,10 @@
 <script setup lang="ts">
+import { secondsToMilliseconds } from "date-fns";
+
+useHead({
+  title: "Microflux",
+});
+
 const route = useRoute();
 
 const requestPath = computed(() => {
@@ -9,7 +15,9 @@ const requestPath = computed(() => {
 });
 
 const { data, error, status, execute } =
-  await useFetch<MinifluxGetFeedCompactEntriesResponse>(requestPath);
+  await useFetch<MinifluxGetFeedCompactEntriesResponse>(requestPath, {
+    timeout: secondsToMilliseconds(30),
+  });
 const entries = computed(() => data.value.entries || []);
 const feeds = computed(
   () =>

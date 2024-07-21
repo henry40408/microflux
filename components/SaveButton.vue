@@ -1,9 +1,17 @@
 <script setup lang="ts">
+import { secondsToMilliseconds } from "date-fns";
+
 const model = defineModel<MinifluxEntry>();
 
 const { status, error, execute } = await useLazyFetch(
   `/api/entries/${model.value.id}/save`,
-  { method: "POST", server: false, immediate: false, watch: false },
+  {
+    method: "POST",
+    immediate: false,
+    server: false,
+    timeout: secondsToMilliseconds(30),
+    watch: false,
+  },
 );
 </script>
 

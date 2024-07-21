@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { secondsToMilliseconds } from "date-fns";
+
 const model = defineModel<string>();
 const props = defineProps<{ url: string }>();
 
@@ -6,8 +8,9 @@ const { data, status, error, execute } =
   await useLazyFetch<KagiSummarizeResponse>("/api/summarize", {
     method: "POST",
     body: { url: props.url },
-    server: false,
     immediate: false,
+    server: false,
+    timeout: secondsToMilliseconds(30),
     watch: false,
   });
 

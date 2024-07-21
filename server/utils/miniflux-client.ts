@@ -1,3 +1,4 @@
+import { secondsToMilliseconds } from "date-fns";
 import got, { Got } from "got";
 import { H3Event } from "h3";
 
@@ -11,6 +12,7 @@ export default function (event: H3Event): Got {
     client = got.extend({
       prefixUrl: config.minifluxUrl,
       headers: { "x-auth-token": config.minifluxAuthToken },
+      timeout: { request: secondsToMilliseconds(30) },
     });
   return client;
 }
