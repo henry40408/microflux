@@ -8,7 +8,7 @@ const requestPath = computed(() => {
   return "/api/entries";
 });
 
-const { data, status, execute } =
+const { data, error, status, execute } =
   await useFetch<MinifluxGetFeedCompactEntriesResponse>(requestPath);
 const entries = computed(() => data.value.entries || []);
 const feeds = computed(
@@ -48,7 +48,7 @@ async function setFeedId(feedId: number | undefined) {
 <template>
   <div>
     <div>
-      <MyButton :loading="status === 'pending'" @click="execute"
+      <MyButton :error="error" :loading="status === 'pending'" @click="execute"
         >reload</MyButton
       >
       <span v-if="selectedFeed"

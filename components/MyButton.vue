@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useInterval } from "@vueuse/core";
 
-defineProps<{ loading?: boolean }>();
+defineProps<{ error?: unknown; loading?: boolean }>();
 
 defineEmits<{ click: [] }>();
 
@@ -20,7 +20,8 @@ const label = computed(() => {
   <span>
     [
     <a v-if="!loading" href="#" @click.prevent="$emit('click')"><slot /></a>
-    <span v-if="loading">{{ label }}</span>
+    <span v-if="loading">{{ " " }}{{ label }}</span>
+    <span v-if="error">{{ " " }}{{ error }}</span>
     ]
   </span>
 </template>

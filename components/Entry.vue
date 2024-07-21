@@ -2,6 +2,9 @@
 const route = useRoute();
 const model = defineModel<MinifluxCompactEntry>();
 
+const toggling = ref(false);
+const toggleError = ref("");
+
 const { data, error, status, execute } = await useFetch(
   `/api/entries/${model.value.id}`,
   { immediate: false, server: false },
@@ -10,6 +13,26 @@ const { data, error, status, execute } = await useFetch(
 async function onDetailsToggle() {
   if (data.value) return;
   await execute();
+}
+
+async function onToggleStatus() {
+  try {
+    const nextStatus = model.value.status === "unread" ? "read" : "unread";
+    toggleError.value = "";
+    toggling.value = true;
+    await $fetch("/api/entries", {
+      method: "PUT",
+      body: {
+        entryIds: [model.value.id],
+        status: nextStatus,
+      },
+    });
+    model.value.status = nextStatus;
+  } catch (e) {
+    toggleError.value = e;
+  } finally {
+    toggling.value = false;
+  }
 }
 
 async function setCategoryId(categoryId: number) {
@@ -38,6 +61,12 @@ async function setFeedId(feedId: number) {
       <a href="#" @click.prevent="setCategoryId(modelValue.feed.category.id)">{{
         modelValue.feed.category.title
       }}</a>
+    </div>
+    <div>
+      <MyButton :error="toggleError" :loading="toggling" @click="onToggleStatus"
+        >mark as
+        {{ modelValue.status === "unread" ? "read" : "unread" }}</MyButton
+      >
     </div>
     <div>
       <details @toggle="onDetailsToggle">
