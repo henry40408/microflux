@@ -21,6 +21,17 @@ const { data, error, status, execute } =
     timeout: secondsToMilliseconds(30),
   });
 const entries = computed(() => data.value?.entries || []);
+watch(entries, (next) => {
+  const { categoryId, feedId } = route.query;
+  if (next.length <= 0 && categoryId && feedId) {
+    navigateTo({ query: { categoryId } });
+    return;
+  }
+  if (next.length <= 0 && categoryId) {
+    navigateTo({ query: {} });
+    return;
+  }
+});
 const feeds = computed(
   () =>
     Object.values(
