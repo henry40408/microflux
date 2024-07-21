@@ -9,4 +9,5 @@ export default defineNuxtConfig({
     minifluxUrl: "",
     kagiSessionLink: "",
   },
+  typescript: { typeCheck: true },
 });

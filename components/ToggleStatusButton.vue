@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { secondsToMilliseconds } from "date-fns";
 
-const model = defineModel<MinifluxEntry>();
+import type { MinifluxEntry } from "../types";
+
+const model = defineModel<MinifluxEntry>({ required: true });
 
 const nextStatus = computed(() =>
   model.value.status === "unread" ? "read" : "unread",

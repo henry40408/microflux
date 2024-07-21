@@ -1,5 +1,6 @@
 import { secondsToMilliseconds } from "date-fns";
-import got, { Got } from "got";
+import got from "got";
+import type { Got } from "got";
 import { H3Event } from "h3";
 
 let client: Got | null = null;

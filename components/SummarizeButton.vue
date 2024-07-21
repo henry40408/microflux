@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { secondsToMilliseconds } from "date-fns";
 
+import type { KagiSummarizeResponse } from "../types";
+
 const model = defineModel<string>();
 const props = defineProps<{ url: string }>();
 
@@ -16,7 +18,7 @@ const { data, status, error, execute } =
 
 async function onClick() {
   await execute();
-  model.value = data.value.output_data.markdown;
+  if (data.value) model.value = data.value.output_data.markdown;
 }
 </script>
 

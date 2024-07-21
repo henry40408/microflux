@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { secondsToMilliseconds } from "date-fns";
 
+import type { MinifluxGetFeedCompactEntriesResponse } from "../server/api/entries.get";
+
 useHead({
   title: "Microflux",
 });
@@ -18,7 +20,7 @@ const { data, error, status, execute } =
   await useFetch<MinifluxGetFeedCompactEntriesResponse>(requestPath, {
     timeout: secondsToMilliseconds(30),
   });
-const entries = computed(() => data.value.entries || []);
+const entries = computed(() => data.value?.entries || []);
 const feeds = computed(
   () =>
     Object.values(
@@ -68,7 +70,7 @@ async function setFeedId(feedId: number | undefined) {
         <MyButton @click="setCategoryId(undefined)">reset</MyButton>
       </span>
     </div>
-    <div class="space-y-4">
+    <div class="space-y-4" v-if="data">
       <Entry
         v-for="(entry, index) in data.entries"
         :key="entry.id"

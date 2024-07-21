@@ -2,7 +2,9 @@
 import { secondsToMilliseconds } from "date-fns";
 import { useClipboard } from "@vueuse/core";
 
-const model = defineModel<MinifluxCompactEntry>();
+import type { MinifluxCompactEntry } from "../server/api/entries.get";
+
+const model = defineModel<MinifluxCompactEntry>({ required: true });
 const isRead = computed(() => model.value.status === "read");
 
 const route = useRoute();

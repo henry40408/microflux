@@ -1,6 +1,6 @@
 import sanitizeHtml from "sanitize-html";
 
-import { MinifluxEntry } from "~/types";
+import type { MinifluxEntry } from "~/types";
 
 export default defineEventHandler(async (event): Promise<MinifluxEntry> => {
   const id = getRouterParam(event, "id");

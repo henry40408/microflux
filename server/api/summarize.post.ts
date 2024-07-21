@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { KagiSummarizeResponse } from "~/types";
+import type { KagiSummarizeResponse } from "~/types";
 
 const querySchema = z.object({
   type: z.enum(["summary"]).default("summary"),
