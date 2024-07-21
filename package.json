@@ -12,6 +12,10 @@
   "dependencies": {
     "got": "^14.4.1",
     "nuxt": "^3.12.4",
+    "sanitize-html": "^2.13.0",
     "vue": "latest"
+  },
+  "devDependencies": {
+    "@types/sanitize-html": "^2.11.0"
   }
 }
