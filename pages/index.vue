@@ -38,7 +38,9 @@ const count = computed(
 const pageTitle = computed(() => `(${count.value}) Miniflux`);
 useHead({ title: pageTitle });
 
-const entryIds = computed(() => entries.value.map((e) => e.id));
+const entryIds = computed(() =>
+  entries.value.filter((e) => e.status === "unread").map((e) => e.id),
+);
 const feeds = computed(
   () =>
     Object.values(
