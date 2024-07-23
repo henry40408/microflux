@@ -49,7 +49,7 @@ function setStage(newStage: Stage) {
     </span>
     <span v-if="loading">{{ label }}</span>
     <span v-if="!loading && stage === 'confirmed'">done!</span>
-    <span v-if="!loading && error">{{ error }}</span>
+    <span v-if="!loading && error" class="ml-2">{{ error }}</span>
     ]
   </span>
 </template>

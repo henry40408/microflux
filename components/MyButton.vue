@@ -23,7 +23,7 @@ const label = computed(() => {
       ><slot
     /></a>
     <span v-if="!done && loading">{{ label }}</span>
-    <span v-if="!done && !loading && error">{{ error }}</span>
+    <span v-if="!done && !loading && error" class="ml-2">{{ error }}</span>
     <span v-if="done"><slot name="done">done!</slot></span>
     ]
   </span>
