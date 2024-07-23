@@ -31,7 +31,7 @@ async function onClick() {
 </script>
 
 <template>
-  <MyButton :error="error" :loading="status === 'pending'" @click="onClick"
-    >mark as {{ nextStatus }}</MyButton
-  >
+  <MyButton :error="error" :loading="status === 'pending'" @click="onClick">{{
+    nextStatus
+  }}</MyButton>
 </template>

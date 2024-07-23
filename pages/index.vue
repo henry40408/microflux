@@ -75,19 +75,24 @@ async function setFeedId(feedId: number | undefined) {
 
 <template>
   <div class="container mx-auto space-y-4 my-8">
-    <div>
+    <div
+      class="space-y-4 text-right md:flex md:items-center md:space-x-2 md:space-y-0"
+    >
       <MyButton :error="error" :loading="status === 'pending'" @click="execute"
         >reload</MyButton
       >
-      <span>/ {{ count }} entries{{ " " }}</span>
-      <span v-if="selectedFeed"
-        >/ {{ selectedFeed.title }}
+      <div class="hidden md:block">/</div>
+      <div>{{ count }} entries</div>
+      <div class="hidden md:block" v-if="selectedFeed">/</div>
+      <div v-if="selectedFeed">
+        {{ selectedFeed.title }}
         <MyButton @click="setFeedId(undefined)">reset</MyButton>
-      </span>
-      <span v-if="selectedCategory"
-        >/ {{ selectedCategory.title }}
+      </div>
+      <div class="hidden md:block" v-if="selectedCategory">/</div>
+      <div v-if="selectedCategory">
+        {{ selectedCategory.title }}
         <MyButton @click="setCategoryId(undefined)">reset</MyButton>
-      </span>
+      </div>
     </div>
     <div class="space-y-4" v-if="data">
       <Entry
@@ -96,7 +101,7 @@ async function setFeedId(feedId: number | undefined) {
         v-model="data.entries[index]"
       />
     </div>
-    <div>
+    <div class="text-right md:text-left">
       <MyButton :error="error" :loading="status === 'pending'" @click="execute"
         >reload</MyButton
       >

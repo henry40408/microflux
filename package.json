@@ -8,6 +8,9 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "story:dev": "histoire dev",
+    "story:build": "histoire build",
+    "story:preview": "histoire preview",
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
@@ -15,15 +18,21 @@
     "date-fns": "^3.6.0",
     "got": "^14.4.1",
     "nuxt": "^3.12.4",
+    "pangu": "^4.0.7",
+    "pino-http": "^10.2.0",
     "sanitize-html": "^2.13.0",
     "vue": "latest",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@histoire/plugin-nuxt": "^0.17.17",
+    "@histoire/plugin-vue": "^0.17.17",
+    "@types/pangu": "^4.0.2",
     "@types/sanitize-html": "^2.11.0",
     "@unocss/nuxt": "^0.61.5",
     "@unocss/preset-wind": "^0.61.5",
     "@unocss/transformer-directives": "^0.61.5",
+    "histoire": "^0.17.17",
     "typescript": "^5.5.3",
     "vue-tsc": "^2.0.26"
   }

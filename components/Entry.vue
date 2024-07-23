@@ -58,31 +58,38 @@ function onToggleStatus(s: string) {
     class="space-y-4"
     :class="{ 'text-slate-300': isRead, 'dark:text-slate-600': isRead }"
   >
-    <div ref="entryTitle">
+    <div ref="entryTitle" class="space-y-2 md:flex md:items-end md:space-y-0">
       <a
+        class="block text-xl"
         :class="{ 'text-slate-300': isRead, 'dark:text-slate-600': isRead }"
         :href="modelValue.url"
         target="_blank"
-        >{{ modelValue.title }}</a
+        >{{ pangu(modelValue.title) }}</a
       >
-      #{{ modelValue.id }}
+      <div class="text-sm md:ml-2">#{{ modelValue.id }}</div>
     </div>
-    <div>
-      <a href="#" @click.prevent="setFeedId(modelValue.feed.id)">{{
-        modelValue.feed.title
-      }}</a>
-      /
-      <a href="#" @click.prevent="setCategoryId(modelValue.feed.category.id)">{{
-        modelValue.feed.category.title
-      }}</a>
+    <div class="flex space-x-2 items-center">
+      <a
+        class="block"
+        href="#"
+        @click.prevent="setFeedId(modelValue.feed.id)"
+        >{{ modelValue.feed.title }}</a
+      >
+      <div>/</div>
+      <a
+        class="block"
+        href="#"
+        @click.prevent="setCategoryId(modelValue.feed.category.id)"
+        >{{ modelValue.feed.category.title }}</a
+      >
     </div>
-    <div>
+    <div class="text-right md:text-left">
       <ToggleStatusButton v-model="model" @toggle-status="onToggleStatus" />
-      <SummarizeButton v-model="summary" :url="model.url" />
-      <SaveButton v-model="model" />
+      <SummarizeButton v-if="!isRead" v-model="summary" :url="model.url" />
+      <SaveButton v-if="!isRead" v-model="model" />
     </div>
-    <div v-if="summary" class="space-y-2">
-      <div class="bg-slate-300 dark:bg-slate-600 p-2">
+    <div v-if="!isRead && summary" class="space-y-2">
+      <div class="bg-slate-200 dark:bg-slate-700 p-2">
         <code>
           <pre class="text-wrap m-0">{{ source }}</pre>
         </code>
@@ -94,7 +101,11 @@ function onToggleStatus(s: string) {
       </div>
     </div>
     <div class="border-dotted p-2">
-      <details @toggle="onDetailsToggle" ref="entryContent">
+      <details
+        @toggle="onDetailsToggle"
+        ref="entryContent"
+        class="my-entry-content"
+      >
         <summary>content</summary>
         <div class="mt-2 space-y-2">
           <div>
@@ -113,3 +124,9 @@ function onToggleStatus(s: string) {
     </div>
   </div>
 </template>
+
+<style>
+.my-entry-content img {
+  @apply max-w-full;
+}
+</style>
