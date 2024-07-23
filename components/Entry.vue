@@ -42,15 +42,8 @@ function onToggleStatus(s: string) {
     class="space-y-4"
     :class="{ 'text-slate-300': isRead, 'dark:text-slate-600': isRead }"
   >
-    <div ref="entryTitle" class="space-y-2 md:flex md:items-end md:space-y-0">
-      <a
-        class="block text-xl"
-        :class="{ 'text-slate-300': isRead, 'dark:text-slate-600': isRead }"
-        :href="modelValue.url"
-        target="_blank"
-        >{{ pangu(modelValue.title) }}</a
-      >
-      <div class="text-sm md:ml-2">#{{ modelValue.id }}</div>
+    <div ref="entryTitle">
+      <EntryTitle v-model="model" />
     </div>
     <div class="flex space-x-2 items-center">
       <a
