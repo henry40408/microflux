@@ -100,6 +100,7 @@ async function setFeedId(feedId: number | undefined) {
         :key="entry.id"
         v-model="data.entries[index]"
       />
+      <div v-if="data.entries.length <= 0">(empty)</div>
     </div>
     <div class="text-right md:text-left">
       <MyButton :error="error" :loading="status === 'pending'" @click="execute"
