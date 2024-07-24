@@ -59,6 +59,10 @@ function onToggleStatus(s: string) {
         @click.prevent="setCategoryId(modelValue.feed.category.id)"
         >{{ modelValue.feed.category.title }}</a
       >
+      <div>/</div>
+      <time :datetime="modelValue.published_at">{{
+        ago(modelValue.published_at)
+      }}</time>
     </div>
     <div class="text-right md:text-left">
       <ToggleStatusButton v-model="model" />
