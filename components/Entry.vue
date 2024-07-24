@@ -59,6 +59,10 @@ function onToggleStatus(s: string) {
         @click.prevent="setCategoryId(modelValue.feed.category.id)"
         >{{ modelValue.feed.category.title }}</a
       >
+      <div>/</div>
+      <time :datetime="modelValue.published_at">{{
+        ago(modelValue.published_at)
+      }}</time>
     </div>
     <div class="text-right md:text-left">
       <ToggleStatusButton v-model="model" />
@@ -68,7 +72,7 @@ function onToggleStatus(s: string) {
     <div v-if="!isRead && summary" class="space-y-2">
       <div class="bg-slate-200 dark:bg-slate-700 p-2">
         <code>
-          <pre class="text-wrap m-0">{{ source }}</pre>
+          <pre class="text-wrap m-0">{{ pangu(source) }}</pre>
         </code>
       </div>
       <div>

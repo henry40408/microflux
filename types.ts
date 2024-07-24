@@ -99,3 +99,7 @@ export interface MinifluxIcon {
   feed_id: number;
   icon_id: number;
 }
+
+export interface MinifluxFetchContentResponse {
+  content: string;
+}

@@ -14,6 +14,7 @@ const body = computed(() => ({
   status: nextStatus.value,
 }));
 const { status, error, execute } = await useLazyFetch("/api/entries", {
+  key: `toggle-status-${model.value.id}`,
   method: "PUT",
   body,
   immediate: false,

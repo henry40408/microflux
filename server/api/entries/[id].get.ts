@@ -1,5 +1,3 @@
-import sanitizeHtml from "sanitize-html";
-
 import type { MinifluxEntry } from "~/types";
 
 export default defineEventHandler(async (event): Promise<MinifluxEntry> => {
@@ -8,8 +6,6 @@ export default defineEventHandler(async (event): Promise<MinifluxEntry> => {
   const json = await client.get(`v1/entries/${id}`).json<MinifluxEntry>();
   return {
     ...json,
-    content: sanitizeHtml(json.content, {
-      allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
-    }),
+    content: sanitizeContent(json.content),
   };
 });

@@ -10,6 +10,7 @@ const body = computed(() => ({
   status: "read",
 }));
 const { status, error, execute } = await useLazyFetch("/api/entries", {
+  key: "mark-all-as-read",
   method: "PUT",
   body,
   immediate: false,

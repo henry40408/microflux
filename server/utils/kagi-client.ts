@@ -18,7 +18,7 @@ export default function (event: H3Event): Got {
     client = got.extend({
       prefixUrl: "https://kagi.com",
       headers: { authorization: token },
-      timeout: { request: secondsToMilliseconds(30) },
+      timeout: { request: secondsToMilliseconds(60) },
     });
   return client;
 }
