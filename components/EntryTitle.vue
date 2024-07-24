@@ -7,7 +7,8 @@ const model = defineModel<MinifluxCompactEntry>({ required: true });
 const isRead = computed(() => model.value.status === "read");
 
 const body = computed(() => ({ entryIds: [model.value.id], status: "read" }));
-const { status, error, execute } = await useLazyFetch("/api/entries", {
+const { execute } = await useLazyFetch("/api/entries", {
+  key: `mark-as-read-${model.value.id}`,
   method: "PUT",
   body,
   immediate: false,
@@ -28,6 +29,7 @@ async function onClick() {
       class="block text-xl"
       :class="{ 'text-slate-300': isRead, 'dark:text-slate-600': isRead }"
       :href="modelValue.url"
+      rel="noreferrer noopener"
       target="_blank"
       @click="onClick"
       >{{ pangu(modelValue.title) }}</a

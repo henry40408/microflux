@@ -11,6 +11,7 @@ const entryContent = ref<HTMLDetailsElement | null>(null);
 const { data, error, status, execute } = await useLazyFetch(
   `/api/entries/${model.value.id}`,
   {
+    key: `entry-content-${model.value.id}`,
     immediate: false,
     server: false,
     timeout: secondsToMilliseconds(30),

@@ -13,7 +13,7 @@ export default function (event: H3Event): Got {
     client = got.extend({
       prefixUrl: config.minifluxUrl,
       headers: { "x-auth-token": config.minifluxAuthToken },
-      timeout: { request: secondsToMilliseconds(30) },
+      timeout: { request: secondsToMilliseconds(60) },
     });
   return client;
 }

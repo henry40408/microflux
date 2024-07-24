@@ -8,6 +8,7 @@ const model = defineModel<MinifluxCompactEntry>({ required: true });
 const { status, error, execute } = await useLazyFetch(
   `/api/entries/${model.value.id}/save`,
   {
+    key: `save-${model.value.id}`,
     method: "POST",
     immediate: false,
     server: false,
