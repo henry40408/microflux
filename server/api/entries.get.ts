@@ -33,7 +33,7 @@ export default defineEventHandler(
 
     const json = await client
       .get(path, {
-        searchParams: { status: "unread", direction: "desc" },
+        searchParams: { status: "unread", direction: "asc" },
       })
       .json<MinifluxGetFeedEntriesResponse>();
     return {
