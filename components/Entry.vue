@@ -68,7 +68,7 @@ function onToggleStatus(s: string) {
     <div v-if="!isRead && summary" class="space-y-2">
       <div class="bg-slate-200 dark:bg-slate-700 p-2">
         <code>
-          <pre class="text-wrap m-0">{{ source }}</pre>
+          <pre class="text-wrap m-0">{{ pangu(source) }}</pre>
         </code>
       </div>
       <div>
