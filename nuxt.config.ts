@@ -5,9 +5,11 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ["@unocss/nuxt"],
   runtimeConfig: {
+    kagiSessionLink: "",
+    linkdingToken: "",
+    linkdingUrl: "",
     minifluxAuthToken: "",
     minifluxUrl: "",
-    kagiSessionLink: "",
   },
   typescript: { typeCheck: true },
 });
