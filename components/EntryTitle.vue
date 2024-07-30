@@ -24,14 +24,17 @@ async function onClick() {
 </script>
 
 <template>
-  <div>
-    <a
-      :href="modelValue.url"
-      rel="noreferrer noopener"
-      target="_blank"
-      @click="onClick"
-      >{{ pangu(modelValue.title) }}</a
-    >
-    <div>#{{ modelValue.id }}</div>
+  <div class="align-bottom">
+    <h3 class="m-0">
+      <a
+        :class="{ 'text-slate-500': isRead }"
+        :href="modelValue.url"
+        rel="noreferrer noopener"
+        target="_blank"
+        @click="onClick"
+        >{{ pangu(modelValue.title) }}</a
+      >
+      <small class="ml-2">#{{ modelValue.id }}</small>
+    </h3>
   </div>
 </template>

@@ -77,19 +77,21 @@ async function setFeedId(feedId: number | undefined) {
 
 <template>
   <div>
-    <NavBar />
-    <div>
-      <MyButton :error="error" :loading="status === 'pending'" @click="execute"
+    <NavBar class="mb-4" />
+    <div class="flex space-x-2 mb-4 items-end">
+      <small class="block">actions</small>
+      <MyButton
+        class="block"
+        :error="error"
+        :loading="status === 'pending'"
+        @click="execute"
         >reload</MyButton
       >
-      <div>/</div>
       <div>{{ count }} entries</div>
-      <div v-if="selectedFeed">/</div>
       <div v-if="selectedFeed">
         {{ selectedFeed.title }}
         <MyButton @click="setFeedId(undefined)">reset</MyButton>
       </div>
-      <div v-if="selectedCategory">/</div>
       <div v-if="selectedCategory">
         {{ selectedCategory.title }}
         <MyButton @click="setCategoryId(undefined)">reset</MyButton>
@@ -101,13 +103,20 @@ async function setFeedId(feedId: number | undefined) {
         :key="entry.id"
         v-model="data.entries[index]"
       />
-      <div v-if="data.entries.length <= 0">(empty)</div>
+      <blockquote v-if="status !== 'pending' && data.entries.length <= 0">
+        empty
+      </blockquote>
     </div>
-    <div>
-      <MyButton :error="error" :loading="status === 'pending'" @click="execute"
+    <div class="flex space-x-2">
+      <MyButton
+        class="block"
+        :error="error"
+        :loading="status === 'pending'"
+        @click="execute"
         >reload</MyButton
       >
       <MarkAllAsReadButton
+        class="block"
         v-if="count > 0"
         :entryIds="entryIds"
         @mark-all-as-read="execute"
