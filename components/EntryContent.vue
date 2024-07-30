@@ -33,13 +33,9 @@ function onToggleStatus(s: string) {
 </script>
 
 <template>
-  <details
-    @toggle="onDetailsToggle"
-    ref="entryContent"
-    class="my-entry-content"
-  >
+  <details @toggle="onDetailsToggle" ref="entryContent">
     <summary>content</summary>
-    <div class="mt-2 space-y-2">
+    <div>
       <div v-if="!fullContent">
         <span v-if="status === 'pending'">...</span>
         <span v-if="status === 'error'">{{ error }}</span>

@@ -22,19 +22,15 @@ function onDelete(id: number) {
 </script>
 
 <template>
-  <div class="space-y-2">
+  <div>
     <div>
-      <a
-        class="text-lg"
-        :href="modelValue.url"
-        rel="noreferrer noopener"
-        target="_blank"
-        >{{ modelValue.title || modelValue.website_title }}</a
-      >
-      <span class="ml-2 text-sm">#{{ modelValue.id }}</span>
-      <div class="text-sm">{{ modelValue.url }}</div>
+      <a :href="modelValue.url" rel="noreferrer noopener" target="_blank">{{
+        modelValue.title || modelValue.website_title
+      }}</a>
+      <span>#{{ modelValue.id }}</span>
+      <div>{{ modelValue.url }}</div>
     </div>
-    <div class="border-l-solid border-l-slate-500">
+    <div>
       <blockquote>
         {{ modelValue.description || modelValue.website_description }}
       </blockquote>
@@ -44,10 +40,10 @@ function onDelete(id: number) {
         ago(modelValue.date_added)
       }}</time>
     </div>
-    <div v-if="summary" class="space-y-2">
-      <div class="bg-slate-300 dark:bg-slate-600 p-2">
+    <div v-if="summary">
+      <div>
         <code>
-          <pre class="m-0 text-wrap">{{ source }}</pre>
+          <pre>{{ source }}</pre>
         </code>
       </div>
       <div>

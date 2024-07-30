@@ -76,28 +76,26 @@ async function setFeedId(feedId: number | undefined) {
 </script>
 
 <template>
-  <div class="container mx-auto space-y-4 my-8">
+  <div>
     <NavBar />
-    <div
-      class="space-y-4 text-right md:flex md:items-center md:space-x-2 md:space-y-0"
-    >
+    <div>
       <MyButton :error="error" :loading="status === 'pending'" @click="execute"
         >reload</MyButton
       >
-      <div class="hidden md:block">/</div>
+      <div>/</div>
       <div>{{ count }} entries</div>
-      <div class="hidden md:block" v-if="selectedFeed">/</div>
+      <div v-if="selectedFeed">/</div>
       <div v-if="selectedFeed">
         {{ selectedFeed.title }}
         <MyButton @click="setFeedId(undefined)">reset</MyButton>
       </div>
-      <div class="hidden md:block" v-if="selectedCategory">/</div>
+      <div v-if="selectedCategory">/</div>
       <div v-if="selectedCategory">
         {{ selectedCategory.title }}
         <MyButton @click="setCategoryId(undefined)">reset</MyButton>
       </div>
     </div>
-    <div class="space-y-4" v-if="data">
+    <div v-if="data">
       <Entry
         v-for="(entry, index) in data.entries"
         :key="entry.id"
@@ -105,7 +103,7 @@ async function setFeedId(feedId: number | undefined) {
       />
       <div v-if="data.entries.length <= 0">(empty)</div>
     </div>
-    <div class="text-right md:text-left">
+    <div>
       <MyButton :error="error" :loading="status === 'pending'" @click="execute"
         >reload</MyButton
       >
