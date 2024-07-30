@@ -11,16 +11,20 @@ const bookmarks = computed(() => data.value?.results || []);
 </script>
 
 <template>
-  <div class="container mx-auto space-y-4 my-8">
-    <NavBar />
-    <div class="flex space-x-2">
-      <MyButton :loading="status === 'pending'" :error="error" @click="execute"
+  <div>
+    <NavBar class="mb-4" />
+    <div class="flex space-x-2 mb-4 items-end">
+      <small class="block">actions</small>
+      <MyButton
+        class="block"
+        :loading="status === 'pending'"
+        :error="error"
+        @click="execute"
         >reload</MyButton
       >
-      <div>/</div>
       <div>{{ count }} entries</div>
     </div>
-    <div class="space-y-4">
+    <div>
       <Bookmark
         v-for="(bookmark, index) in bookmarks"
         :key="bookmark.id"

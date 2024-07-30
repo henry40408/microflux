@@ -33,29 +33,29 @@ function onToggleStatus(s: string) {
 </script>
 
 <template>
-  <details
-    @toggle="onDetailsToggle"
-    ref="entryContent"
-    class="my-entry-content"
-  >
+  <details @toggle="onDetailsToggle" ref="entryContent">
     <summary>content</summary>
-    <div class="mt-2 space-y-2">
-      <div v-if="!fullContent">
-        <span v-if="status === 'pending'">...</span>
-        <span v-if="status === 'error'">{{ error }}</span>
-        <span v-if="data" v-html="data.content"></span>
+    <div>
+      <div class="mb-4">
+        <div v-if="!fullContent">
+          <span v-if="status === 'pending'">...</span>
+          <span v-if="status === 'error'">{{ error }}</span>
+          <span v-if="data" v-html="data.content"></span>
+        </div>
+        <div v-if="fullContent" v-html="fullContent"></div>
       </div>
-      <div v-if="fullContent" v-html="fullContent"></div>
-      <div>
-        <ToggleStatusButton v-model="model" @toggle-status="onToggleStatus" />
-        <FetchContentButton v-model="fullContent" :id="modelValue.id" />
+      <div class="flex space-x-2">
+        <ToggleStatusButton
+          class="block"
+          v-model="model"
+          @toggle-status="onToggleStatus"
+        />
+        <FetchContentButton
+          class="block"
+          v-model="fullContent"
+          :id="modelValue.id"
+        />
       </div>
     </div>
   </details>
 </template>
-
-<style>
-.my-entry-content img {
-  @apply max-w-full;
-}
-</style>

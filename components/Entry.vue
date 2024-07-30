@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { secondsToMilliseconds } from "date-fns";
 import { useClipboard } from "@vueuse/core";
 
 import type { MinifluxCompactEntry } from "../server/api/entries.get";
@@ -38,42 +37,44 @@ function onToggleStatus(s: string) {
 </script>
 
 <template>
-  <div
-    class="space-y-4"
-    :class="{ 'text-slate-300': isRead, 'dark:text-slate-600': isRead }"
-  >
+  <div class="space-y-1">
     <div ref="entryTitle">
       <EntryTitle v-model="model" />
     </div>
     <div class="flex space-x-2 items-center">
+      <small class="block">feed</small>
       <a
         class="block"
         href="#"
         @click.prevent="setFeedId(modelValue.feed.id)"
         >{{ modelValue.feed.title }}</a
       >
-      <div>/</div>
+      <small class="block">category</small>
       <a
         class="block"
         href="#"
         @click.prevent="setCategoryId(modelValue.feed.category.id)"
         >{{ modelValue.feed.category.title }}</a
       >
-      <div>/</div>
-      <time :datetime="modelValue.published_at">{{
+      <small class="block">published at</small>
+      <time class="block" :datetime="modelValue.published_at">{{
         ago(modelValue.published_at)
       }}</time>
     </div>
-    <div class="text-right md:text-left">
-      <ToggleStatusButton v-model="model" />
-      <SummarizeButton v-if="!isRead" v-model="summary" :url="model.url" />
-      <SaveButton v-if="!isRead" v-model="model" />
+    <div class="flex space-x-2 items-end mb-2">
+      <small class="block">actions</small>
+      <ToggleStatusButton class="block" v-model="model" />
+      <SummarizeButton
+        class="block"
+        v-if="!isRead"
+        v-model="summary"
+        :url="model.url"
+      />
+      <SaveButton class="block" v-if="!isRead" v-model="model" />
     </div>
-    <div v-if="!isRead && summary" class="space-y-2">
-      <div class="bg-slate-200 dark:bg-slate-700 p-2">
-        <code>
-          <pre class="text-wrap m-0">{{ pangu(source) }}</pre>
-        </code>
+    <div class="space-y-2" v-if="!isRead && summary">
+      <div class="bg-slate-500 text-white p-2">
+        <pre class="m-0 text-wrap">{{ pangu(source) }}</pre>
       </div>
       <div>
         <MyButton :done="copied" @click="copy">
@@ -81,7 +82,7 @@ function onToggleStatus(s: string) {
         </MyButton>
       </div>
     </div>
-    <div class="border-dotted p-2">
+    <div>
       <EntryContent v-model="model" @toggle-status="onToggleStatus" />
     </div>
   </div>

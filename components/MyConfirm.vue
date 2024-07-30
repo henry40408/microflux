@@ -33,10 +33,8 @@ function setStage(newStage: Stage) {
 </script>
 
 <template>
-  <span class="uppercase">
-    [
+  <span>
     <a
-      :class="{ 'text-red-400': props.danger }"
       href="#"
       v-if="!loading && stage === 'init'"
       @click.prevent="setStage('pending')"
@@ -44,14 +42,16 @@ function setStage(newStage: Stage) {
     /></a>
     <span v-if="!loading && stage === 'pending'">
       <span>are you sure?</span>
-      <a href="#" @click.prevent="setStage('confirmed')" class="text-red ml-2"
+      <a
+        class="ml-1 text-red-500"
+        href="#"
+        @click.prevent="setStage('confirmed')"
         >yes</a
       >
-      <a href="#" @click.prevent="setStage('init')" class="ml-2">no</a>
+      <a class="ml-1" href="#" @click.prevent="setStage('init')">no</a>
     </span>
     <span v-if="loading">{{ label }}</span>
     <span v-if="!loading && stage === 'confirmed'">done!</span>
-    <span v-if="!loading && error" class="ml-2">{{ error }}</span>
-    ]
+    <span v-if="!loading && error">{{ error }}</span>
   </span>
 </template>

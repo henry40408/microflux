@@ -6,9 +6,15 @@ import type { LinkdingBookmark } from "~/types";
 const model = defineModel<LinkdingBookmark>({ required: true });
 const emit = defineEmits<{ delete: [id: number] }>();
 
+const bookmarkTitle = computed(
+  () => model.value.title || model.value.website_title,
+);
+const bookmarkDescription = computed(
+  () => model.value.description || model.value.website_description,
+);
 const summary = ref("");
 const source = computed(
-  () => `${model.value.title || model.value.website_title}
+  () => `${bookmarkTitle.value}
 
 ${model.value.url}
 
@@ -22,41 +28,36 @@ function onDelete(id: number) {
 </script>
 
 <template>
-  <div class="space-y-2">
+  <div class="space-y-2 mb-4">
     <div>
-      <a
-        class="text-lg"
-        :href="modelValue.url"
-        rel="noreferrer noopener"
-        target="_blank"
-        >{{ modelValue.title || modelValue.website_title }}</a
-      >
-      <span class="ml-2 text-sm">#{{ modelValue.id }}</span>
-      <div class="text-sm">{{ modelValue.url }}</div>
+      <h3 class="m-0">
+        <a :href="modelValue.url" rel="noreferrer noopener" target="_blank">{{
+          bookmarkTitle
+        }}</a>
+        <small class="ml-1">#{{ modelValue.id }}</small>
+      </h3>
+      <small>{{ modelValue.url }}</small>
     </div>
-    <div class="border-l-solid border-l-slate-500">
-      <blockquote>
-        {{ modelValue.description || modelValue.website_description }}
-      </blockquote>
+    <div v-if="bookmarkDescription">
+      <blockquote class="m-0">{{ bookmarkDescription }}</blockquote>
     </div>
-    <div>
-      <time :datetime="modelValue.date_added">{{
+    <div class="flex space-x-2 items-center">
+      <small class="block">created</small>
+      <time class="block" :datetime="modelValue.date_added">{{
         ago(modelValue.date_added)
       }}</time>
     </div>
-    <div v-if="summary" class="space-y-2">
-      <div class="bg-slate-300 dark:bg-slate-600 p-2">
-        <code>
-          <pre class="m-0 text-wrap">{{ source }}</pre>
-        </code>
+    <div class="space-y-1" v-if="summary">
+      <div class="bg-slate-500 text-white p-2">
+        <pre class="m-0 text-wrap">{{ source }}</pre>
       </div>
-      <div>
-        <MyButton :done="copied" @click="copy">copy to clipboard</MyButton>
-      </div>
+      <MyButton class="block" :done="copied" @click="copy"
+        >copy to clipboard</MyButton
+      >
     </div>
-    <div>
-      <SummarizeButton v-model="summary" :url="modelValue.url" />
-      <DeleteBookmarkButton v-model="model" @delete="onDelete" />
+    <div class="flex space-x-2">
+      <SummarizeButton class="block" v-model="summary" :url="modelValue.url" />
+      <DeleteBookmarkButton class="block" v-model="model" @delete="onDelete" />
     </div>
   </div>
 </template>
