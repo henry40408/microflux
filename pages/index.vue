@@ -35,8 +35,8 @@ watch(entries, (next) => {
 const count = computed(
   () => entries.value.filter((e) => e.status === "unread").length,
 );
-const pageTitle = computed(() => `(${count.value}) Miniflux`);
-useHead({ title: pageTitle });
+const title = computed(() => `(${count.value}) miniflux`);
+useHead({ title });
 
 const entryIds = computed(() =>
   entries.value.filter((e) => e.status === "unread").map((e) => e.id),
@@ -77,6 +77,7 @@ async function setFeedId(feedId: number | undefined) {
 
 <template>
   <div class="container mx-auto space-y-4 my-8">
+    <NavBar />
     <div
       class="space-y-4 text-right md:flex md:items-center md:space-x-2 md:space-y-0"
     >

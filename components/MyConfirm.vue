@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { useInterval } from "@vueuse/core";
 
 const props = defineProps<{
+  danger?: boolean;
   error?: unknown;
   loading?: boolean;
   repeated?: boolean;
@@ -35,6 +36,7 @@ function setStage(newStage: Stage) {
   <span class="uppercase">
     [
     <a
+      :class="{ 'text-red-400': props.danger }"
       href="#"
       v-if="!loading && stage === 'init'"
       @click.prevent="setStage('pending')"

@@ -36,6 +36,37 @@ export interface KagiSummarizeResponseMetadata {
   model: string;
 }
 
+// linkding
+
+export interface LinkdingPaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
+export interface LinkdingBookmark {
+  id: number;
+  url: string;
+  title: string;
+  description: string;
+  notes: string;
+  website_title: string;
+  website_description: string;
+  web_archive_snapshot_url: string;
+  favicon_url: string;
+  preview_image_url: string;
+  is_archived: boolean;
+  unread: boolean;
+  shared: boolean;
+  tag_names: string[];
+  date_added: string;
+  date_modified: string;
+}
+
+export type LinkdingBookmarkResponse =
+  LinkdingPaginatedResponse<LinkdingBookmark>;
+
 // miniflux
 
 export interface MinifluxGetFeedEntriesResponse {
