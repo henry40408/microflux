@@ -28,36 +28,39 @@ function onDelete(id: number) {
 </script>
 
 <template>
-  <div class="space-y-2 mb-4">
+  <div space-y-2>
     <div>
-      <h3 class="m-0">
+      <h3 space-x-2 mb-0>
         <a :href="modelValue.url" rel="noreferrer noopener" target="_blank">{{
           bookmarkTitle
         }}</a>
-        <small class="ml-1">#{{ modelValue.id }}</small>
+        <small>#{{ modelValue.id }}</small>
       </h3>
       <small>{{ modelValue.url }}</small>
     </div>
     <div v-if="bookmarkDescription">
-      <blockquote class="m-0">{{ bookmarkDescription }}</blockquote>
+      <blockquote m-0>{{ bookmarkDescription }}</blockquote>
     </div>
-    <div class="flex space-x-2 items-center">
-      <small class="block">created</small>
-      <time class="block" :datetime="modelValue.date_added">{{
+    <div space-x-1 text-right md:text-left>
+      <small>created</small>
+      <time :datetime="modelValue.date_added">{{
         ago(modelValue.date_added)
       }}</time>
     </div>
-    <div class="space-y-1" v-if="summary">
-      <div class="bg-slate-500 text-white p-2">
-        <pre class="m-0 text-wrap">{{ source }}</pre>
-      </div>
-      <MyButton class="block" :done="copied" @click="copy"
-        >copy to clipboard</MyButton
-      >
+    <div v-if="summary" space-y-2 text-right md:text-left>
+      <pre m-0><code text-wrap>{{ source }}</code></pre>
+      <MyButton block :done="copied" @click="copy">copy to clipboard</MyButton>
     </div>
-    <div class="flex space-x-2">
-      <SummarizeButton class="block" v-model="summary" :url="modelValue.url" />
-      <DeleteBookmarkButton class="block" v-model="model" @delete="onDelete" />
+    <div
+      flex
+      space-x-2
+      flex-row-reverse
+      space-x-reverse
+      md:space-x-2
+      md:flex-row
+    >
+      <SummarizeButton v-model="summary" :url="modelValue.url" />
+      <DeleteBookmarkButton v-model="model" @delete="onDelete" />
     </div>
   </div>
 </template>

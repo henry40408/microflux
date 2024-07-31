@@ -12,16 +12,17 @@ const bookmarks = computed(() => data.value?.results || []);
 
 <template>
   <div>
-    <NavBar class="mb-4" />
-    <div class="flex space-x-2 mb-4 items-end">
-      <small class="block">actions</small>
-      <MyButton
-        class="block"
-        :loading="status === 'pending'"
-        :error="error"
-        @click="execute"
-        >reload</MyButton
-      >
+    <div space-y-2 text-right md:text-left>
+      <NavBar />
+      <div space-x-2>
+        <small>actions</small>
+        <MyButton
+          :loading="status === 'pending'"
+          :error="error"
+          @click="execute"
+          >reload</MyButton
+        >
+      </div>
       <div>{{ count }} entries</div>
     </div>
     <div>

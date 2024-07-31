@@ -42,13 +42,8 @@ function setStage(newStage: Stage) {
     /></a>
     <span v-if="!loading && stage === 'pending'">
       <span>are you sure?</span>
-      <a
-        class="ml-1 text-red-500"
-        href="#"
-        @click.prevent="setStage('confirmed')"
-        >yes</a
-      >
-      <a class="ml-1" href="#" @click.prevent="setStage('init')">no</a>
+      <a href="#" @click.prevent="setStage('confirmed')">yes</a>
+      <a href="#" @click.prevent="setStage('init')">no</a>
     </span>
     <span v-if="loading">{{ label }}</span>
     <span v-if="!loading && stage === 'confirmed'">done!</span>
