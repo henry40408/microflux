@@ -37,50 +37,54 @@ function onToggleStatus(s: string) {
 </script>
 
 <template>
-  <div class="space-y-1">
+  <div space-y-2>
     <div ref="entryTitle">
       <EntryTitle v-model="model" />
     </div>
-    <div class="flex space-x-2 items-center">
-      <small class="block">feed</small>
-      <a
-        class="block"
-        href="#"
-        @click.prevent="setFeedId(modelValue.feed.id)"
-        >{{ modelValue.feed.title }}</a
+    <div space-y-2>
+      <div
+        space-y-2
+        text-right
+        md:flex
+        md:items-center
+        md:space-x-2
+        md:space-y-0
       >
-      <small class="block">category</small>
-      <a
-        class="block"
-        href="#"
-        @click.prevent="setCategoryId(modelValue.feed.category.id)"
-        >{{ modelValue.feed.category.title }}</a
-      >
-      <small class="block">published at</small>
-      <time class="block" :datetime="modelValue.published_at">{{
-        ago(modelValue.published_at)
-      }}</time>
-    </div>
-    <div class="flex space-x-2 items-end mb-2">
-      <small class="block">actions</small>
-      <ToggleStatusButton class="block" v-model="model" />
-      <SummarizeButton
-        class="block"
-        v-if="!isRead"
-        v-model="summary"
-        :url="model.url"
-      />
-      <SaveButton class="block" v-if="!isRead" v-model="model" />
-    </div>
-    <div class="space-y-2" v-if="!isRead && summary">
-      <div class="bg-slate-500 text-white p-2">
-        <pre class="m-0 text-wrap">{{ pangu(source) }}</pre>
+        <div space-x-1 items-center>
+          <small>feed</small>
+          <a href="#" @click.prevent="setFeedId(modelValue.feed.id)">{{
+            modelValue.feed.title
+          }}</a>
+        </div>
+        <div space-x-1 items-center>
+          <small>category</small>
+          <a
+            href="#"
+            @click.prevent="setCategoryId(modelValue.feed.category.id)"
+            >{{ modelValue.feed.category.title }}</a
+          >
+        </div>
+        <div space-x-1 items-center>
+          <small>published at</small>
+          <time :datetime="modelValue.published_at">{{
+            ago(modelValue.published_at)
+          }}</time>
+        </div>
       </div>
-      <div>
-        <MyButton :done="copied" @click="copy">
-          copy to clipboard<template #done>copied!</template>
-        </MyButton>
+      <div flex space-x-2 items-end justify-end md:justify-start>
+        <small block>actions</small>
+        <div space-x-2>
+          <ToggleStatusButton v-model="model" />
+          <SummarizeButton v-if="!isRead" v-model="summary" :url="model.url" />
+          <SaveButton v-if="!isRead" v-model="model" />
+        </div>
       </div>
+    </div>
+    <div v-if="!isRead && summary" space-y-2 text-right md:text-left>
+      <pre m-0><code text-wrap>{{ pangu(source) }}</code></pre>
+      <MyButton block :done="copied" @click="copy">
+        copy to clipboard<template #done>copied!</template>
+      </MyButton>
     </div>
     <div>
       <EntryContent v-model="model" @toggle-status="onToggleStatus" />

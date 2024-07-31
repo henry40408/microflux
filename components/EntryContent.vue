@@ -36,7 +36,7 @@ function onToggleStatus(s: string) {
   <details @toggle="onDetailsToggle" ref="entryContent">
     <summary>content</summary>
     <div>
-      <div class="mb-4">
+      <div>
         <div v-if="!fullContent">
           <span v-if="status === 'pending'">...</span>
           <span v-if="status === 'error'">{{ error }}</span>
@@ -44,17 +44,16 @@ function onToggleStatus(s: string) {
         </div>
         <div v-if="fullContent" v-html="fullContent"></div>
       </div>
-      <div class="flex space-x-2">
-        <ToggleStatusButton
-          class="block"
-          v-model="model"
-          @toggle-status="onToggleStatus"
-        />
-        <FetchContentButton
-          class="block"
-          v-model="fullContent"
-          :id="modelValue.id"
-        />
+      <div
+        flex
+        space-x-2
+        flex-row-reverse
+        space-x-reverse
+        md:flex-row
+        md:space-x-2
+      >
+        <ToggleStatusButton v-model="model" @toggle-status="onToggleStatus" />
+        <FetchContentButton v-model="fullContent" :id="modelValue.id" />
       </div>
     </div>
   </details>

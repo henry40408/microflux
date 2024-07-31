@@ -1,6 +1,6 @@
 <template>
-  <div class="flex space-x-2">
-    <div><small>nav</small></div>
+  <div space-x-2 items-end>
+    <small>nav</small>
     <NuxtLink to="/">miniflux</NuxtLink>
     <NuxtLink to="/linkding">linkding</NuxtLink>
   </div>

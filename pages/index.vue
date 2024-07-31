@@ -77,24 +77,27 @@ async function setFeedId(feedId: number | undefined) {
 
 <template>
   <div>
-    <NavBar class="mb-4" />
-    <div class="flex space-x-2 mb-4 items-end">
-      <small class="block">actions</small>
-      <MyButton
-        class="block"
-        :error="error"
-        :loading="status === 'pending'"
-        @click="execute"
-        >reload</MyButton
-      >
-      <div>{{ count }} entries</div>
-      <div v-if="selectedFeed">
-        {{ selectedFeed.title }}
-        <MyButton @click="setFeedId(undefined)">reset</MyButton>
-      </div>
-      <div v-if="selectedCategory">
-        {{ selectedCategory.title }}
-        <MyButton @click="setCategoryId(undefined)">reset</MyButton>
+    <div space-y-2>
+      <NavBar text-right md:text-left />
+      <div space-y-2 text-right md:text-left md:flex md:space-x-2 md:space-y-0>
+        <div space-x-2 items-end>
+          <small>actions</small>
+          <MyButton
+            :error="error"
+            :loading="status === 'pending'"
+            @click="execute"
+            >reload</MyButton
+          >
+        </div>
+        <div>{{ count }} entries</div>
+        <div v-if="selectedFeed">
+          {{ selectedFeed.title }}
+          <MyButton @click="setFeedId(undefined)">reset</MyButton>
+        </div>
+        <div v-if="selectedCategory">
+          {{ selectedCategory.title }}
+          <MyButton @click="setCategoryId(undefined)">reset</MyButton>
+        </div>
       </div>
     </div>
     <div v-if="data">
@@ -107,16 +110,18 @@ async function setFeedId(feedId: number | undefined) {
         empty
       </blockquote>
     </div>
-    <div class="flex space-x-2">
-      <MyButton
-        class="block"
-        :error="error"
-        :loading="status === 'pending'"
-        @click="execute"
+    <div
+      flex
+      space-x-2
+      flex-row-reverse
+      space-x-reverse
+      md:space-x-2
+      md:flex-row
+    >
+      <MyButton :error="error" :loading="status === 'pending'" @click="execute"
         >reload</MyButton
       >
       <MarkAllAsReadButton
-        class="block"
         v-if="count > 0"
         :entryIds="entryIds"
         @mark-all-as-read="execute"

@@ -24,8 +24,8 @@ async function onClick() {
 </script>
 
 <template>
-  <div class="align-bottom">
-    <h3 class="m-0">
+  <div>
+    <h3 space-x-2>
       <a
         :class="{ 'text-slate-500': isRead }"
         :href="modelValue.url"
@@ -34,7 +34,7 @@ async function onClick() {
         @click="onClick"
         >{{ pangu(modelValue.title) }}</a
       >
-      <small class="ml-2">#{{ modelValue.id }}</small>
+      <small>#{{ modelValue.id }}</small>
     </h3>
   </div>
 </template>
