@@ -47,18 +47,13 @@ function onDelete(id: number) {
         ago(modelValue.date_added)
       }}</time>
     </div>
-    <div v-if="summary" space-y-2 text-right md:text-left>
+    <div v-if="summary" space-y-2>
       <pre m-0><code text-wrap>{{ source }}</code></pre>
-      <MyButton block :done="copied" @click="copy">copy to clipboard</MyButton>
+      <MyButton block text-right md:text-left :done="copied" @click="copy"
+        >copy to clipboard</MyButton
+      >
     </div>
-    <div
-      flex
-      space-x-2
-      flex-row-reverse
-      space-x-reverse
-      md:space-x-2
-      md:flex-row
-    >
+    <div class="my-controls">
       <SummarizeButton v-model="summary" :url="modelValue.url" />
       <DeleteBookmarkButton v-model="model" @delete="onDelete" />
     </div>

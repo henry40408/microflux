@@ -44,14 +44,7 @@ function onToggleStatus(s: string) {
         </div>
         <div v-if="fullContent" v-html="fullContent"></div>
       </div>
-      <div
-        flex
-        space-x-2
-        flex-row-reverse
-        space-x-reverse
-        md:flex-row
-        md:space-x-2
-      >
+      <div class="my-controls">
         <ToggleStatusButton v-model="model" @toggle-status="onToggleStatus" />
         <FetchContentButton v-model="fullContent" :id="modelValue.id" />
       </div>
