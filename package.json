@@ -6,6 +6,8 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "postinstall": "nuxt prepare",
     "prettier:check": "prettier --check .",
     "preview": "nuxt preview",
@@ -15,6 +17,7 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
+    "@nuxt/eslint": "^0.4.0",
     "@vueuse/core": "^10.11.0",
     "date-fns": "^3.6.0",
     "got": "^14.4.1",
@@ -36,6 +39,7 @@
     "histoire": "^0.17.17",
     "prettier": "^3.3.3",
     "typescript": "^5.5.3",
+    "vite-plugin-eslint2": "^4.4.0",
     "vue-tsc": "^2.0.26"
   }
 }

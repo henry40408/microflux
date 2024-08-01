@@ -33,27 +33,22 @@ function onToggleStatus(s: string) {
 </script>
 
 <template>
-  <details @toggle="onDetailsToggle" ref="entryContent">
+  <details ref="entryContent" @toggle="onDetailsToggle">
     <summary>content</summary>
     <div>
       <div>
         <div v-if="!fullContent">
           <span v-if="status === 'pending'">...</span>
           <span v-if="status === 'error'">{{ error }}</span>
-          <span v-if="data" v-html="data.content"></span>
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <span v-if="data" v-html="data.content" />
         </div>
-        <div v-if="fullContent" v-html="fullContent"></div>
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <div v-if="fullContent" v-html="fullContent" />
       </div>
-      <div
-        flex
-        space-x-2
-        flex-row-reverse
-        space-x-reverse
-        md:flex-row
-        md:space-x-2
-      >
+      <div class="my-controls">
         <ToggleStatusButton v-model="model" @toggle-status="onToggleStatus" />
-        <FetchContentButton v-model="fullContent" :id="modelValue.id" />
+        <FetchContentButton :id="modelValue.id" v-model="fullContent" />
       </div>
     </div>
   </details>

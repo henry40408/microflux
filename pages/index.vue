@@ -78,7 +78,7 @@ async function setFeedId(feedId: number | undefined) {
 <template>
   <div>
     <div space-y-2>
-      <NavBar text-right md:text-left />
+      <NavBar />
       <div space-y-2 text-right md:text-left md:flex md:space-x-2 md:space-y-0>
         <div space-x-2 items-end>
           <small>actions</small>
@@ -101,7 +101,7 @@ async function setFeedId(feedId: number | undefined) {
       </div>
     </div>
     <div v-if="data">
-      <Entry
+      <MyEntry
         v-for="(entry, index) in data.entries"
         :key="entry.id"
         v-model="data.entries[index]"
@@ -110,20 +110,13 @@ async function setFeedId(feedId: number | undefined) {
         empty
       </blockquote>
     </div>
-    <div
-      flex
-      space-x-2
-      flex-row-reverse
-      space-x-reverse
-      md:space-x-2
-      md:flex-row
-    >
+    <div class="my-controls">
       <MyButton :error="error" :loading="status === 'pending'" @click="execute"
         >reload</MyButton
       >
       <MarkAllAsReadButton
         v-if="count > 0"
-        :entryIds="entryIds"
+        :entry-ids="entryIds"
         @mark-all-as-read="execute"
       />
     </div>

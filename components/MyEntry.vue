@@ -71,18 +71,18 @@ function onToggleStatus(s: string) {
           }}</time>
         </div>
       </div>
-      <div flex space-x-2 items-end justify-end md:justify-start>
+      <div class="my-controls-with-label">
         <small block>actions</small>
-        <div space-x-2>
+        <div class="my-controls">
           <ToggleStatusButton v-model="model" />
           <SummarizeButton v-if="!isRead" v-model="summary" :url="model.url" />
           <SaveButton v-if="!isRead" v-model="model" />
         </div>
       </div>
     </div>
-    <div v-if="!isRead && summary" space-y-2 text-right md:text-left>
+    <div v-if="!isRead && summary" space-y-2>
       <pre m-0><code text-wrap>{{ pangu(source) }}</code></pre>
-      <MyButton block :done="copied" @click="copy">
+      <MyButton block text-right md:text-left :done="copied" @click="copy">
         copy to clipboard<template #done>copied!</template>
       </MyButton>
     </div>

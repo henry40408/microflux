@@ -12,13 +12,13 @@ export interface KagiSummarizeOutputData {
   word_stats: KagiSummarizeWordStats;
   elapsed_seconds: number;
   markdown: string;
-  citations_json: any[]; // Assuming it's an array, but it's empty in the example
+  // citations_json: any[]; // Assuming it's an array, but it's empty in the example
   citation_snippets: string;
-  references: any[]; // Assuming it's an array, but it's empty in the example
+  // references: any[]; // Assuming it's an array, but it's empty in the example
   md_references: string;
   references_text: string;
   response_metadata: KagiSummarizeResponseMetadata;
-  images: any[]; // Assuming it's an array, but it's empty in the example
+  // images: any[]; // Assuming it's an array, but it's empty in the example
 }
 
 export interface KagiSummarizeWordStats {
@@ -90,7 +90,7 @@ export interface MinifluxEntry {
   share_code: string;
   starred: boolean;
   reading_time: number;
-  enclosures: null | any[]; // Assuming it could be an array if not null
+  // enclosures: null | any[]; // Assuming it could be an array if not null
   feed: MinifluxFeed;
 }
 
