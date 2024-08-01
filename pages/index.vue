@@ -101,7 +101,7 @@ async function setFeedId(feedId: number | undefined) {
       </div>
     </div>
     <div v-if="data">
-      <Entry
+      <MyEntry
         v-for="(entry, index) in data.entries"
         :key="entry.id"
         v-model="data.entries[index]"

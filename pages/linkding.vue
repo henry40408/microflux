@@ -28,7 +28,7 @@ const bookmarks = computed(() => data.value?.results || []);
       </div>
     </div>
     <div>
-      <Bookmark
+      <MyBookmark
         v-for="(bookmark, index) in bookmarks"
         :key="bookmark.id"
         v-model="bookmarks[index]"

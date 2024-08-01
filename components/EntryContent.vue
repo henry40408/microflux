@@ -40,9 +40,11 @@ function onToggleStatus(s: string) {
         <div v-if="!fullContent">
           <span v-if="status === 'pending'">...</span>
           <span v-if="status === 'error'">{{ error }}</span>
-          <span v-if="data" v-html="data.content"/>
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <span v-if="data" v-html="data.content" />
         </div>
-        <div v-if="fullContent" v-html="fullContent"/>
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <div v-if="fullContent" v-html="fullContent" />
       </div>
       <div class="my-controls">
         <ToggleStatusButton v-model="model" @toggle-status="onToggleStatus" />
