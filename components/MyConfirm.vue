@@ -35,14 +35,14 @@ function setStage(newStage: Stage) {
 <template>
   <span>
     <a
-      href="#"
       v-if="!loading && stage === 'init'"
+      href="#"
       @click.prevent="setStage('pending')"
       ><slot
     /></a>
     <span v-if="!loading && stage === 'pending'" space-x-1>
       <span>are you sure?</span>
-      <a href="#" @click.prevent="setStage('confirmed')" text-red-500>yes</a>
+      <a href="#" text-red-500 @click.prevent="setStage('confirmed')">yes</a>
       <a href="#" @click.prevent="setStage('init')">no</a>
     </span>
     <span v-if="loading">{{ label }}</span>

@@ -116,7 +116,7 @@ async function setFeedId(feedId: number | undefined) {
       >
       <MarkAllAsReadButton
         v-if="count > 0"
-        :entryIds="entryIds"
+        :entry-ids="entryIds"
         @mark-all-as-read="execute"
       />
     </div>
