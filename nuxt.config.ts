@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   css: ["~/vendor/assets/css/water.css", "~/assets/css/style.css"],
   devtools: { enabled: true },
   eslint: { checker: true },
-  modules: ["@unocss/nuxt", "@nuxt/eslint"],
+  modules: ["@vueuse/nuxt", "@unocss/nuxt", "@nuxt/eslint"],
   runtimeConfig: {
     kagiSessionLink: "",
     linkdingToken: "",

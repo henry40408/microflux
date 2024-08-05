@@ -6,7 +6,7 @@ import type { KagiSummarizeResponse } from "../types";
 const model = defineModel<string>();
 const props = defineProps<{ url: string }>();
 
-const { data, status, error, execute } =
+const { data, status, error, execute, clear } =
   await useLazyFetch<KagiSummarizeResponse>("/api/summarize", {
     key: `summarize-${props.url}`,
     method: "POST",
@@ -21,6 +21,11 @@ async function onClick() {
   await execute();
   if (data.value) model.value = data.value.output_data.markdown;
 }
+
+function onCancel() {
+  clear();
+  model.value = "";
+}
 </script>
 
 <template>
@@ -29,6 +34,7 @@ async function onClick() {
     :error="error"
     :loading="status === 'pending'"
     @click="onClick"
-    >summarize</MyButton
+    @cancel="onCancel"
+    >summarize<template #done>reset summary</template></MyButton
   >
 </template>

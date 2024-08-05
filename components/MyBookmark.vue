@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useClipboard } from "@vueuse/core";
-
 import type { LinkdingBookmark } from "~/types";
 
 const model = defineModel<LinkdingBookmark>({ required: true });
@@ -43,9 +41,7 @@ function onDelete(id: number) {
     </div>
     <div space-x-1 text-right md:text-left>
       <small>created</small>
-      <time :datetime="modelValue.date_added">{{
-        ago(modelValue.date_added)
-      }}</time>
+      <DateTime :datetime="modelValue.date_added" />
     </div>
     <div v-if="summary" space-y-2>
       <pre m-0><code text-wrap>{{ source }}</code></pre>

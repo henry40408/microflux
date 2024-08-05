@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useClipboard } from "@vueuse/core";
-
 import type { MinifluxCompactEntry } from "../server/api/entries.get";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
@@ -66,9 +64,7 @@ function onToggleStatus(s: string) {
         </div>
         <div space-x-1 items-center>
           <small>published at</small>
-          <time :datetime="modelValue.published_at">{{
-            ago(modelValue.published_at)
-          }}</time>
+          <DateTime :datetime="modelValue.published_at" />
         </div>
       </div>
       <div class="my-controls-with-label">
