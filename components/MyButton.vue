@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{ done?: boolean; error?: unknown; loading?: boolean }>();
 
-defineEmits<{ click: [] }>();
+defineEmits<{ click: []; cancel: [] }>();
 
 const counter = useInterval(300);
 const label = computed(() => {
@@ -19,8 +19,17 @@ const label = computed(() => {
     <a v-if="!done && !loading" href="#" @click.prevent="$emit('click')"
       ><slot
     /></a>
-    <span v-if="!done && loading">{{ label }}</span>
+    <span v-if="!done && loading">
+      {{ label }}
+      <a v-if="!done && loading" href="#" @click.prevent="$emit('cancel')"
+        >cancel</a
+      ></span
+    >
     <span v-if="!done && !loading && error">{{ error }}</span>
-    <span v-if="done"><slot name="done">done!</slot></span>
+    <span v-if="done"
+      ><a href="#" @click.prevent="$emit('cancel')"
+        ><slot name="done">reset</slot></a
+      ></span
+    >
   </span>
 </template>
