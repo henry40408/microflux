@@ -36,7 +36,7 @@ function onToggleStatus(s: string) {
   <details ref="entryContent" @toggle="onDetailsToggle">
     <summary>content</summary>
     <div>
-      <div>
+      <div mb-4>
         <div v-if="!fullContent">
           <span v-if="status === 'pending'">...</span>
           <span v-if="status === 'error'">{{ error }}</span>
