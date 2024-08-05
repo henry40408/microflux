@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useClipboard } from "@vueuse/core";
-
 import type { LinkdingBookmark } from "~/types";
 
 const model = defineModel<LinkdingBookmark>({ required: true });

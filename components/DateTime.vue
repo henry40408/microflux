@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useToggle } from "@vueuse/core";
-
 const props = defineProps<{ datetime: string }>();
 
 const [absolute, toggle] = useToggle(false);

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useInterval } from "@vueuse/core";
-
 defineProps<{ done?: boolean; error?: unknown; loading?: boolean }>();
 
 defineEmits<{ click: [] }>();

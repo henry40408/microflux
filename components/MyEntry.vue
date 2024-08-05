@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useClipboard } from "@vueuse/core";
-
 import type { MinifluxCompactEntry } from "../server/api/entries.get";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });

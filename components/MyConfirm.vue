@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { useInterval } from "@vueuse/core";
 
 const props = defineProps<{
   danger?: boolean;
