@@ -30,11 +30,11 @@ function onCancel() {
 
 <template>
   <MyButton
+    :cancel="onCancel"
     :done="status === 'success'"
     :error="error"
     :loading="status === 'pending'"
     @click="onClick"
-    @cancel="onCancel"
     >summarize<template #done>reset summary</template></MyButton
   >
 </template>
