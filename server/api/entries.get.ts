@@ -1,16 +1,25 @@
+import lodash from "lodash";
 import type {
+  MinifluxCategory,
   MinifluxEntry,
   MinifluxFeed,
   MinifluxGetFeedEntriesResponse,
 } from "~/types";
 import minifluxClient from "../utils/miniflux-client";
 
+export type MinifluxCompactCategory = Pick<MinifluxCategory, "id" | "title">;
+
 export type MinifluxCompactFeed = Pick<
   MinifluxFeed,
-  "id" | "title" | "category" | "icon"
->;
+  "id" | "title" | "icon"
+> & {
+  category: MinifluxCompactCategory;
+};
 
-export type MinifluxCompactEntry = Omit<MinifluxEntry, "content" | "feed"> & {
+export type MinifluxCompactEntry = Pick<
+  MinifluxEntry,
+  "id" | "published_at" | "status" | "title" | "url"
+> & {
   feed: MinifluxCompactFeed;
 };
 
@@ -39,12 +48,11 @@ export default defineEventHandler(
     return {
       total: json.total,
       entries: json.entries.map((e) => ({
-        ...e,
-        content: undefined,
+        ...lodash.pick(e, ["id", "published_at", "status", "title", "url"]),
         feed: {
           id: e.feed.id,
           title: e.feed.title,
-          category: e.feed.category,
+          category: lodash.pick(e.feed.category, ["id", "title"]),
           icon: e.feed.icon,
         },
       })),
