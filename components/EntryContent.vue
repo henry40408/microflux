@@ -8,6 +8,7 @@ const emit = defineEmits<{ "toggle-status": [state: string] }>();
 
 const entryContent = ref<HTMLDetailsElement | null>(null);
 const fullContent = ref("");
+const fullContentRef = ref<HTMLElement | null>(null);
 
 const { data, error, status, execute } = await useLazyFetch(
   `/api/entries/${model.value.id}`,
@@ -24,6 +25,10 @@ async function onDetailsToggle() {
   await execute();
 }
 
+function onFetchContent() {
+  fullContentRef.value?.scrollIntoView();
+}
+
 function onToggleStatus(s: string) {
   if (s === "read" && entryContent.value?.open) {
     entryContent.value?.removeAttribute("open");
@@ -36,7 +41,7 @@ function onToggleStatus(s: string) {
   <details ref="entryContent" @toggle="onDetailsToggle">
     <summary>content</summary>
     <div>
-      <div mb-4>
+      <div ref="fullContentRef" mb-4>
         <div v-if="!fullContent">
           <span v-if="status === 'pending'">...</span>
           <span v-if="status === 'error'">{{ error }}</span>
@@ -48,7 +53,11 @@ function onToggleStatus(s: string) {
       </div>
       <div class="my-controls">
         <ToggleStatusButton v-model="model" @toggle-status="onToggleStatus" />
-        <FetchContentButton :id="modelValue.id" v-model="fullContent" />
+        <FetchContentButton
+          :id="modelValue.id"
+          v-model="fullContent"
+          @click="onFetchContent"
+        />
       </div>
     </div>
   </details>
