@@ -3,7 +3,7 @@ import { secondsToMilliseconds } from "date-fns";
 
 import type { MinifluxGetFeedCompactEntriesResponse } from "../server/api/entries.get";
 
-const entriesRef = ref<HTMLElement | null>(null);
+const toolbarRef = ref<HTMLElement | null>(null);
 const route = useRoute();
 
 const requestPath = computed(() => {
@@ -19,7 +19,7 @@ const { data, error, status, execute } =
   });
 const entries = computed(() => data.value?.entries || []);
 watch(entries, async (next) => {
-  entriesRef.value?.scrollIntoView(true);
+  toolbarRef.value?.scrollIntoView(true);
   const { categoryId, feedId } = route.query;
   if (next.length <= 0 && categoryId && feedId) {
     await navigateTo({ query: { categoryId } });
@@ -81,7 +81,15 @@ async function setFeedId(feedId: number | undefined) {
   <div>
     <div space-y-2>
       <NavBar />
-      <div space-y-2 text-right md:text-left md:flex md:space-x-2 md:space-y-0>
+      <div
+        ref="toolbarRef"
+        space-y-2
+        text-right
+        md:text-left
+        md:flex
+        md:space-x-2
+        md:space-y-0
+      >
         <div space-x-2 items-end>
           <small>actions</small>
           <MyButton
@@ -102,7 +110,6 @@ async function setFeedId(feedId: number | undefined) {
         </div>
       </div>
     </div>
-    <div ref="entriesRef" />
     <div v-if="data">
       <MyEntry
         v-for="(entry, index) in data.entries"
