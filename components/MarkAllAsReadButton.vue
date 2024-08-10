@@ -9,7 +9,7 @@ const body = computed(() => ({
   entryIds: props.entryIds,
   status: "read",
 }));
-const { status, error, execute } = await useLazyFetch("/api/entries", {
+const { status, error, execute } = await useLazyFetch("/api/miniflux/entries", {
   key: "mark-all-as-read",
   method: "PUT",
   body,

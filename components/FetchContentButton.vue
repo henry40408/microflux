@@ -5,7 +5,7 @@ const props = defineProps<{ id: number }>();
 const emit = defineEmits<{ click: [] }>();
 
 const { data, status, error, execute } = await useLazyFetch(
-  `/api/entries/${props.id}/fetch-content`,
+  `/api/miniflux/entries/${props.id}/fetch-content`,
   { immediate: false, server: false },
 );
 

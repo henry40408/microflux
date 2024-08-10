@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { secondsToMilliseconds } from "date-fns";
 
-import type { MinifluxCompactEntry } from "../server/api/entries.get";
+import type { MinifluxCompactEntry } from "../server/api/miniflux/entries.get";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
 const emit = defineEmits<{ "toggle-status": [state: string] }>();
@@ -18,7 +18,7 @@ const fullContent = ref("");
 const fullContentRef = ref<HTMLElement | null>(null);
 
 const { data, error, status, execute } = await useLazyFetch(
-  `/api/entries/${model.value.id}`,
+  `/api/miniflux/entries/${model.value.id}`,
   {
     key: `entry-content-${model.value.id}`,
     immediate: false,

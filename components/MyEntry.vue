@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MinifluxCompactEntry } from "../server/api/entries.get";
+import type { MinifluxCompactEntry } from "../server/api/miniflux/entries.get";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
 const isRead = computed(() => model.value.status === "read");

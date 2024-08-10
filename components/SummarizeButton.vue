@@ -7,7 +7,7 @@ const model = defineModel<string>();
 const props = defineProps<{ url: string }>();
 
 const { data, status, error, execute, clear } =
-  await useLazyFetch<KagiSummarizeResponse>("/api/summarize", {
+  await useLazyFetch<KagiSummarizeResponse>("/api/kagi/summarize", {
     key: `summarize-${props.url}`,
     method: "POST",
     body: { url: props.url },
