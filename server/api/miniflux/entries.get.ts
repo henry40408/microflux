@@ -31,7 +31,7 @@ export interface MinifluxGetFeedCompactEntriesResponse {
 export default defineEventHandler(
   async (event): Promise<MinifluxGetFeedCompactEntriesResponse> => {
     const client = minifluxClient(event);
-    const { categoryId, feedId } = getQuery(event);
+    const { categoryId, feedId, q } = getQuery(event);
 
     let path = "v1/entries";
     if (feedId) {
@@ -42,7 +42,11 @@ export default defineEventHandler(
 
     const json = await client
       .get(path, {
-        searchParams: { status: "unread", direction: "asc" },
+        searchParams: {
+          status: "unread",
+          direction: "asc",
+          search: q?.toString() || "",
+        },
       })
       .json<MinifluxGetFeedEntriesResponse>();
     return {

@@ -2,9 +2,10 @@
 import type { MinifluxCompactEntry } from "../server/api/miniflux/entries.get";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
-const isRead = computed(() => model.value.status === "read");
 
-const route = useRoute();
+defineEmits<{ clickCategory: [id: number]; clickFeed: [id: number] }>();
+
+const isRead = computed(() => model.value.status === "read");
 
 const entryTitle = ref<HTMLElement | null>(null);
 const summary = ref("");
@@ -16,16 +17,6 @@ ${model.value.url}
 ${summary.value}`,
 );
 const { copy, copied } = useClipboard({ source });
-
-async function setCategoryId(categoryId: number) {
-  const { feedId } = route.query;
-  await navigateTo({ query: { categoryId, feedId } });
-}
-
-async function setFeedId(feedId: number) {
-  const { categoryId } = route.query;
-  await navigateTo({ query: { categoryId, feedId } });
-}
 
 function onToggleStatus(s: string) {
   if (s === "read") {
@@ -50,7 +41,7 @@ function onToggleStatus(s: string) {
       >
         <div space-x-1 items-center>
           <small>feed</small>
-          <a href="#" @click.prevent="setFeedId(modelValue.feed.id)">{{
+          <a href="#" @click.prevent="$emit('clickFeed', modelValue.feed.id)">{{
             modelValue.feed.title
           }}</a>
         </div>
@@ -58,7 +49,7 @@ function onToggleStatus(s: string) {
           <small>category</small>
           <a
             href="#"
-            @click.prevent="setCategoryId(modelValue.feed.category.id)"
+            @click.prevent="$emit('clickCategory', modelValue.feed.category.id)"
             >{{ modelValue.feed.category.title }}</a
           >
         </div>
