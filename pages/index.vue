@@ -121,16 +121,16 @@ async function setFeedId(feedId: number | undefined) {
         :key="entry.id"
         v-model="data.entries[index]"
       />
-      <blockquote v-if="status !== 'pending' && data.entries.length <= 0">
-        empty
-      </blockquote>
+      <em v-if="status !== 'pending' && data.entries.length <= 0" block mb-4>
+        (empty)
+      </em>
     </div>
     <div class="my-controls">
       <MyButton :error="error" :loading="status === 'pending'" @click="execute"
         >reload</MyButton
       >
       <MarkAllAsReadButton
-        v-if="count > 0"
+        v-if="status !== 'pending' && count > 0"
         :entry-ids="entryIds"
         @mark-all-as-read="execute"
       />
