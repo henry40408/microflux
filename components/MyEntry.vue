@@ -9,12 +9,13 @@ const isRead = computed(() => model.value.status === "read");
 
 const entryTitle = ref<HTMLElement | null>(null);
 const summary = ref("");
+const finalUrl = ref("");
 const source = computed(
   () => `${model.value.title}
 
-${model.value.url}
+${finalUrl.value}
 
-${summary.value}`,
+${pangu(summary.value)}`,
 );
 const { copy, copied } = useClipboard({ source });
 
@@ -62,13 +63,18 @@ function onToggleStatus(s: string) {
         <small block>actions</small>
         <div class="my-controls">
           <ToggleStatusButton v-model="model" />
-          <SummarizeButton v-if="!isRead" v-model="summary" :url="model.url" />
+          <SummarizeButton
+            v-if="!isRead"
+            v-model:summary="summary"
+            v-model:final-url="finalUrl"
+            :url="model.url"
+          />
           <SaveButton v-if="!isRead" v-model="model" />
         </div>
       </div>
     </div>
     <div v-if="!isRead && summary" space-y-2>
-      <pre m-0><code text-wrap>{{ pangu(source) }}</code></pre>
+      <pre m-0><code text-wrap>{{ source }}</code></pre>
       <MyButton block text-right md:text-left :done="copied" @click="copy">
         copy to clipboard<template #done>copied!</template>
       </MyButton>
