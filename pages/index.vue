@@ -111,6 +111,11 @@ async function setFeedId(feedId: number | undefined) {
       </div>
     </div>
     <div v-if="data">
+      <MyOutlines
+        v-model="data"
+        @click-feed="setFeedId"
+        @click-category="setCategoryId"
+      />
       <MyEntry
         v-for="(entry, index) in data.entries"
         :key="entry.id"
