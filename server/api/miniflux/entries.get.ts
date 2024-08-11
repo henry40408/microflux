@@ -5,7 +5,7 @@ import type {
   MinifluxFeed,
   MinifluxGetFeedEntriesResponse,
 } from "~/types";
-import minifluxClient from "../utils/miniflux-client";
+import minifluxClient from "~/server/utils/miniflux-client";
 
 export type MinifluxCompactCategory = Pick<MinifluxCategory, "id" | "title">;
 

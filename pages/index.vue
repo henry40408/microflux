@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { secondsToMilliseconds } from "date-fns";
 
-import type { MinifluxGetFeedCompactEntriesResponse } from "../server/api/entries.get";
+import type { MinifluxGetFeedCompactEntriesResponse } from "../server/api/miniflux/entries.get";
 
 const toolbarRef = ref<HTMLElement | null>(null);
 const route = useRoute();
 
 const requestPath = computed(() => {
   const { categoryId, feedId } = route.query;
-  if (feedId) return `/api/entries?feedId=${feedId}`;
-  if (categoryId) return `/api/entries?categoryId=${categoryId}`;
-  return "/api/entries";
+  if (feedId) return `/api/miniflux/entries?feedId=${feedId}`;
+  if (categoryId) return `/api/miniflux/entries?categoryId=${categoryId}`;
+  return "/api/miniflux/entries";
 });
 
 const { data, error, status, execute } =
@@ -111,6 +111,11 @@ async function setFeedId(feedId: number | undefined) {
       </div>
     </div>
     <div v-if="data">
+      <MyOutlines
+        v-model="data"
+        @click-feed="setFeedId"
+        @click-category="setCategoryId"
+      />
       <MyEntry
         v-for="(entry, index) in data.entries"
         :key="entry.id"
