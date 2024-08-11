@@ -4,13 +4,20 @@ import { secondsToMilliseconds } from "date-fns";
 import type { MinifluxGetFeedCompactEntriesResponse } from "../server/api/miniflux/entries.get";
 
 const toolbarRef = ref<HTMLElement | null>(null);
-const route = useRoute();
+const params = useUrlSearchParams("history");
+
+const q = ref(params.q || "");
+watch(q, (next) => {
+  params.q = next;
+  if (!next) delete params.q;
+});
 
 const requestPath = computed(() => {
-  const { categoryId, feedId } = route.query;
-  if (feedId) return `/api/miniflux/entries?feedId=${feedId}`;
-  if (categoryId) return `/api/miniflux/entries?categoryId=${categoryId}`;
-  return "/api/miniflux/entries";
+  if (params.feedId)
+    return `/api/miniflux/entries?q=${q.value}&feedId=${params.feedId}`;
+  if (params.categoryId)
+    return `/api/miniflux/entries?q=${q.value}&categoryId=${params.categoryId}`;
+  return `/api/miniflux/entries?q=${q.value}`;
 });
 
 const { data, error, status, execute } =
@@ -20,17 +27,19 @@ const { data, error, status, execute } =
 const entries = computed(() => data.value?.entries || []);
 watch(entries, async (next) => {
   toolbarRef.value?.scrollIntoView(true);
-  const { categoryId, feedId } = route.query;
+  const { categoryId, feedId } = params;
   if (next.length <= 0 && categoryId && feedId) {
-    await navigateTo({ query: { categoryId } });
+    delete params.feedId;
     return;
   }
   if (next.length <= 0 && feedId) {
-    await navigateTo({ query: {} });
+    delete params.categoryId;
+    delete params.feedId;
     return;
   }
   if (next.length <= 0 && categoryId) {
-    await navigateTo({ query: {} });
+    delete params.categoryId;
+    delete params.feedId;
     return;
   }
 });
@@ -56,24 +65,24 @@ const categories = computed(
     ) || [],
 );
 const selectedFeed = computed(() => {
-  const { feedId } = route.query;
+  const { feedId } = params;
   if (!feedId) return null;
   return feeds.value.find((f) => `${f.id}` === feedId);
 });
 const selectedCategory = computed(() => {
-  const { categoryId } = route.query;
+  const { categoryId } = params;
   if (!categoryId) return null;
   return categories.value.find((c) => `${c.id}` === categoryId);
 });
 
 async function setCategoryId(categoryId: number | undefined) {
-  const { feedId } = route.query;
-  await navigateTo({ query: { categoryId, feedId } });
+  params.categoryId = categoryId?.toString() || "";
+  if (!categoryId) delete params.categoryId;
 }
 
 async function setFeedId(feedId: number | undefined) {
-  const { categoryId } = route.query;
-  await navigateTo({ query: { categoryId, feedId } });
+  params.feedId = feedId?.toString() || "";
+  if (!feedId) delete params.feedId;
 }
 </script>
 
@@ -85,6 +94,7 @@ async function setFeedId(feedId: number | undefined) {
         ref="toolbarRef"
         space-y-2
         text-right
+        items-center
         md:text-left
         md:flex
         md:space-x-2
@@ -99,6 +109,7 @@ async function setFeedId(feedId: number | undefined) {
             >reload</MyButton
           >
         </div>
+        <MySearch v-model="q" />
         <div>{{ count }} entries</div>
         <div v-if="selectedFeed">
           {{ selectedFeed.title }}
@@ -120,6 +131,8 @@ async function setFeedId(feedId: number | undefined) {
         v-for="(entry, index) in data.entries"
         :key="entry.id"
         v-model="data.entries[index]"
+        @click-category="setCategoryId"
+        @click-feed="setFeedId"
       />
       <em v-if="status !== 'pending' && data.entries.length <= 0" block mb-4>
         (empty)

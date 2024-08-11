@@ -7,7 +7,7 @@ const model = defineModel<MinifluxCompactEntry>({ required: true });
 const isRead = computed(() => model.value.status === "read");
 
 const body = computed(() => ({ entryIds: [model.value.id], status: "read" }));
-const { execute } = await useLazyFetch("/api/entries", {
+const { execute } = await useLazyFetch("/api/miniflux/entries", {
   key: `mark-as-read-${model.value.id}`,
   method: "PUT",
   body,
