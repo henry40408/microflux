@@ -10,13 +10,14 @@ const bookmarkTitle = computed(
 const bookmarkDescription = computed(
   () => model.value.description || model.value.website_description,
 );
+const finalUrl = ref("");
 const summary = ref("");
 const source = computed(
   () => `${bookmarkTitle.value}
 
-${model.value.url}
+${finalUrl.value}
 
-${summary.value}`,
+${pangu(summary.value)}`,
 );
 const { copy, copied } = useClipboard({ source });
 
@@ -50,7 +51,11 @@ function onDelete(id: number) {
       >
     </div>
     <div class="my-controls">
-      <SummarizeButton v-model="summary" :url="modelValue.url" />
+      <SummarizeButton
+        v-model:summary="summary"
+        v-model:final-url="finalUrl"
+        :url="modelValue.url"
+      />
       <DeleteBookmarkButton v-model="model" @delete="onDelete" />
     </div>
   </div>

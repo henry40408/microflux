@@ -1,15 +1,19 @@
 import { z } from "zod";
 import got from "got";
 
+import type { FullURLResponse } from "~/types";
+
 const getFullURLSchema = z.object({
   url: z.string().url(),
 });
 
-export default defineEventHandler(async (event) => {
-  const result = await getValidatedQuery(event, (query) =>
-    getFullURLSchema.safeParse(query),
+export default defineEventHandler(async (event): Promise<FullURLResponse> => {
+  const logger = getLogger();
+
+  const result = await readValidatedBody(event, (body) =>
+    getFullURLSchema.safeParse(body),
   );
-  if (!result.success) return result.error.issues;
+  if (!result.success) throw result.error.issues;
   const query = result.data;
 
   // 1. try HEAD method
@@ -17,7 +21,7 @@ export default defineEventHandler(async (event) => {
     const res = await got.head(query.url);
     if (res.url) return { url: res.url };
   } catch (err) {
-    console.error(err);
+    logger.error(err);
   }
 
   // 2. try GET method
@@ -25,7 +29,7 @@ export default defineEventHandler(async (event) => {
     const res = await got(query.url);
     if (res.url) return { url: res.url };
   } catch (err) {
-    console.error(err);
+    logger.error(err);
   }
 
   // 3. otherwise, return the original URL

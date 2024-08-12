@@ -1,3 +1,9 @@
+// internal
+
+export interface FullURLResponse {
+  url: string;
+}
+
 // kagi
 
 export interface KagiSummarizeResponse {
