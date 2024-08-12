@@ -10,7 +10,6 @@ const expandableRef = ref<HTMLDetailsElement | null>(null);
 watch(
   () => model.value.status,
   (next) => {
-    console.log("next", next);
     if (next === "read") expandableRef.value?.removeAttribute("open");
   },
 );

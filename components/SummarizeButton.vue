@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { secondsToMilliseconds } from "date-fns";
 
-import type { KagiSummarizeResponse } from "../types";
+import type { KagiSummarizeResponse, FullURLResponse } from "~/types";
 
-const model = defineModel<string>("summary");
-const finalUrl = defineModel<string>("finalUrl");
+const model = defineModel<string>("summary", { required: true });
+const finalUrl = defineModel<string>("finalUrl", { required: true });
 const props = defineProps<{ url: string }>();
 
 const { data, status, error, execute, clear } =
@@ -24,11 +24,10 @@ const {
   error: fullUrlError,
   execute: executeFullUrl,
   clear: clearFullUrl,
-} = await useLazyFetch<{
-  url: string;
-}>("/api/full-url", {
+} = await useLazyFetch<FullURLResponse>("/api/full-url", {
   key: `full-url-${props.url}`,
-  query: { url: props.url },
+  method: "POST",
+  body: { url: props.url },
   immediate: false,
   server: false,
   timeout: secondsToMilliseconds(30),
@@ -45,7 +44,6 @@ const isSuccess = computed(
 async function onClick() {
   await Promise.all([execute(), executeFullUrl()]);
   if (data.value) model.value = data.value.output_data.markdown;
-  console.log(fullUrlData.value);
   if (fullUrlData.value) finalUrl.value = fullUrlData.value.url;
 }
 

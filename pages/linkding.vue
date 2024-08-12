@@ -3,7 +3,7 @@ import type { LinkdingBookmarkResponse } from "~/types";
 
 const params = useUrlSearchParams("history");
 
-const q = ref(params.q);
+const q = ref(params.q || "");
 watch(q, (next) => {
   params.q = next;
   if (!next) delete params.q;
