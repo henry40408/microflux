@@ -97,6 +97,7 @@ async function setFeedId(feedId: number | undefined) {
         items-center
         md:text-left
         md:flex
+        md:flex-wrap
         md:space-x-2
         md:space-y-0
       >
