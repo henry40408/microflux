@@ -16,7 +16,7 @@ const feeds = computed(() =>
   lodash(unreadEntries.value || [])
     .groupBy("feed.id")
     .map((entries) => ({ feed: entries[0].feed, count: entries.length }))
-    .sortBy((g) => -g.count)
+    .orderBy([(g) => g.count, (g) => g.feed.title], ["desc", "asc"])
     .value(),
 );
 const categories = computed(() =>
@@ -26,7 +26,7 @@ const categories = computed(() =>
       category: entries[0].feed.category,
       count: entries.length,
     }))
-    .sortBy((g) => -g.count)
+    .orderBy([(g) => g.count, (g) => g.category.title], ["desc", "asc"])
     .value(),
 );
 </script>
