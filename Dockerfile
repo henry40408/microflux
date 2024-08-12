@@ -19,7 +19,7 @@ WORKDIR /app
 COPY --from=builder /app/.output /app/.output
 COPY --from=builder /app/package*.json ./
 
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 EXPOSE 3000
 
