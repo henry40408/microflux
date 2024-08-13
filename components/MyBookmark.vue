@@ -10,14 +10,13 @@ const bookmarkTitle = computed(
 const bookmarkDescription = computed(
   () => model.value.description || model.value.website_description,
 );
-const finalUrl = ref("");
-const summary = ref("");
+const summary = useSummarize(model.value.url);
 const source = computed(
   () => `${bookmarkTitle.value}
 
-${finalUrl.value}
+${summary.data.value?.finalUrl || ""}
 
-${pangu(summary.value)}`,
+${pangu(summary.data.value?.summary || "")}`,
 );
 const { copy, copied } = useClipboard({ source });
 
@@ -44,18 +43,21 @@ function onDelete(id: number) {
       <small>created</small>
       <DateTime :datetime="modelValue.date_added" />
     </div>
-    <div v-if="summary" space-y-2>
+    <div v-if="summary.done.value" space-y-2>
       <pre m-0><code text-wrap>{{ source }}</code></pre>
       <MyButton block text-right md:text-left :done="copied" @click="copy"
         >copy to clipboard</MyButton
       >
     </div>
     <div class="my-controls">
-      <SummarizeButton
-        v-model:summary="summary"
-        v-model:final-url="finalUrl"
-        :url="modelValue.url"
-      />
+      <MyButton
+        :cancel="summary.clear"
+        :done="summary.done.value"
+        :error="summary.error"
+        :loading="summary.pending.value"
+        @click="summary.execute"
+        >summarize<template #done>reset summary</template></MyButton
+      >
       <DeleteBookmarkButton v-model="model" @delete="onDelete" />
     </div>
   </div>

@@ -8,14 +8,15 @@ defineEmits<{ clickCategory: [id: number]; clickFeed: [id: number] }>();
 const isRead = computed(() => model.value.status === "read");
 
 const entryTitle = ref<HTMLElement | null>(null);
-const summary = ref("");
-const finalUrl = ref("");
+
+const summary = useSummarize(model.value.url);
 const source = computed(
-  () => `${model.value.title}
+  () =>
+    `${model.value.title}
 
-${finalUrl.value}
+${summary.data.value?.finalUrl || ""}
 
-${pangu(summary.value)}`,
+${pangu(summary.data.value?.summary || "")}`,
 );
 const { copy, copied } = useClipboard({ source });
 
@@ -63,17 +64,19 @@ function onToggleStatus(s: string) {
         <small block>actions</small>
         <div class="my-controls">
           <ToggleStatusButton v-model="model" />
-          <SummarizeButton
-            v-if="!isRead"
-            v-model:summary="summary"
-            v-model:final-url="finalUrl"
-            :url="model.url"
-          />
+          <MyButton
+            :cancel="summary.clear"
+            :done="summary.done.value"
+            :error="summary.error"
+            :loading="summary.pending.value"
+            @click="summary.execute"
+            >summarize<template #done>reset summary</template></MyButton
+          >
           <SaveButton v-if="!isRead" v-model="model" />
         </div>
       </div>
     </div>
-    <div v-if="!isRead && summary" space-y-2>
+    <div v-if="!isRead && summary.done.value" space-y-2>
       <pre m-0><code text-wrap>{{ source }}</code></pre>
       <MyButton block text-right md:text-left :done="copied" @click="copy">
         copy to clipboard<template #done>copied!</template>
