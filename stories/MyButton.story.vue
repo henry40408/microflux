@@ -16,6 +16,6 @@ async function load() {
 <template>
   <Story>
     <MyButton @click="logEvent('click', $event)">button</MyButton>
-    <MyButton :loading="loading" @click="load">async button</MyButton>
+    <MyButton :pending="loading" @click="load">async button</MyButton>
   </Story>
 </template>

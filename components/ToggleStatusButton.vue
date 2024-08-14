@@ -34,7 +34,7 @@ async function onClick() {
 <template>
   <MyButton
     :error="fetchEntries.error.value"
-    :loading="fetchEntries.status.value === 'pending'"
+    :pending="fetchEntries.status.value === 'pending'"
     @click="onClick"
     >{{ nextStatus }}</MyButton
   >

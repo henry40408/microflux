@@ -22,7 +22,7 @@ const saved = await useLazyFetch(
   <MyButton
     :done="saved.status.value === 'success'"
     :error="saved.error.value"
-    :loading="saved.status.value === 'pending'"
+    :pending="saved.status.value === 'pending'"
     @click="saved.execute"
     >save</MyButton
   >

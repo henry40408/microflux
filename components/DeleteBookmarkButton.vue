@@ -27,7 +27,7 @@ async function onConfirm() {
     danger
     :done="deleted.status.value === 'success'"
     :error="deleted.error.value"
-    :loading="deleted.status.value === 'pending'"
+    :pending="deleted.status.value === 'pending'"
     @confirm="onConfirm"
     >delete</MyConfirm
   >

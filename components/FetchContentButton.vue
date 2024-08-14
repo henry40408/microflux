@@ -23,10 +23,10 @@ async function onClick() {
 
 <template>
   <MyButton
-    :cancel="onCancel"
+    :clear="onCancel"
     :done="fetched.status.value === 'success'"
     :error="fetched.error.value"
-    :loading="fetched.status.value === 'pending'"
+    :pending="fetched.status.value === 'pending'"
     @click="onClick"
     >download</MyButton
   >

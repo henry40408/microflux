@@ -29,7 +29,7 @@ async function onClick() {
   <MyConfirm
     repeated
     :error="markedAsRead.error.value"
-    :loading="markedAsRead.status.value === 'pending'"
+    :pending="markedAsRead.status.value === 'pending'"
     @confirm="onClick"
     >mark {{ props.entryIds.length }} as read</MyConfirm
   >

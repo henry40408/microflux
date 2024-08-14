@@ -51,12 +51,12 @@ function onDelete(id: number) {
     </div>
     <div class="my-controls">
       <MyButton
-        :cancel="summary.clear"
+        :clear="summary.clear"
         :done="summary.done.value"
         :error="summary.error"
-        :loading="summary.pending.value"
+        :pending="summary.pending.value"
         @click="summary.execute"
-        >summarize<template #done>reset summary</template></MyButton
+        >summarize<template #clear>reset summary</template></MyButton
       >
       <DeleteBookmarkButton v-model="model" @delete="onDelete" />
     </div>

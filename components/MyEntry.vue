@@ -65,12 +65,12 @@ function onToggleStatus(s: string) {
         <div class="my-controls">
           <ToggleStatusButton v-model="model" />
           <MyButton
-            :cancel="summary.clear"
+            :clear="summary.clear"
             :done="summary.done.value"
             :error="summary.error"
-            :loading="summary.pending.value"
+            :pending="summary.pending.value"
             @click="summary.execute"
-            >summarize<template #done>reset summary</template></MyButton
+            >summarize<template #clear>reset summary</template></MyButton
           >
           <SaveButton v-if="!isRead" v-model="model" />
         </div>
@@ -79,7 +79,7 @@ function onToggleStatus(s: string) {
     <div v-if="!isRead && summary.done.value" space-y-2>
       <pre m-0><code text-wrap>{{ source }}</code></pre>
       <MyButton block text-right md:text-left :done="copied" @click="copy">
-        copy to clipboard<template #done>copied!</template>
+        copy to clipboard<template #clear>copied!</template>
       </MyButton>
     </div>
     <div>
