@@ -13,7 +13,7 @@ const body = computed(() => ({
   entryIds: [model.value.id],
   status: nextStatus.value,
 }));
-const { status, error, execute } = await useLazyFetch("/api/miniflux/entries", {
+const fetchEntries = await useLazyFetch("/api/miniflux/entries", {
   key: `toggle-status-${model.value.id}`,
   method: "PUT",
   body,
@@ -24,15 +24,18 @@ const { status, error, execute } = await useLazyFetch("/api/miniflux/entries", {
 });
 
 async function onClick() {
-  const s = nextStatus.value;
-  await execute();
-  model.value.status = s;
-  emit("toggle-status", s);
+  const oldStatus = nextStatus.value;
+  await fetchEntries.execute();
+  model.value.status = oldStatus;
+  emit("toggle-status", oldStatus);
 }
 </script>
 
 <template>
-  <MyButton :error="error" :loading="status === 'pending'" @click="onClick">{{
-    nextStatus
-  }}</MyButton>
+  <MyButton
+    :error="fetchEntries.error.value"
+    :pending="fetchEntries.status.value === 'pending'"
+    @click="onClick"
+    >{{ nextStatus }}</MyButton
+  >
 </template>

@@ -29,7 +29,7 @@ const bookmarks = computed(() => data.value?.results || []);
         <div space-x-2>
           <small>actions</small>
           <MyButton
-            :loading="status === 'pending'"
+            :pending="status === 'pending'"
             :error="error"
             @click="execute"
             >reload</MyButton

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 defineProps<{
+  clear?: () => void;
   done?: boolean;
   error?: unknown;
-  loading?: boolean;
-  cancel?: () => void;
+  pending?: boolean;
 }>();
 
 defineEmits<{ click: [] }>();
@@ -21,21 +21,21 @@ const label = computed(() => {
 
 <template>
   <span>
-    <a v-if="!done && !loading" href="#" @click.prevent="$emit('click')"
+    <a v-if="!done && !pending" href="#" @click.prevent="$emit('click')"
       ><slot
     /></a>
-    <span v-if="!done && loading">
+    <span v-if="!done && pending">
       {{ label }}
-      <a v-if="!done && loading" href="#" @click.prevent="cancel?.()"
+      <a v-if="!done && pending" href="#" @click.prevent="clear?.()"
         >cancel</a
       ></span
     >
-    <span v-if="!done && !loading && error">{{ error }}</span>
-    <span v-if="done && cancel"
-      ><a href="#" @click.prevent="cancel?.()"
-        ><slot name="done">reset</slot></a
+    <span v-if="!done && !pending && error">{{ error }}</span>
+    <span v-if="done && clear"
+      ><a href="#" @click.prevent="clear?.()"
+        ><slot name="clear">reset</slot></a
       ></span
     >
-    <span v-if="done && !cancel">done!</span>
+    <span v-if="done && !clear">done!</span>
   </span>
 </template>

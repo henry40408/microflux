@@ -8,21 +8,20 @@ defineEmits<{ clickCategory: [id: number]; clickFeed: [id: number] }>();
 const isRead = computed(() => model.value.status === "read");
 
 const entryTitle = ref<HTMLElement | null>(null);
-const summary = ref("");
-const finalUrl = ref("");
+
+const summary = useSummarize(model.value.url);
 const source = computed(
-  () => `${model.value.title}
+  () =>
+    `${model.value.title}
 
-${finalUrl.value}
+${summary.data.value?.finalUrl || ""}
 
-${pangu(summary.value)}`,
+${pangu(summary.data.value?.summary || "")}`,
 );
 const { copy, copied } = useClipboard({ source });
 
-function onToggleStatus(s: string) {
-  if (s === "read") {
-    entryTitle.value?.scrollIntoView();
-  }
+function onScrollToEntry() {
+  entryTitle.value?.scrollIntoView();
 }
 </script>
 
@@ -63,24 +62,26 @@ function onToggleStatus(s: string) {
         <small block>actions</small>
         <div class="my-controls">
           <ToggleStatusButton v-model="model" />
-          <SummarizeButton
-            v-if="!isRead"
-            v-model:summary="summary"
-            v-model:final-url="finalUrl"
-            :url="model.url"
-          />
+          <MyButton
+            :clear="summary.clear"
+            :done="summary.done.value"
+            :error="summary.error"
+            :pending="summary.pending.value"
+            @click="summary.execute"
+            >summarize<template #clear>reset summary</template></MyButton
+          >
           <SaveButton v-if="!isRead" v-model="model" />
         </div>
       </div>
     </div>
-    <div v-if="!isRead && summary" space-y-2>
+    <div v-if="!isRead && summary.done.value" space-y-2>
       <pre m-0><code text-wrap>{{ source }}</code></pre>
       <MyButton block text-right md:text-left :done="copied" @click="copy">
-        copy to clipboard<template #done>copied!</template>
+        copy to clipboard<template #clear>copied!</template>
       </MyButton>
     </div>
     <div>
-      <EntryContent v-model="model" @toggle-status="onToggleStatus" />
+      <EntryContent v-model="model" @scroll-to-entry="onScrollToEntry" />
     </div>
   </div>
 </template>

@@ -105,7 +105,7 @@ async function setFeedId(feedId: number | undefined) {
           <small>actions</small>
           <MyButton
             :error="error"
-            :loading="status === 'pending'"
+            :pending="status === 'pending'"
             @click="execute"
             >reload</MyButton
           >
@@ -140,7 +140,7 @@ async function setFeedId(feedId: number | undefined) {
       </em>
     </div>
     <div class="my-controls">
-      <MyButton :error="error" :loading="status === 'pending'" @click="execute"
+      <MyButton :error="error" :pending="status === 'pending'" @click="execute"
         >reload</MyButton
       >
       <MarkAllAsReadButton

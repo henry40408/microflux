@@ -9,7 +9,7 @@ const body = computed(() => ({
   entryIds: props.entryIds,
   status: "read",
 }));
-const { status, error, execute } = await useLazyFetch("/api/miniflux/entries", {
+const markedAsRead = await useLazyFetch("/api/miniflux/entries", {
   key: "mark-all-as-read",
   method: "PUT",
   body,
@@ -20,7 +20,7 @@ const { status, error, execute } = await useLazyFetch("/api/miniflux/entries", {
 });
 
 async function onClick() {
-  await execute();
+  await markedAsRead.execute();
   emit("mark-all-as-read");
 }
 </script>
@@ -28,8 +28,8 @@ async function onClick() {
 <template>
   <MyConfirm
     repeated
-    :error="error"
-    :loading="status === 'pending'"
+    :error="markedAsRead.error.value"
+    :pending="markedAsRead.status.value === 'pending'"
     @confirm="onClick"
     >mark {{ props.entryIds.length }} as read</MyConfirm
   >

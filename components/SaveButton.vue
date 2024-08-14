@@ -5,7 +5,7 @@ import type { MinifluxCompactEntry } from "../server/api/miniflux/entries.get";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
 
-const { status, error, execute } = await useLazyFetch(
+const saved = await useLazyFetch(
   `/api/miniflux/entries/${model.value.id}/save`,
   {
     key: `save-${model.value.id}`,
@@ -20,10 +20,10 @@ const { status, error, execute } = await useLazyFetch(
 
 <template>
   <MyButton
-    :done="status === 'success'"
-    :error="error"
-    :loading="status === 'pending'"
-    @click="execute"
+    :done="saved.status.value === 'success'"
+    :error="saved.error.value"
+    :pending="saved.status.value === 'pending'"
+    @click="saved.execute"
     >save</MyButton
   >
 </template>

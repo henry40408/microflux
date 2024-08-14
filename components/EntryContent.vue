@@ -4,7 +4,7 @@ import { secondsToMilliseconds } from "date-fns";
 import type { MinifluxCompactEntry } from "../server/api/miniflux/entries.get";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
-const emit = defineEmits<{ "toggle-status": [state: string] }>();
+const emit = defineEmits<{ "scroll-to-entry": [] }>();
 
 const expandableRef = ref<HTMLDetailsElement | null>(null);
 watch(
@@ -16,19 +16,21 @@ watch(
 const fullContent = ref("");
 const fullContentRef = ref<HTMLElement | null>(null);
 
-const { data, error, status, execute } = await useLazyFetch(
-  `/api/miniflux/entries/${model.value.id}`,
-  {
-    key: `entry-content-${model.value.id}`,
-    immediate: false,
-    server: false,
-    timeout: secondsToMilliseconds(30),
-  },
-);
+const fetched = await useLazyFetch(`/api/miniflux/entries/${model.value.id}`, {
+  key: `entry-content-${model.value.id}`,
+  immediate: false,
+  server: false,
+  timeout: secondsToMilliseconds(30),
+});
+
+function onCollapse() {
+  expandableRef.value?.removeAttribute("open");
+  emit("scroll-to-entry");
+}
 
 async function onDetailsToggle() {
-  if (data.value) return;
-  await execute();
+  if (fetched.data.value) return;
+  await fetched.execute();
 }
 
 function onFetchContent() {
@@ -38,7 +40,7 @@ function onFetchContent() {
 function onToggleStatus(s: string) {
   if (s === "read") {
     expandableRef.value?.removeAttribute("open");
-    emit("toggle-status", s);
+    emit("scroll-to-entry");
   }
 }
 </script>
@@ -49,21 +51,23 @@ function onToggleStatus(s: string) {
     <div>
       <div ref="fullContentRef" mb-4>
         <div v-if="!fullContent">
-          <span v-if="status === 'pending'">...</span>
-          <span v-if="status === 'error'">{{ error }}</span>
+          <span v-if="fetched.status.value === 'pending'">...</span>
+          <span v-if="fetched.error">{{ fetched.error }}</span>
           <!-- eslint-disable-next-line vue/no-v-html -->
-          <span v-if="data" v-html="data.content" />
+          <span v-if="fetched.data.value" v-html="fetched.data.value.content" />
         </div>
         <!-- eslint-disable-next-line vue/no-v-html -->
         <div v-if="fullContent" v-html="fullContent" />
       </div>
       <div class="my-controls">
+        <MyButton @click="onCollapse">collapse</MyButton>
         <ToggleStatusButton v-model="model" @toggle-status="onToggleStatus" />
         <FetchContentButton
           :id="modelValue.id"
           v-model="fullContent"
-          @click="onFetchContent"
+          @fetch-content="onFetchContent"
         />
+        <SaveButton v-model="model" />
       </div>
     </div>
   </details>
