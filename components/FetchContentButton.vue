@@ -6,8 +6,13 @@ const emit = defineEmits<{ click: [] }>();
 
 const fetched = await useLazyFetch(
   `/api/miniflux/entries/${props.id}/fetch-content`,
-  { immediate: false, server: false },
+  { key: `fetch-content-${props.id}`, immediate: false, server: false },
 );
+
+async function onCancel() {
+  fetched.clear();
+  model.value = "";
+}
 
 async function onClick() {
   await fetched.execute();
@@ -18,6 +23,7 @@ async function onClick() {
 
 <template>
   <MyButton
+    :cancel="onCancel"
     :done="fetched.status.value === 'success'"
     :error="fetched.error.value"
     :loading="fetched.status.value === 'pending'"
