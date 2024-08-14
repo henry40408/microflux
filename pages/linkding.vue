@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import type { LinkdingBookmarkResponse } from "~/types";
 
-const params = useUrlSearchParams("history");
+const query = toRef(useRoute(), "query");
 
-const q = ref(params.q || "");
-watch(q, (next) => {
-  params.q = next;
-  if (!next) delete params.q;
+const q = ref(query.value.q?.toString());
+watch(q, async () => {
+  await navigateTo({ query: { q: q.value || undefined } });
 });
 
-const requestPath = computed(
-  () => `/api/linkding/bookmarks?q=${q.value || ""}`,
+const requestPath = computed(() =>
+  q.value ? `/api/linkding/bookmarks?q=${q.value}` : "/api/linkding/bookmarks",
 );
 const { data, status, error, execute } =
   await useFetch<LinkdingBookmarkResponse>(requestPath);

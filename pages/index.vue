@@ -4,20 +4,14 @@ import { secondsToMilliseconds } from "date-fns";
 import type { MinifluxGetFeedCompactEntriesResponse } from "../server/api/miniflux/entries.get";
 
 const toolbarRef = ref<HTMLElement | null>(null);
-const params = useUrlSearchParams("history");
-
-const q = ref(params.q || "");
-watch(q, (next) => {
-  params.q = next;
-  if (!next) delete params.q;
-});
+const query = toRef(useRoute(), "query");
 
 const requestPath = computed(() => {
-  if (params.feedId)
-    return `/api/miniflux/entries?q=${q.value}&feedId=${params.feedId}`;
-  if (params.categoryId)
-    return `/api/miniflux/entries?q=${q.value}&categoryId=${params.categoryId}`;
-  return `/api/miniflux/entries?q=${q.value}`;
+  if (query.value.feedId)
+    return `/api/miniflux/entries?feedId=${query.value.feedId}`;
+  if (query.value.categoryId)
+    return `/api/miniflux/entries?categoryId=${query.value.categoryId}`;
+  return `/api/miniflux/entries`;
 });
 
 const { data, error, status, execute } =
@@ -27,19 +21,17 @@ const { data, error, status, execute } =
 const entries = computed(() => data.value?.entries || []);
 watch(entries, async (next) => {
   toolbarRef.value?.scrollIntoView(true);
-  const { categoryId, feedId } = params;
+  const { categoryId, feedId } = query.value;
   if (next.length <= 0 && categoryId && feedId) {
-    delete params.feedId;
+    await navigateTo({ query: { categoryId } });
     return;
   }
   if (next.length <= 0 && feedId) {
-    delete params.categoryId;
-    delete params.feedId;
+    await navigateTo({});
     return;
   }
   if (next.length <= 0 && categoryId) {
-    delete params.categoryId;
-    delete params.feedId;
+    await navigateTo({});
     return;
   }
 });
@@ -65,24 +57,34 @@ const categories = computed(
     ) || [],
 );
 const selectedFeed = computed(() => {
-  const { feedId } = params;
+  const { feedId } = query.value;
   if (!feedId) return null;
   return feeds.value.find((f) => `${f.id}` === feedId);
 });
 const selectedCategory = computed(() => {
-  const { categoryId } = params;
+  const { categoryId } = query.value;
   if (!categoryId) return null;
   return categories.value.find((c) => `${c.id}` === categoryId);
 });
 
 async function setCategoryId(categoryId: number | undefined) {
-  params.categoryId = categoryId?.toString() || "";
-  if (!categoryId) delete params.categoryId;
+  const q = { ...query.value };
+  if (!categoryId) {
+    delete q.categoryId;
+  } else {
+    q.categoryId = categoryId.toString();
+  }
+  await navigateTo({ query: q });
 }
 
 async function setFeedId(feedId: number | undefined) {
-  params.feedId = feedId?.toString() || "";
-  if (!feedId) delete params.feedId;
+  const q = { ...query.value };
+  if (!feedId) {
+    delete q.feedId;
+  } else {
+    q.feedId = feedId.toString();
+  }
+  await navigateTo({ query: q });
 }
 </script>
 
@@ -110,7 +112,7 @@ async function setFeedId(feedId: number | undefined) {
             >reload</MyButton
           >
         </div>
-        <MySearch v-model="q" />
+        <!--MySearch v-model="q" /-->
         <div>{{ count }} entries</div>
         <div v-if="selectedFeed">
           {{ selectedFeed.title }}

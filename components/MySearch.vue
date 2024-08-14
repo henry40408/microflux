@@ -1,10 +1,10 @@
 <script setup lang="ts">
-const model = defineModel<string | string[]>({ required: true });
+const model = defineModel<string | undefined>({ required: true });
 
 const q = ref(model.value);
 
 const search = () => {
-  model.value = q.value.toString().trim();
+  model.value = q.value?.toString().trim();
 };
 const debouncedSearch = useDebounceFn(search, 300);
 watch(q, () => {
