@@ -65,7 +65,7 @@ function onToggleStatus(s: string) {
         <FetchContentButton
           :id="modelValue.id"
           v-model="fullContent"
-          @click="onFetchContent"
+          @fetch-content="onFetchContent"
         />
         <SaveButton v-model="model" />
       </div>

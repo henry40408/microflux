@@ -2,7 +2,7 @@
 const model = defineModel<string>({ required: true });
 const props = defineProps<{ id: number }>();
 
-const emit = defineEmits<{ click: [] }>();
+const emit = defineEmits<{ "fetch-content": [] }>();
 
 const fetched = await useLazyFetch(
   `/api/miniflux/entries/${props.id}/fetch-content`,
@@ -17,7 +17,7 @@ async function onCancel() {
 async function onClick() {
   await fetched.execute();
   model.value = fetched.data.value?.content || "";
-  emit("click");
+  emit("fetch-content");
 }
 </script>
 
