@@ -4,7 +4,7 @@ import type { LinkdingBookmark } from "~/types";
 const model = defineModel<LinkdingBookmark>({ required: true });
 const emit = defineEmits<{ delete: [id: number] }>();
 
-const { data, error, status, execute } = await useLazyFetch(
+const deleted = await useLazyFetch(
   `/api/linkding/bookmarks/${model.value.id}`,
   {
     key: `delete-bookmark-${model.value.id}`,
@@ -17,7 +17,7 @@ const { data, error, status, execute } = await useLazyFetch(
 );
 
 async function onConfirm() {
-  await execute();
+  await deleted.execute();
   emit("delete", model.value.id);
 }
 </script>
@@ -25,9 +25,9 @@ async function onConfirm() {
 <template>
   <MyConfirm
     danger
-    :done="!!data"
-    :error="error"
-    :loading="status === 'pending'"
+    :done="deleted.status.value === 'success'"
+    :error="deleted.error.value"
+    :loading="deleted.status.value === 'pending'"
     @confirm="onConfirm"
     >delete</MyConfirm
   >

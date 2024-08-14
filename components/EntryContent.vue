@@ -16,19 +16,16 @@ watch(
 const fullContent = ref("");
 const fullContentRef = ref<HTMLElement | null>(null);
 
-const { data, error, status, execute } = await useLazyFetch(
-  `/api/miniflux/entries/${model.value.id}`,
-  {
-    key: `entry-content-${model.value.id}`,
-    immediate: false,
-    server: false,
-    timeout: secondsToMilliseconds(30),
-  },
-);
+const fetched = await useLazyFetch(`/api/miniflux/entries/${model.value.id}`, {
+  key: `entry-content-${model.value.id}`,
+  immediate: false,
+  server: false,
+  timeout: secondsToMilliseconds(30),
+});
 
 async function onDetailsToggle() {
-  if (data.value) return;
-  await execute();
+  if (fetched.data.value) return;
+  await fetched.execute();
 }
 
 function onFetchContent() {
@@ -49,10 +46,10 @@ function onToggleStatus(s: string) {
     <div>
       <div ref="fullContentRef" mb-4>
         <div v-if="!fullContent">
-          <span v-if="status === 'pending'">...</span>
-          <span v-if="status === 'error'">{{ error }}</span>
+          <span v-if="fetched.status.value === 'pending'">...</span>
+          <span v-if="fetched.error">{{ fetched.error }}</span>
           <!-- eslint-disable-next-line vue/no-v-html -->
-          <span v-if="data" v-html="data.content" />
+          <span v-if="fetched.data.value" v-html="fetched.data.value.content" />
         </div>
         <!-- eslint-disable-next-line vue/no-v-html -->
         <div v-if="fullContent" v-html="fullContent" />

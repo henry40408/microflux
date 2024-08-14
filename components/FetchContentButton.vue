@@ -4,23 +4,23 @@ const props = defineProps<{ id: number }>();
 
 const emit = defineEmits<{ click: [] }>();
 
-const { data, status, error, execute } = await useLazyFetch(
+const fetched = await useLazyFetch(
   `/api/miniflux/entries/${props.id}/fetch-content`,
   { immediate: false, server: false },
 );
 
 async function onClick() {
-  await execute();
-  model.value = data.value?.content || "";
+  await fetched.execute();
+  model.value = fetched.data.value?.content || "";
   emit("click");
 }
 </script>
 
 <template>
   <MyButton
-    :done="!!data"
-    :error="error"
-    :loading="status === 'pending'"
+    :done="fetched.status.value === 'success'"
+    :error="fetched.error.value"
+    :loading="fetched.status.value === 'pending'"
     @click="onClick"
     >download</MyButton
   >
