@@ -4,7 +4,7 @@ import { secondsToMilliseconds } from "date-fns";
 import type { MinifluxCompactEntry } from "../server/api/miniflux/entries.get";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
-const emit = defineEmits<{ "toggle-status": [state: string] }>();
+const emit = defineEmits<{ "scroll-to-entry": [] }>();
 
 const expandableRef = ref<HTMLDetailsElement | null>(null);
 watch(
@@ -23,6 +23,11 @@ const fetched = await useLazyFetch(`/api/miniflux/entries/${model.value.id}`, {
   timeout: secondsToMilliseconds(30),
 });
 
+function onCollapse() {
+  expandableRef.value?.removeAttribute("open");
+  emit("scroll-to-entry");
+}
+
 async function onDetailsToggle() {
   if (fetched.data.value) return;
   await fetched.execute();
@@ -35,7 +40,7 @@ function onFetchContent() {
 function onToggleStatus(s: string) {
   if (s === "read") {
     expandableRef.value?.removeAttribute("open");
-    emit("toggle-status", s);
+    emit("scroll-to-entry");
   }
 }
 </script>
@@ -55,12 +60,14 @@ function onToggleStatus(s: string) {
         <div v-if="fullContent" v-html="fullContent" />
       </div>
       <div class="my-controls">
+        <MyButton @click="onCollapse">collapse</MyButton>
         <ToggleStatusButton v-model="model" @toggle-status="onToggleStatus" />
         <FetchContentButton
           :id="modelValue.id"
           v-model="fullContent"
           @click="onFetchContent"
         />
+        <SaveButton v-model="model" />
       </div>
     </div>
   </details>

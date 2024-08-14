@@ -20,10 +20,8 @@ ${pangu(summary.data.value?.summary || "")}`,
 );
 const { copy, copied } = useClipboard({ source });
 
-function onToggleStatus(s: string) {
-  if (s === "read") {
-    entryTitle.value?.scrollIntoView();
-  }
+function onScrollToEntry() {
+  entryTitle.value?.scrollIntoView();
 }
 </script>
 
@@ -83,7 +81,7 @@ function onToggleStatus(s: string) {
       </MyButton>
     </div>
     <div>
-      <EntryContent v-model="model" @toggle-status="onToggleStatus" />
+      <EntryContent v-model="model" @scroll-to-entry="onScrollToEntry" />
     </div>
   </div>
 </template>
