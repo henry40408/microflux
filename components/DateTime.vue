@@ -8,11 +8,16 @@ const [absolute, toggle] = useToggle(false);
 
 <template>
   <a href="#" @click.prevent="toggle()">
-    <time v-if="!absolute" :datetime="props.datetime">{{
-      ago(props.datetime)
-    }}</time>
-    <time v-if="absolute" :datetime="props.datetime">{{
-      formatISO9075(new Date(props.datetime))
-    }}</time>
+    <ClientOnly>
+      <time v-if="!absolute" :datetime="props.datetime">{{
+        ago(props.datetime)
+      }}</time>
+      <time v-if="absolute" :datetime="props.datetime">{{
+        formatISO9075(new Date(props.datetime))
+      }}</time>
+      <template #fallback>
+        <time>{{ props.datetime }}</time>
+      </template>
+    </ClientOnly>
   </a>
 </template>
