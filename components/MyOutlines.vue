@@ -43,7 +43,7 @@ const categories = computed(() =>
             @click.prevent="$emit('clickCategory', group.category.id)"
             >{{ group.category.title }}</a
           >
-          <sup>{{ group.count }}</sup>
+          <small ml-1>{{ group.count }}</small>
         </div>
         <em v-if="categories.length <= 0" block ml-2>(empty)</em>
       </div>
@@ -53,7 +53,7 @@ const categories = computed(() =>
           <a href="#" @click.prevent="$emit('clickFeed', group.feed.id)">{{
             group.feed.title
           }}</a>
-          <sup>{{ group.count }}</sup>
+          <small ml-1>{{ group.count }}</small>
         </div>
         <em v-if="categories.length <= 0" block ml-2>(empty)</em>
       </div>
