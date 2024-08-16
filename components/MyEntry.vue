@@ -5,8 +5,6 @@ const model = defineModel<MinifluxCompactEntry>({ required: true });
 
 defineEmits<{ clickCategory: [id: number]; clickFeed: [id: number] }>();
 
-const isRead = computed(() => model.value.status === "read");
-
 const entryTitle = ref<HTMLElement | null>(null);
 
 const summary = useSummarize(model.value.url);
@@ -70,11 +68,11 @@ function onScrollToEntry() {
             @click="summary.execute"
             >summarize<template #clear>reset summary</template></MyButton
           >
-          <SaveButton v-if="!isRead" v-model="model" />
+          <SaveButton v-model="model" />
         </div>
       </div>
     </div>
-    <div v-if="!isRead && summary.done.value" space-y-2>
+    <div v-if="summary.done.value" space-y-2>
       <pre m-0><code text-wrap>{{ source }}</code></pre>
       <MyButton block text-right md:text-left :done="copied" @click="copy">
         copy to clipboard<template #clear>copied!</template>
