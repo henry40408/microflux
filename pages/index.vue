@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { secondsToMilliseconds } from "date-fns";
 
-import type { MinifluxGetFeedCompactEntriesResponse } from "../server/api/miniflux/entries.get";
+import type {
+  MinifluxCompactEntry,
+  MinifluxGetFeedCompactEntriesResponse,
+} from "~/server/api/miniflux/entries.get";
 
 const toolbarRef = ref<HTMLElement | null>(null);
 const query = toRef(useRoute(), "query");
@@ -21,19 +24,7 @@ const { data, error, status, execute } =
 const entries = computed(() => data.value?.entries || []);
 watch(entries, async (next) => {
   toolbarRef.value?.scrollIntoView(true);
-  const { categoryId, feedId } = query.value;
-  if (next.length <= 0 && categoryId && feedId) {
-    await navigateTo({ query: { categoryId } });
-    return;
-  }
-  if (next.length <= 0 && feedId) {
-    await navigateTo({});
-    return;
-  }
-  if (next.length <= 0 && categoryId) {
-    await navigateTo({});
-    return;
-  }
+  await handleEmptyEntries(next);
 });
 const count = computed(
   () => entries.value.filter((e) => e.status === "unread").length,
@@ -66,6 +57,23 @@ const selectedCategory = computed(() => {
   if (!categoryId) return null;
   return categories.value.find((c) => `${c.id}` === categoryId);
 });
+
+async function handleEmptyEntries(next: MinifluxCompactEntry[]) {
+  const { categoryId, feedId } = query.value;
+  if (next.length <= 0 && categoryId && feedId) {
+    await navigateTo({ query: { categoryId } });
+    return;
+  }
+  if (next.length <= 0 && feedId) {
+    await navigateTo({});
+    return;
+  }
+  if (next.length <= 0 && categoryId) {
+    await navigateTo({});
+    return;
+  }
+}
+handleEmptyEntries(entries.value);
 
 async function setCategoryId(categoryId: number | undefined) {
   const q = { ...query.value };
