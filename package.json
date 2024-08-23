@@ -18,6 +18,8 @@
   },
   "dependencies": {
     "@nuxt/eslint": "^0.4.0",
+    "@trpc/client": "^10.45.2",
+    "@trpc/server": "^10.45.2",
     "@vueuse/core": "^10.11.0",
     "@vueuse/nuxt": "^10.11.0",
     "date-fns": "^3.6.0",
@@ -27,6 +29,7 @@
     "pangu": "^4.0.7",
     "pino-http": "^10.2.0",
     "sanitize-html": "^2.13.0",
+    "trpc-nuxt": "^0.10.22",
     "vue": "latest",
     "zod": "^3.23.8"
   },

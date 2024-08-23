@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  build: { transpile: ["trpc-nuxt"] },
   compatibilityDate: "2024-04-03",
   css: ["~/vendor/assets/css/water.css", "~/assets/css/style.css"],
   devtools: { enabled: true },
