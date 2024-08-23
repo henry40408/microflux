@@ -4,6 +4,10 @@ export interface FullURLResponse {
   url: string;
 }
 
+export interface MinifluxFetchContentResponse {
+  content: string;
+}
+
 // kagi
 
 export interface KagiSummarizeResponse {
@@ -135,8 +139,4 @@ export interface MinifluxCategory {
 export interface MinifluxIcon {
   feed_id: number;
   icon_id: number;
-}
-
-export interface MinifluxFetchContentResponse {
-  content: string;
 }

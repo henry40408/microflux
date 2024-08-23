@@ -1,29 +1,22 @@
 <script setup lang="ts">
-import { secondsToMilliseconds } from "date-fns";
-
-import type { MinifluxCompactEntry } from "../server/api/miniflux/entries.get";
+import type { MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
 
-const saved = await useLazyFetch(
-  `/api/miniflux/entries/${model.value.id}/save`,
-  {
-    key: `save-${model.value.id}`,
-    method: "POST",
-    immediate: false,
-    server: false,
-    timeout: secondsToMilliseconds(30),
-    watch: false,
-  },
+const { $client } = useNuxtApp();
+const fetched = await useAsyncData(
+  `save-${model.value.id}`,
+  () => $client.miniflux.saveEntry.mutate(model.value.id),
+  { immediate: false, server: false },
 );
 </script>
 
 <template>
   <MyButton
-    :done="saved.status.value === 'success'"
-    :error="saved.error.value"
-    :pending="saved.status.value === 'pending'"
-    @click="saved.execute"
+    :done="fetched.status.value === 'success'"
+    :error="fetched.error.value"
+    :pending="fetched.status.value === 'pending'"
+    @click="fetched.execute"
     >save</MyButton
   >
 </template>

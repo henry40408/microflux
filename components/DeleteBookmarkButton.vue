@@ -4,20 +4,15 @@ import type { LinkdingBookmark } from "~/types";
 const model = defineModel<LinkdingBookmark>({ required: true });
 const emit = defineEmits<{ delete: [id: number] }>();
 
-const deleted = await useLazyFetch(
-  `/api/linkding/bookmarks/${model.value.id}`,
-  {
-    key: `delete-bookmark-${model.value.id}`,
-    method: "DELETE",
-    body: "",
-    immediate: false,
-    server: false,
-    watch: false,
-  },
+const { $client } = useNuxtApp();
+const fetched = await useAsyncData(
+  `delete-bookmark-${model.value.id}`,
+  () => $client.linkding.deleteBookmark.mutate(model.value.id),
+  { immediate: false, server: false },
 );
 
 async function onConfirm() {
-  await deleted.execute();
+  await fetched.execute();
   emit("delete", model.value.id);
 }
 </script>
@@ -25,9 +20,9 @@ async function onConfirm() {
 <template>
   <MyConfirm
     danger
-    :done="deleted.status.value === 'success'"
-    :error="deleted.error.value"
-    :loading="deleted.status.value === 'pending'"
+    :done="fetched.status.value === 'success'"
+    :error="fetched.error.value"
+    :loading="fetched.status.value === 'pending'"
     @confirm="onConfirm"
     >delete</MyConfirm
   >

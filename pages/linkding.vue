@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { LinkdingBookmarkResponse } from "~/types";
-
 const query = toRef(useRoute(), "query");
 
 const q = ref(query.value.q?.toString());
@@ -8,16 +6,17 @@ watch(q, async () => {
   await navigateTo({ query: { q: q.value || undefined } });
 });
 
-const requestPath = computed(() =>
-  q.value ? `/api/linkding/bookmarks?q=${q.value}` : "/api/linkding/bookmarks",
+const { $client } = useNuxtApp();
+const fetched = await useAsyncData(
+  `bookmarks-${q.value}`,
+  () => $client.linkding.getBookmarks.query({ q: q.value }),
+  { watch: [q] },
 );
-const { data, status, error, execute } =
-  await useFetch<LinkdingBookmarkResponse>(requestPath);
-const count = computed(() => data.value?.count || 0);
+const count = computed(() => fetched.data.value?.count || 0);
 const title = computed(() => `(${count.value}) linkding`);
 useHead({ title });
 
-const bookmarks = computed(() => data.value?.results || []);
+const bookmarks = computed(() => fetched.data.value?.results || []);
 </script>
 
 <template>
@@ -28,9 +27,9 @@ const bookmarks = computed(() => data.value?.results || []);
         <div space-x-2>
           <small>actions</small>
           <MyButton
-            :pending="status === 'pending'"
-            :error="error"
-            @click="execute"
+            :pending="fetched.status.value === 'pending'"
+            :error="fetched.error.value"
+            @click="fetched.execute"
             >reload</MyButton
           >
         </div>
@@ -43,7 +42,7 @@ const bookmarks = computed(() => data.value?.results || []);
         v-for="(bookmark, index) in bookmarks"
         :key="bookmark.id"
         v-model="bookmarks[index]"
-        @delete="execute()"
+        @delete="fetched.execute()"
       />
     </div>
   </div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MinifluxCompactEntry } from "../server/api/miniflux/entries.get";
+import type { MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
 
