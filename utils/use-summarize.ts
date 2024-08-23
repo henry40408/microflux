@@ -1,4 +1,3 @@
-import { secondsToMilliseconds } from "date-fns";
 import type { FullURLResponse, KagiSummarizeResponse } from "~/types";
 
 export class SummaryData {
@@ -7,27 +6,24 @@ export class SummaryData {
 }
 
 export default function useSummarize(url: string) {
+  const { $client } = useNuxtApp();
+
   const data = ref<SummaryData | null>(null);
 
-  const sf = useLazyFetch<KagiSummarizeResponse>("/api/kagi/summarize", {
-    key: `summarize-${url}`,
-    method: "POST",
-    body: { url },
-    immediate: false,
-    server: false,
-    timeout: secondsToMilliseconds(30),
-    watch: false,
-  });
+  const sf = useAsyncData<KagiSummarizeResponse>(
+    `summarize-${url}`,
+    () => $client.kagi.summarize.query({ url }),
+    { immediate: false, server: false },
+  );
 
-  const ff = useLazyFetch<FullURLResponse>("/api/full-url", {
-    key: `full-url-${url}`,
-    method: "POST",
-    body: { url },
-    immediate: false,
-    server: false,
-    timeout: secondsToMilliseconds(30),
-    watch: false,
-  });
+  const ff = useAsyncData<FullURLResponse>(
+    `full-url-${url}`,
+    () => $client.getFullUrl.query({ url }),
+    {
+      immediate: false,
+      server: false,
+    },
+  );
 
   watch([sf.data, ff.data], ([s, u]) => {
     if (s && u) {
