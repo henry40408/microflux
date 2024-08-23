@@ -1,26 +1,23 @@
 <script setup lang="ts">
-import { secondsToMilliseconds } from "date-fns";
-
-import type {
-  MinifluxCompactEntry,
-  MinifluxGetFeedCompactEntriesResponse,
-} from "~/server/api/miniflux/entries.get";
+import type { MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
 
 const toolbarRef = ref<HTMLElement | null>(null);
+
 const query = toRef(useRoute(), "query");
+const categoryId = computed(() => query.value.categoryId?.toString());
+const feedId = computed(() => query.value.feedId?.toString());
 
-const requestPath = computed(() => {
-  if (query.value.feedId)
-    return `/api/miniflux/entries?feedId=${query.value.feedId}`;
-  if (query.value.categoryId)
-    return `/api/miniflux/entries?categoryId=${query.value.categoryId}`;
-  return `/api/miniflux/entries`;
-});
+const { $client } = useNuxtApp();
+const { data, error, status, execute } = await useAsyncData(
+  "entries",
+  () =>
+    $client.miniflux.getEntries.query({
+      categoryId: categoryId.value,
+      feedId: feedId.value,
+    }),
+  { watch: [categoryId, feedId] },
+);
 
-const { data, error, status, execute } =
-  await useFetch<MinifluxGetFeedCompactEntriesResponse>(requestPath, {
-    timeout: secondsToMilliseconds(30),
-  });
 const entries = computed(() => data.value?.entries || []);
 watch(entries, async (next) => {
   toolbarRef.value?.scrollIntoView(true);

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import lodash from "lodash";
 
-import type { MinifluxGetFeedCompactEntriesResponse } from "~/server/api/miniflux/entries.get";
+import type { MinifluxGetFeedCompactEntriesResponse } from "~/server/trpc/routers/miniflux";
 
 const model = defineModel<MinifluxGetFeedCompactEntriesResponse>();
 defineEmits<{
