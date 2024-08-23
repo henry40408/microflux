@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { secondsToMilliseconds } from "date-fns";
-
 import type { MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
@@ -9,23 +7,20 @@ const emit = defineEmits<{ "toggle-status": [status: string] }>();
 const nextStatus = computed(() =>
   model.value.status === "unread" ? "read" : "unread",
 );
-const body = computed(() => ({
-  entryIds: [model.value.id],
-  status: nextStatus.value,
-}));
-const fetchEntries = await useLazyFetch("/api/miniflux/entries", {
-  key: `toggle-status-${model.value.id}`,
-  method: "PUT",
-  body,
-  immediate: false,
-  server: false,
-  timeout: secondsToMilliseconds(30),
-  watch: false,
-});
+const { $client } = useNuxtApp();
+const fetched = await useAsyncData(
+  `toggle-status-${model.value.id}`,
+  () =>
+    $client.miniflux.updateEntries.mutate({
+      entryIds: [model.value.id],
+      status: nextStatus.value,
+    }),
+  { immediate: false, server: false },
+);
 
 async function onClick() {
   const oldStatus = nextStatus.value;
-  await fetchEntries.execute();
+  await fetched.execute();
   model.value.status = oldStatus;
   emit("toggle-status", oldStatus);
 }
@@ -33,8 +28,8 @@ async function onClick() {
 
 <template>
   <MyButton
-    :error="fetchEntries.error.value"
-    :pending="fetchEntries.status.value === 'pending'"
+    :error="fetched.error.value"
+    :pending="fetched.status.value === 'pending'"
     @click="onClick"
     >{{ nextStatus }}</MyButton
   >

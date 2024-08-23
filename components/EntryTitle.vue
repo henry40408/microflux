@@ -1,21 +1,19 @@
 <script setup lang="ts">
-import { secondsToMilliseconds } from "date-fns";
-
 import type { MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
 const isRead = computed(() => model.value.status === "read");
 
-const body = computed(() => ({ entryIds: [model.value.id], status: "read" }));
-const fetched = await useLazyFetch("/api/miniflux/entries", {
-  key: `mark-as-read-${model.value.id}`,
-  method: "PUT",
-  body,
-  immediate: false,
-  server: false,
-  timeout: secondsToMilliseconds(30),
-  watch: false,
-});
+const { $client } = useNuxtApp();
+const fetched = await useAsyncData(
+  `mark-as-read-${model.value.id}`,
+  () =>
+    $client.miniflux.updateEntries.mutate({
+      entryIds: [model.value.id],
+      status: "read",
+    }),
+  { immediate: false, server: false },
+);
 
 async function onClick() {
   await fetched.execute();
