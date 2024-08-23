@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { secondsToMilliseconds } from "date-fns";
-
 import type { MinifluxCompactEntry } from "../server/api/miniflux/entries.get";
+
+const { $client } = useNuxtApp();
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
 const emit = defineEmits<{ "scroll-to-entry": [] }>();
@@ -16,12 +16,11 @@ watch(
 const fullContent = ref("");
 const fullContentRef = ref<HTMLElement | null>(null);
 
-const fetched = await useLazyFetch(`/api/miniflux/entries/${model.value.id}`, {
-  key: `entry-content-${model.value.id}`,
-  immediate: false,
-  server: false,
-  timeout: secondsToMilliseconds(30),
-});
+const fetched = await useAsyncData(
+  `entry-content-${model.value.id}`,
+  () => $client.miniflux.getContent.query({ id: model.value.id }),
+  { immediate: false },
+);
 
 function onCollapse() {
   expandableRef.value?.removeAttribute("open");
