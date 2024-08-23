@@ -4,8 +4,10 @@ import got from "got";
 import { publicProcedure, router } from "../trpc";
 import { kagiRouter } from "./kagi";
 import { minifluxRouter } from "./miniflux";
+import { linkdingRouter } from "./linkding";
 
 export const appRouter = router({
+  linkding: linkdingRouter,
   kagi: kagiRouter,
   miniflux: minifluxRouter,
   getFullUrl: publicProcedure
