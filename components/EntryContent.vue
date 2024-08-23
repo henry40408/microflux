@@ -18,7 +18,7 @@ const fullContentRef = ref<HTMLElement | null>(null);
 
 const fetched = await useAsyncData(
   `entry-content-${model.value.id}`,
-  () => $client.miniflux.getContent.query({ id: model.value.id }),
+  () => $client.miniflux.getContent.query(model.value.id),
   { immediate: false },
 );
 

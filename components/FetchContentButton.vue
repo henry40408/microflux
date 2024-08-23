@@ -4,9 +4,11 @@ const props = defineProps<{ id: number }>();
 
 const emit = defineEmits<{ "fetch-content": [] }>();
 
-const fetched = await useLazyFetch(
-  `/api/miniflux/entries/${props.id}/fetch-content`,
-  { key: `fetch-content-${props.id}`, immediate: false, server: false },
+const { $client } = useNuxtApp();
+const fetched = await useAsyncData(
+  `fetch-content-${props.id}`,
+  () => $client.miniflux.fetchContent.query(props.id),
+  { immediate: false, server: false },
 );
 
 async function onCancel() {
