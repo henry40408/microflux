@@ -20,7 +20,7 @@ export const appRouter = router({
         const res = await got.head(input.url);
         if (res.url) return { url: res.url };
       } catch (err) {
-        logger.error(err);
+        logger.error(err, "HEAD request failed");
       }
 
       // 2. try GET method
@@ -28,7 +28,7 @@ export const appRouter = router({
         const res = await got(input.url);
         if (res.url) return { url: res.url };
       } catch (err) {
-        logger.error(err);
+        logger.error(err, "GET request failed");
       }
 
       // 3. otherwise, return the original URL
