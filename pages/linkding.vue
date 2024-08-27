@@ -30,7 +30,7 @@ const bookmarks = computed(() => fetched.data.value?.results || []);
             :pending="fetched.status.value === 'pending'"
             :error="fetched.error.value"
             @click="fetched.execute"
-            >reload</MyButton
+            >🔄 reload</MyButton
           >
         </div>
         <MySearch v-model="q" />

@@ -30,6 +30,6 @@ async function onClick() {
     :error="fetched.error.value"
     :pending="fetched.status.value === 'pending'"
     @click="onClick"
-    >download</MyButton
+    >🔍 download<template #clear>reset full content</template></MyButton
   >
 </template>

@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
+import type {
+  MinifluxCompactCategory,
+  MinifluxCompactEntry,
+} from "~/server/trpc/routers/miniflux";
 
 const toolbarRef = ref<HTMLElement | null>(null);
 const q = ref("");
@@ -49,7 +52,15 @@ const feeds = computed(
 const categories = computed(
   () =>
     Object.values(
-      Object.fromEntries(feeds.value.map((f) => [f.category.id, f.category])),
+      Object.fromEntries(
+        feeds.value
+          .filter((f) => f.category)
+          .map((f) => ({
+            ...f,
+            category: f.category as MinifluxCompactCategory,
+          }))
+          .map((f) => [f.category.id, f.category]),
+      ),
     ) || [],
 );
 const selectedFeed = computed(() => {
@@ -122,7 +133,7 @@ async function setFeedId(feedId: number | undefined) {
             :error="error"
             :pending="status === 'pending'"
             @click="execute"
-            >reload</MyButton
+            >🔄 reload</MyButton
           >
         </div>
         <MySearch v-model="q" />
@@ -156,7 +167,7 @@ async function setFeedId(feedId: number | undefined) {
     </div>
     <div class="my-controls">
       <MyButton :error="error" :pending="status === 'pending'" @click="execute"
-        >reload</MyButton
+        >🔄 reload</MyButton
       >
       <MarkAllAsReadButton
         v-if="status !== 'pending' && count > 0"

@@ -26,6 +26,6 @@ async function onClick() {
     :error="fetched.error.value"
     :loading="fetched.status.value === 'pending'"
     @confirm="onClick"
-    >mark {{ props.entryIds.length }} as read</MyConfirm
+    >✅ mark {{ props.entryIds.length }} as read</MyConfirm
   >
 </template>

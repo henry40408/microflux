@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { KagiSummarizeResponse } from "~/types";
+import { KagiSummarizerOutputResponseSchema } from "~/schema/kagi";
 
 import { publicProcedure, router } from "../trpc";
 
@@ -13,9 +13,9 @@ export const kagiRouter = router({
         url: z.string().url(),
       }),
     )
-    .query(({ ctx, input }) => {
+    .query(async ({ ctx, input }) => {
       const client = kagiClient(ctx.event);
-      return client
+      const json = await client
         .get("mother/summary_labs", {
           searchParams: {
             summary_type: input.type,
@@ -23,7 +23,8 @@ export const kagiRouter = router({
             url: input.url,
           },
         })
-        .json<KagiSummarizeResponse>();
+        .json();
+      return KagiSummarizerOutputResponseSchema.parse(json);
     }),
 });
 

@@ -1,4 +1,5 @@
-import type { FullURLResponse, KagiSummarizeResponse } from "~/types";
+import type { KagiSummarizerOutputResponse } from "~/schema/kagi";
+import type { FullUrlResponse } from "~/schema/internal";
 
 export class SummaryData {
   finalUrl!: string;
@@ -10,13 +11,13 @@ export default function useSummarize(url: string) {
 
   const data = ref<SummaryData | null>(null);
 
-  const sf = useAsyncData<KagiSummarizeResponse>(
+  const sf = useAsyncData<KagiSummarizerOutputResponse>(
     `summarize-${url}`,
     () => $client.kagi.summarize.query({ url }),
     { immediate: false, server: false },
   );
 
-  const ff = useAsyncData<FullURLResponse>(
+  const ff = useAsyncData<FullUrlResponse>(
     `full-url-${url}`,
     () => $client.getFullUrl.query({ url }),
     {

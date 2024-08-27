@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import lodash from "lodash";
 
-import type { MinifluxGetFeedCompactEntriesResponse } from "~/server/trpc/routers/miniflux";
+import type {
+  MinifluxCompactCategory,
+  MinifluxGetFeedCompactEntriesResponse,
+} from "~/server/trpc/routers/miniflux";
 
 const model = defineModel<MinifluxGetFeedCompactEntriesResponse>();
 defineEmits<{
@@ -26,6 +29,8 @@ const categories = computed(() =>
       category: entries[0].feed.category,
       count: entries.length,
     }))
+    .filter((g) => !!g.category)
+    .map((g) => ({ ...g, category: g.category as MinifluxCompactCategory }))
     .orderBy([(g) => g.count, (g) => g.category.title], ["desc", "asc"])
     .value(),
 );

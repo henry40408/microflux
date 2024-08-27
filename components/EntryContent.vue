@@ -59,7 +59,7 @@ function onToggleStatus(s: string) {
         <div v-if="fullContent" v-html="fullContent" />
       </div>
       <div class="my-controls">
-        <MyButton @click="onCollapse">collapse</MyButton>
+        <MyButton @click="onCollapse">🔼 collapse</MyButton>
         <ToggleStatusButton v-model="model" @toggle-status="onToggleStatus" />
         <FetchContentButton
           :id="modelValue.id"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { LinkdingBookmark } from "~/types";
+import type { LinkdingBookmark } from "~/schema/linkding";
 
 const model = defineModel<LinkdingBookmark>({ required: true });
 const emit = defineEmits<{ delete: [id: number] }>();
@@ -24,6 +24,6 @@ async function onConfirm() {
     :error="fetched.error.value"
     :loading="fetched.status.value === 'pending'"
     @confirm="onConfirm"
-    >delete</MyConfirm
+    >🗑️ delete</MyConfirm
   >
 </template>

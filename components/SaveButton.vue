@@ -17,6 +17,6 @@ const fetched = await useAsyncData(
     :error="fetched.error.value"
     :pending="fetched.status.value === 'pending'"
     @click="fetched.execute"
-    >save</MyButton
+    >💾 save</MyButton
   >
 </template>

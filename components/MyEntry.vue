@@ -43,7 +43,7 @@ function onScrollToEntry() {
             modelValue.feed.title
           }}</a>
         </div>
-        <div space-x-1 items-center>
+        <div v-if="modelValue.feed.category" space-x-1 items-center>
           <small>category</small>
           <a
             href="#"
@@ -66,7 +66,7 @@ function onScrollToEntry() {
             :error="summary.error"
             :pending="summary.pending.value"
             @click="summary.execute"
-            >summarize<template #clear>reset summary</template></MyButton
+            >📋 summarize<template #clear>🔄 reset summary</template></MyButton
           >
           <SaveButton v-model="model" />
         </div>

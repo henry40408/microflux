@@ -1,23 +1,21 @@
 import lodash from "lodash";
 import { z } from "zod";
 
-import type {
-  MinifluxCategory,
-  MinifluxEntry,
-  MinifluxFeed,
-  MinifluxFetchContentResponse,
-  MinifluxGetFeedEntriesResponse,
-} from "~/types";
+import {
+  MinifluxEntryResultSetScheme,
+  MinifluxFetchContentScheme,
+  type MinifluxCategory,
+  type MinifluxEntry,
+  type MinifluxFeed,
+  type MinifluxFetchContent,
+} from "~/schema/miniflux";
 
 import { publicProcedure, router } from "../trpc";
 
 export type MinifluxCompactCategory = Pick<MinifluxCategory, "id" | "title">;
 
-export type MinifluxCompactFeed = Pick<
-  MinifluxFeed,
-  "id" | "title" | "icon"
-> & {
-  category: MinifluxCompactCategory;
+export type MinifluxCompactFeed = Pick<MinifluxFeed, "id" | "title"> & {
+  category?: MinifluxCompactCategory;
 };
 
 export type MinifluxCompactEntry = Pick<
@@ -37,14 +35,13 @@ export const minifluxRouter = router({
     .input(z.number())
     .query(async ({ ctx, input }) => {
       const client = minifluxClient(ctx.event);
-      const json = await client
-        .get(`v1/entries/${input}/fetch-content`)
-        .json<MinifluxFetchContentResponse>();
-      return { content: sanitizeContent(json.content) };
+      const json = await client.get(`v1/entries/${input}/fetch-content`).json();
+      const { content } = MinifluxFetchContentScheme.parse(json);
+      return { content: sanitizeContent(content) };
     }),
   getContent: publicProcedure
     .input(z.number())
-    .query(async ({ ctx, input }): Promise<MinifluxFetchContentResponse> => {
+    .query(async ({ ctx, input }): Promise<MinifluxFetchContent> => {
       const client = minifluxClient(ctx.event);
       const entry = await client
         .get(`v1/entries/${input}`)
@@ -73,22 +70,19 @@ export const minifluxRouter = router({
         }
 
         const json = await client
-          .get(path, {
-            searchParams: {
-              status: "unread",
-              direction: "asc",
-            },
-          })
-          .json<MinifluxGetFeedEntriesResponse>();
+          .get(path, { searchParams: { status: "unread", direction: "asc" } })
+          .json();
+        const { total, entries } = MinifluxEntryResultSetScheme.parse(json);
         return {
-          total: json.total,
-          entries: json.entries.map((e) => ({
+          total,
+          entries: entries.map((e) => ({
             ...lodash.pick(e, ["id", "published_at", "status", "title", "url"]),
             feed: {
               id: e.feed.id,
               title: e.feed.title,
-              category: lodash.pick(e.feed.category, ["id", "title"]),
-              icon: e.feed.icon,
+              category:
+                e.feed.category &&
+                lodash.pick(e.feed.category, ["id", "title"]),
             },
           })),
         };
@@ -120,5 +114,4 @@ export const minifluxRouter = router({
     }),
 });
 
-// export type definition of API
 export type MinifluxRouter = typeof minifluxRouter;

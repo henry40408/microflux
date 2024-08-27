@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { LinkdingBookmark } from "~/types";
+import type { LinkdingBookmark } from "~/schema/linkding";
 
 const model = defineModel<LinkdingBookmark>({ required: true });
 const emit = defineEmits<{ delete: [id: number] }>();
@@ -43,20 +43,21 @@ function onDelete(id: number) {
       <small>created</small>
       <DateTime :datetime="modelValue.date_added" />
     </div>
-    <div v-if="summary.done.value" space-y-2>
-      <pre m-0><code text-wrap>{{ source }}</code></pre>
+    <div v-if="summary.done.value">
+      <pre m-0 mb-2><code text-wrap>{{ source }}</code></pre>
       <MyButton block text-right md:text-left :done="copied" @click="copy"
         >copy to clipboard</MyButton
       >
     </div>
     <div class="my-controls">
+      <small>actions</small>
       <MyButton
         :clear="summary.clear"
         :done="summary.done.value"
         :error="summary.error"
         :pending="summary.pending.value"
         @click="summary.execute"
-        >summarize<template #clear>reset summary</template></MyButton
+        >🔍 summarize<template #clear>reset summary</template></MyButton
       >
       <DeleteBookmarkButton v-model="model" @delete="onDelete" />
     </div>

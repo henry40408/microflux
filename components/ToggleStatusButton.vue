@@ -31,6 +31,6 @@ async function onClick() {
     :error="fetched.error.value"
     :pending="fetched.status.value === 'pending'"
     @click="onClick"
-    >{{ nextStatus }}</MyButton
+    >{{ nextStatus === "read" ? "✅ read" : "✅ unread" }}</MyButton
   >
 </template>
