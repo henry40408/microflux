@@ -45,8 +45,8 @@ function onDelete(id: number) {
     </div>
     <div v-if="summary.done.value">
       <pre m-0 mb-2><code text-wrap>{{ source }}</code></pre>
-      <MyButton block text-right md:text-left :done="copied" @click="copy"
-        >copy to clipboard</MyButton
+      <MyButton block text-right md:text-left :done="copied" @click="copy">
+        📋 copy to clipboard</MyButton
       >
     </div>
     <div class="my-controls">

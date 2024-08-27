@@ -79,7 +79,7 @@ function onScrollToEntry() {
     <div v-if="summary.done.value" space-y-2>
       <pre m-0><code text-wrap>{{ source }}</code></pre>
       <MyButton block text-right md:text-left :done="copied" @click="copy">
-        copy to clipboard<template #clear>copied!</template>
+        📋 copy to clipboard<template #clear>copied!</template>
       </MyButton>
     </div>
     <div>

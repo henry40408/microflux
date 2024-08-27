@@ -8,14 +8,10 @@ defineProps<{
 
 defineEmits<{ click: [] }>();
 
-const counter = useInterval(300);
+const counter = useInterval(500);
 const label = computed(() => {
-  const l = 3;
-  const s = [];
-  for (let i = 0; i < l; i += 1) {
-    s.push((counter.value - i) % l === 0 ? ":" : ".");
-  }
-  return s.join("");
+  const icons = ["⌛", "⏳"];
+  return icons[counter.value % icons.length];
 });
 </script>
 
