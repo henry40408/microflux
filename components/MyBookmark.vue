@@ -29,9 +29,9 @@ function onDelete(id: number) {
   <div space-y-2>
     <div>
       <h3 space-x-2 mb-0>
-        <a :href="modelValue.url" rel="noreferrer noopener" target="_blank">{{
+        <NuxtLink target="_blank" :to="modelValue.url">{{
           bookmarkTitle
-        }}</a>
+        }}</NuxtLink>
         <small>#{{ modelValue.id }}</small>
       </h3>
       <small>{{ modelValue.url }}</small>

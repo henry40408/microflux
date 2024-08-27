@@ -24,13 +24,12 @@ async function onClick() {
 <template>
   <div>
     <h3 space-x-2>
-      <a
-        :class="{ 'text-slate-500': isRead }"
-        :href="modelValue.url"
-        rel="noreferrer noopener"
+      <NuxtLink
         target="_blank"
+        :class="{ 'text-slate-500': isRead }"
+        :to="modelValue.url"
         @click="onClick"
-        >{{ pangu(modelValue.title) }}</a
+        >{{ pangu(modelValue.title) }}</NuxtLink
       >
       <small>#{{ modelValue.id }}</small>
     </h3>

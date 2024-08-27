@@ -138,12 +138,14 @@ async function setFeedId(feedId: number | undefined) {
         </div>
         <MySearch v-model="q" />
         <div>{{ count }} entries</div>
-        <div v-if="selectedFeed">
-          {{ selectedFeed.title }}
+        <div v-if="selectedFeed" space-x-2>
+          <span>📡</span>
+          <span>{{ selectedFeed.title }}</span>
           <MyButton @click="setFeedId(undefined)">reset</MyButton>
         </div>
-        <div v-if="selectedCategory">
-          {{ selectedCategory.title }}
+        <div v-if="selectedCategory" space-x-2>
+          <span>📁</span>
+          <span>{{ selectedCategory.title }}</span>
           <MyButton @click="setCategoryId(undefined)">reset</MyButton>
         </div>
       </div>

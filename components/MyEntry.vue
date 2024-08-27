@@ -37,39 +37,43 @@ function onScrollToEntry() {
         md:space-x-2
         md:space-y-0
       >
-        <div space-x-1 items-center>
-          <small>feed</small>
+        <div space-x-1>
+          <span>📡</span>
           <a href="#" @click.prevent="$emit('clickFeed', modelValue.feed.id)">{{
             modelValue.feed.title
           }}</a>
         </div>
-        <div v-if="modelValue.feed.category" space-x-1 items-center>
-          <small>category</small>
+        <div v-if="modelValue.feed.category" space-x-1>
+          <span>📁</span>
           <a
             href="#"
             @click.prevent="$emit('clickCategory', modelValue.feed.category.id)"
             >{{ modelValue.feed.category.title }}</a
           >
         </div>
-        <div space-x-1 items-center>
-          <small>published at</small>
+        <div space-x-1>
+          <span>⏰</span>
           <DateTime :datetime="modelValue.published_at" />
         </div>
       </div>
-      <div class="my-controls-with-label">
-        <small block>actions</small>
-        <div class="my-controls">
-          <ToggleStatusButton v-model="model" />
-          <MyButton
-            :clear="summary.clear"
-            :done="summary.done.value"
-            :error="summary.error"
-            :pending="summary.pending.value"
-            @click="summary.execute"
-            >📋 summarize<template #clear>🔄 reset summary</template></MyButton
-          >
-          <SaveButton v-model="model" />
-        </div>
+      <div class="my-controls">
+        <ToggleStatusButton v-model="model" />
+        <MyButton
+          :clear="summary.clear"
+          :done="summary.done.value"
+          :error="summary.error"
+          :pending="summary.pending.value"
+          @click="summary.execute"
+          >📋 summarize<template #clear>🔄 reset summary</template></MyButton
+        >
+        <SaveButton v-model="model" />
+        <NuxtLink
+          v-if="model.comments_url"
+          block
+          :to="model.comments_url"
+          target="_blank"
+          >💬 comments</NuxtLink
+        >
       </div>
     </div>
     <div v-if="summary.done.value" space-y-2>

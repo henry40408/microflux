@@ -20,7 +20,7 @@ export type MinifluxCompactFeed = Pick<MinifluxFeed, "id" | "title"> & {
 
 export type MinifluxCompactEntry = Pick<
   MinifluxEntry,
-  "id" | "published_at" | "status" | "title" | "url"
+  "comments_url" | "id" | "published_at" | "status" | "title" | "url"
 > & {
   feed: MinifluxCompactFeed;
 };
@@ -76,7 +76,14 @@ export const minifluxRouter = router({
         return {
           total,
           entries: entries.map((e) => ({
-            ...lodash.pick(e, ["id", "published_at", "status", "title", "url"]),
+            ...lodash.pick(e, [
+              "comments_url",
+              "id",
+              "published_at",
+              "status",
+              "title",
+              "url",
+            ]),
             feed: {
               id: e.feed.id,
               title: e.feed.title,
