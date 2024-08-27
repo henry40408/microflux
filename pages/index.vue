@@ -127,15 +127,12 @@ async function setFeedId(feedId: number | undefined) {
         md:space-x-2
         md:space-y-0
       >
-        <div space-x-2 items-end>
-          <small>actions</small>
-          <MyButton
-            :error="error"
-            :pending="status === 'pending'"
-            @click="execute"
-            >🔄 reload</MyButton
-          >
-        </div>
+        <MyButton
+          :error="error"
+          :pending="status === 'pending'"
+          @click="execute"
+          >🔄 reload</MyButton
+        >
         <MySearch v-model="q" />
         <div>{{ count }} entries</div>
         <div v-if="selectedFeed" space-x-2>

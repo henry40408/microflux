@@ -24,15 +24,12 @@ const bookmarks = computed(() => fetched.data.value?.results || []);
     <div space-y-2 text-right md:text-left>
       <NavBar />
       <div items-center space-y-2 md:flex md:space-x-2 md:space-y-0>
-        <div space-x-2>
-          <small>actions</small>
-          <MyButton
-            :pending="fetched.status.value === 'pending'"
-            :error="fetched.error.value"
-            @click="fetched.execute"
-            >🔄 reload</MyButton
-          >
-        </div>
+        <MyButton
+          :pending="fetched.status.value === 'pending'"
+          :error="fetched.error.value"
+          @click="fetched.execute"
+          >🔄 reload</MyButton
+        >
         <MySearch v-model="q" />
         <div>{{ count }} entries</div>
       </div>

@@ -40,7 +40,7 @@ function onDelete(id: number) {
       <blockquote m-0>{{ bookmarkDescription }}</blockquote>
     </div>
     <div space-x-1 text-right md:text-left>
-      <small>created</small>
+      <span>⏰</span>
       <DateTime :datetime="modelValue.date_added" />
     </div>
     <div v-if="summary.done.value">
@@ -50,7 +50,6 @@ function onDelete(id: number) {
       >
     </div>
     <div class="my-controls">
-      <small>actions</small>
       <MyButton
         :clear="summary.clear"
         :done="summary.done.value"
