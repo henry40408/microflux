@@ -16,6 +16,12 @@ watch(
 const fullContent = ref("");
 const fullContentRef = ref<HTMLElement | null>(null);
 
+const counter = useInterval(500);
+const loadingLabel = computed(() => {
+  const icons = ["⌛", "⏳"];
+  return icons[counter.value % icons.length];
+});
+
 const fetched = await useAsyncData(
   `entry-content-${model.value.id}`,
   () => $client.miniflux.getContent.query(model.value.id),
@@ -50,7 +56,9 @@ function onToggleStatus(s: string) {
     <div>
       <div ref="fullContentRef" mb-4>
         <div v-if="!fullContent">
-          <span v-if="fetched.status.value === 'pending'">...</span>
+          <span v-if="fetched.status.value === 'pending'"
+            >{{ loadingLabel }} loading content</span
+          >
           <span v-if="fetched.error">{{ fetched.error }}</span>
           <!-- eslint-disable-next-line vue/no-v-html -->
           <span v-if="fetched.data.value" v-html="fetched.data.value.content" />
