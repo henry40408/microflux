@@ -5,28 +5,28 @@ const model = defineModel<MinifluxCompactEntry>({ required: true });
 
 defineEmits<{ clickCategory: [id: number]; clickFeed: [id: number] }>();
 
-const entryTitle = ref<HTMLElement | null>(null);
+const entryTitleRef = ref<HTMLElement | null>(null);
 
-const summary = useSummarize(model.value.url);
+const fetchedSummary = useSummarize(model.value.url);
 const source = computed(
   () =>
     `${model.value.title}
 
-${summary.data.value?.finalUrl || ""}
+${fetchedSummary.data.value?.finalUrl || ""}
 
-${pangu(summary.data.value?.summary || "")}`,
+${pangu(fetchedSummary.data.value?.summary || "")}`,
 );
 const { copy, copied } = useClipboard({ source });
 
 function onScrollToEntry() {
-  entryTitle.value?.scrollIntoView();
+  entryTitleRef.value?.scrollIntoView();
 }
 </script>
 
 <template>
   <div space-y-2>
-    <div ref="entryTitle">
-      <EntryTitle v-model="model" />
+    <div ref="entryTitleRef">
+      <AppEntryTitle v-model="model" />
     </div>
     <div space-y-2>
       <div
@@ -57,16 +57,16 @@ function onScrollToEntry() {
         </div>
       </div>
       <div class="my-controls">
-        <ToggleStatusButton v-model="model" />
-        <MyButton
-          :clear="summary.clear"
-          :done="summary.done.value"
-          :error="summary.error"
-          :pending="summary.pending.value"
-          @click="summary.execute"
-          >📋 summarize<template #clear>🔄 reset summary</template></MyButton
+        <AppEntryToggleStatusButton v-model="model" />
+        <BaseButton
+          :clear="fetchedSummary.clear"
+          :done="fetchedSummary.done.value"
+          :error="fetchedSummary.error"
+          :pending="fetchedSummary.pending.value"
+          @click="fetchedSummary.execute"
+          >🔎 summarize<template #clear>🔄 reset summary</template></BaseButton
         >
-        <SaveButton v-model="model" />
+        <AppEntrySaveButton v-model="model" />
         <NuxtLink
           v-if="model.comments_url"
           block
@@ -76,14 +76,14 @@ function onScrollToEntry() {
         >
       </div>
     </div>
-    <div v-if="summary.done.value" space-y-2>
+    <div v-if="fetchedSummary.done.value" space-y-2>
       <pre m-0><code text-wrap>{{ source }}</code></pre>
-      <MyButton block text-right md:text-left :done="copied" @click="copy">
+      <BaseButton block text-right md:text-left :done="copied" @click="copy">
         📋 copy to clipboard<template #clear>copied!</template>
-      </MyButton>
+      </BaseButton>
     </div>
     <div>
-      <EntryContent v-model="model" @scroll-to-entry="onScrollToEntry" />
+      <AppEntryContent v-model="model" @scroll-to-entry="onScrollToEntry" />
     </div>
   </div>
 </template>

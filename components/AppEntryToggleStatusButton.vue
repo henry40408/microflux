@@ -2,7 +2,7 @@
 import type { MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
-const emit = defineEmits<{ "toggle-status": [status: string] }>();
+const emit = defineEmits<{ toggleStatus: [status: string] }>();
 
 const nextStatus = computed(() =>
   model.value.status === "unread" ? "read" : "unread",
@@ -22,15 +22,15 @@ async function onClick() {
   const oldStatus = nextStatus.value;
   await fetched.execute();
   model.value.status = oldStatus;
-  emit("toggle-status", oldStatus);
+  emit("toggleStatus", oldStatus);
 }
 </script>
 
 <template>
-  <MyButton
+  <BaseButton
     :error="fetched.error.value"
     :pending="fetched.status.value === 'pending'"
     @click="onClick"
-    >{{ nextStatus === "read" ? "✅ read" : "✅ unread" }}</MyButton
+    >{{ nextStatus === "read" ? "✅ read" : "✅ unread" }}</BaseButton
   >
 </template>

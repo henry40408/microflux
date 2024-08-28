@@ -2,7 +2,7 @@
 const model = defineModel<string>({ required: true });
 const props = defineProps<{ id: number }>();
 
-const emit = defineEmits<{ "fetch-content": [] }>();
+const emit = defineEmits<{ fetchContent: [] }>();
 
 const { $client } = useNuxtApp();
 const fetched = await useAsyncData(
@@ -19,17 +19,17 @@ async function onCancel() {
 async function onClick() {
   await fetched.execute();
   model.value = fetched.data.value?.content || "";
-  emit("fetch-content");
+  emit("fetchContent");
 }
 </script>
 
 <template>
-  <MyButton
+  <BaseButton
     :clear="onCancel"
     :done="fetched.status.value === 'success'"
     :error="fetched.error.value"
     :pending="fetched.status.value === 'pending'"
     @click="onClick"
-    >🔍 download<template #clear>reset full content</template></MyButton
+    >🔍 download<template #clear>reset full content</template></BaseButton
   >
 </template>

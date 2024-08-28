@@ -18,12 +18,12 @@ async function onConfirm() {
 </script>
 
 <template>
-  <MyConfirm
+  <BaseConfirm
     danger
     :done="fetched.status.value === 'success'"
     :error="fetched.error.value"
     :loading="fetched.status.value === 'pending'"
     @confirm="onConfirm"
-    >🗑️ delete</MyConfirm
+    >🗑️ delete</BaseConfirm
   >
 </template>

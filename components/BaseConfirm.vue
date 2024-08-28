@@ -8,7 +8,7 @@ const props = defineProps<{
   repeated?: boolean;
 }>();
 
-const emit = defineEmits(["confirm"]);
+const emit = defineEmits<{ confirm: [] }>();
 
 type Stage = "init" | "pending" | "confirmed";
 

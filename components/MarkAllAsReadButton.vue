@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{ entryIds: number[] }>();
 
-const emit = defineEmits(["mark-all-as-read"]);
+const emit = defineEmits<{ markAllAsRead: [] }>();
 
 const { $client } = useNuxtApp();
 const fetched = await useAsyncData(
@@ -16,16 +16,16 @@ const fetched = await useAsyncData(
 
 async function onClick() {
   await fetched.execute();
-  emit("mark-all-as-read");
+  emit("markAllAsRead");
 }
 </script>
 
 <template>
-  <MyConfirm
+  <BaseConfirm
     repeated
     :error="fetched.error.value"
     :loading="fetched.status.value === 'pending'"
     @confirm="onClick"
-    >✅ mark {{ props.entryIds.length }} as read</MyConfirm
+    >✅ mark {{ props.entryIds.length }} as read</BaseConfirm
   >
 </template>

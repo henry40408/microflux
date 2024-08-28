@@ -7,12 +7,6 @@ defineProps<{
 }>();
 
 defineEmits<{ click: [] }>();
-
-const counter = useInterval(500);
-const label = computed(() => {
-  const icons = ["⌛", "⏳"];
-  return icons[counter.value % icons.length];
-});
 </script>
 
 <template>
@@ -21,9 +15,8 @@ const label = computed(() => {
       ><slot
     /></a>
     <span v-if="!done && pending">
-      {{ label }}
       <a v-if="!done && pending" href="#" @click.prevent="clear?.()"
-        >cancel</a
+        ><BaseSpinner /> cancel</a
       ></span
     >
     <span v-if="!done && !pending && error">{{ error }}</span>

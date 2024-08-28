@@ -4,19 +4,19 @@ import type { LinkdingBookmark } from "~/schema/linkding";
 const model = defineModel<LinkdingBookmark>({ required: true });
 const emit = defineEmits<{ delete: [id: number] }>();
 
-const bookmarkTitle = computed(
+const coalescedTitle = computed(
   () => model.value.title || model.value.website_title,
 );
-const bookmarkDescription = computed(
+const coalescedDescription = computed(
   () => model.value.description || model.value.website_description,
 );
-const summary = useSummarize(model.value.url);
+const fetchedSummary = useSummarize(model.value.url);
 const source = computed(
-  () => `${bookmarkTitle.value}
+  () => `${coalescedTitle.value}
 
-${summary.data.value?.finalUrl || ""}
+${fetchedSummary.data.value?.finalUrl || ""}
 
-${pangu(summary.data.value?.summary || "")}`,
+${pangu(fetchedSummary.data.value?.summary || "")}`,
 );
 const { copy, copied } = useClipboard({ source });
 
@@ -30,35 +30,35 @@ function onDelete(id: number) {
     <div>
       <h3 space-x-2 mb-0>
         <NuxtLink target="_blank" :to="modelValue.url">{{
-          bookmarkTitle
+          coalescedTitle
         }}</NuxtLink>
         <small>#{{ modelValue.id }}</small>
       </h3>
       <small>{{ modelValue.url }}</small>
     </div>
-    <div v-if="bookmarkDescription">
-      <blockquote m-0>{{ bookmarkDescription }}</blockquote>
+    <div v-if="coalescedDescription">
+      <blockquote m-0>{{ coalescedDescription }}</blockquote>
     </div>
     <div space-x-1 text-right md:text-left>
       <span>⏰</span>
       <DateTime :datetime="modelValue.date_added" />
     </div>
-    <div v-if="summary.done.value">
+    <div v-if="fetchedSummary.done.value">
       <pre m-0 mb-2><code text-wrap>{{ source }}</code></pre>
-      <MyButton block text-right md:text-left :done="copied" @click="copy">
-        📋 copy to clipboard</MyButton
+      <BaseButton block text-right md:text-left :done="copied" @click="copy"
+        >📋 copy to clipboard</BaseButton
       >
     </div>
     <div class="my-controls">
-      <MyButton
-        :clear="summary.clear"
-        :done="summary.done.value"
-        :error="summary.error"
-        :pending="summary.pending.value"
-        @click="summary.execute"
-        >🔍 summarize<template #clear>reset summary</template></MyButton
+      <BaseButton
+        :clear="fetchedSummary.clear"
+        :done="fetchedSummary.done.value"
+        :error="fetchedSummary.error"
+        :pending="fetchedSummary.pending.value"
+        @click="fetchedSummary.execute"
+        >🔍 summarize<template #clear>reset summary</template></BaseButton
       >
-      <DeleteBookmarkButton v-model="model" @delete="onDelete" />
+      <AppBookmarkDeleteButton v-model="model" @delete="onDelete" />
     </div>
   </div>
 </template>

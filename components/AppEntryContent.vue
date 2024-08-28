@@ -4,7 +4,7 @@ import type { MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
 const { $client } = useNuxtApp();
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
-const emit = defineEmits<{ "scroll-to-entry": [] }>();
+const emit = defineEmits<{ scrollToEntry: [] }>();
 
 const expandableRef = ref<HTMLDetailsElement | null>(null);
 watch(
@@ -14,13 +14,7 @@ watch(
   },
 );
 const fullContent = ref("");
-const fullContentRef = ref<HTMLElement | null>(null);
-
-const counter = useInterval(500);
-const loadingLabel = computed(() => {
-  const icons = ["⌛", "⏳"];
-  return icons[counter.value % icons.length];
-});
+const expandableContentRef = ref<HTMLElement | null>(null);
 
 const fetched = await useAsyncData(
   `entry-content-${model.value.id}`,
@@ -30,7 +24,7 @@ const fetched = await useAsyncData(
 
 function onCollapse() {
   expandableRef.value?.removeAttribute("open");
-  emit("scroll-to-entry");
+  emit("scrollToEntry");
 }
 
 async function onDetailsToggle() {
@@ -39,13 +33,13 @@ async function onDetailsToggle() {
 }
 
 function onFetchContent() {
-  fullContentRef.value?.scrollIntoView();
+  expandableContentRef.value?.scrollIntoView();
 }
 
-function onToggleStatus(s: string) {
-  if (s === "read") {
+function onToggleStatus(nextStatus: string) {
+  if (nextStatus === "read") {
     expandableRef.value?.removeAttribute("open");
-    emit("scroll-to-entry");
+    emit("scrollToEntry");
   }
 }
 </script>
@@ -54,10 +48,10 @@ function onToggleStatus(s: string) {
   <details ref="expandableRef" @toggle="onDetailsToggle">
     <summary>content</summary>
     <div>
-      <div ref="fullContentRef" mb-4>
+      <div ref="expandableContentRef" mb-4>
         <div v-if="!fullContent">
           <span v-if="fetched.status.value === 'pending'"
-            >{{ loadingLabel }} loading content</span
+            ><BaseSpinner /> loading content</span
           >
           <span v-if="fetched.error">{{ fetched.error }}</span>
           <!-- eslint-disable-next-line vue/no-v-html -->
@@ -67,14 +61,17 @@ function onToggleStatus(s: string) {
         <div v-if="fullContent" v-html="fullContent" />
       </div>
       <div class="my-controls">
-        <MyButton @click="onCollapse">🔼 collapse</MyButton>
-        <ToggleStatusButton v-model="model" @toggle-status="onToggleStatus" />
-        <FetchContentButton
+        <BaseButton @click="onCollapse">🔼 collapse</BaseButton>
+        <AppEntryToggleStatusButton
+          v-model="model"
+          @toggle-status="onToggleStatus"
+        />
+        <AppEntryFetchContentButton
           :id="modelValue.id"
           v-model="fullContent"
           @fetch-content="onFetchContent"
         />
-        <SaveButton v-model="model" />
+        <AppEntrySaveButton v-model="model" />
       </div>
     </div>
   </details>

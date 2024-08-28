@@ -12,11 +12,11 @@ const fetched = await useAsyncData(
 </script>
 
 <template>
-  <MyButton
+  <BaseButton
     :done="fetched.status.value === 'success'"
     :error="fetched.error.value"
     :pending="fetched.status.value === 'pending'"
     @click="fetched.execute"
-    >💾 save</MyButton
+    >💾 save</BaseButton
   >
 </template>

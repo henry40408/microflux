@@ -4,49 +4,49 @@ import type {
   MinifluxCompactEntry,
 } from "~/server/trpc/routers/miniflux";
 
-const toolbarRef = ref<HTMLElement | null>(null);
-const q = ref("");
+const actionsRef = ref<HTMLElement | null>(null);
+const queryString = ref("");
 
-const query = toRef(useRoute(), "query");
-const categoryId = computed(() => query.value.categoryId?.toString());
-const feedId = computed(() => query.value.feedId?.toString());
+const queryParams = toRef(useRoute(), "query");
+const selectedCategoryId = computed(() =>
+  queryParams.value.categoryId?.toString(),
+);
+const selectedFeedId = computed(() => queryParams.value.feedId?.toString());
 
 const { $client } = useNuxtApp();
 const { data, error, status, execute } = await useAsyncData(
   "entries",
   () =>
     $client.miniflux.getEntries.query({
-      categoryId: categoryId.value,
-      feedId: feedId.value,
+      categoryId: selectedCategoryId.value,
+      feedId: selectedFeedId.value,
     }),
-  { watch: [categoryId, feedId] },
+  { watch: [selectedCategoryId, selectedFeedId] },
 );
 
-const entries = computed(
+const filteredEntries = computed(
   () =>
     data.value?.entries.filter((e) => {
-      return q.value
-        ? e.title.toLowerCase().includes(q.value.toLowerCase())
+      return queryString.value
+        ? e.title.toLowerCase().includes(queryString.value.toLowerCase())
         : true;
     }) || [],
 );
-watch(entries, async (next) => {
-  toolbarRef.value?.scrollIntoView(true);
+watch(filteredEntries, async (next) => {
+  actionsRef.value?.scrollIntoView(true);
   await handleEmptyEntries(next);
 });
-const count = computed(
-  () => entries.value.filter((e) => e.status === "unread").length,
+const unreadEntries = computed(() =>
+  filteredEntries.value.filter((e) => e.status === "unread"),
 );
-const title = computed(() => `(${count.value}) miniflux`);
+const title = computed(() => `(${unreadEntries.value.length}) miniflux`);
 useHead({ title });
 
-const entryIds = computed(() =>
-  entries.value.filter((e) => e.status === "unread").map((e) => e.id),
-);
+const unreadEntryIds = computed(() => unreadEntries.value.map((e) => e.id));
 const feeds = computed(
   () =>
     Object.values(
-      Object.fromEntries(entries.value.map((e) => [e.feed.id, e.feed])),
+      Object.fromEntries(filteredEntries.value.map((e) => [e.feed.id, e.feed])),
     ) || [],
 );
 const categories = computed(
@@ -64,18 +64,18 @@ const categories = computed(
     ) || [],
 );
 const selectedFeed = computed(() => {
-  const { feedId } = query.value;
+  const { feedId } = queryParams.value;
   if (!feedId) return null;
   return feeds.value.find((f) => `${f.id}` === feedId);
 });
 const selectedCategory = computed(() => {
-  const { categoryId } = query.value;
+  const { categoryId } = queryParams.value;
   if (!categoryId) return null;
   return categories.value.find((c) => `${c.id}` === categoryId);
 });
 
 async function handleEmptyEntries(next: MinifluxCompactEntry[]) {
-  const { categoryId, feedId } = query.value;
+  const { categoryId, feedId } = queryParams.value;
   if (next.length <= 0 && categoryId && feedId) {
     await navigateTo({ query: { categoryId } });
     return;
@@ -89,10 +89,10 @@ async function handleEmptyEntries(next: MinifluxCompactEntry[]) {
     return;
   }
 }
-handleEmptyEntries(entries.value);
+handleEmptyEntries(filteredEntries.value);
 
 async function setCategoryId(categoryId: number | undefined) {
-  const q = { ...query.value };
+  const q = { ...queryParams.value };
   if (!categoryId) {
     delete q.categoryId;
   } else {
@@ -102,7 +102,7 @@ async function setCategoryId(categoryId: number | undefined) {
 }
 
 async function setFeedId(feedId: number | undefined) {
-  const q = { ...query.value };
+  const q = { ...queryParams.value };
   if (!feedId) {
     delete q.feedId;
   } else {
@@ -117,7 +117,7 @@ async function setFeedId(feedId: number | undefined) {
     <div space-y-2>
       <NavBar />
       <div
-        ref="toolbarRef"
+        ref="actionsRef"
         space-y-2
         text-right
         items-center
@@ -127,50 +127,53 @@ async function setFeedId(feedId: number | undefined) {
         md:space-x-2
         md:space-y-0
       >
-        <MyButton
+        <BaseButton
           :error="error"
           :pending="status === 'pending'"
           @click="execute"
-          >🔄 reload</MyButton
+          >🔄 reload</BaseButton
         >
-        <MySearch v-model="q" />
-        <div>{{ count }} entries</div>
+        <BaseSearch v-model="queryString" />
+        <div>{{ unreadEntries.length }} entries</div>
         <div v-if="selectedFeed" space-x-2>
           <span>📡</span>
           <span>{{ selectedFeed.title }}</span>
-          <MyButton @click="setFeedId(undefined)">reset</MyButton>
+          <BaseButton @click="setFeedId(undefined)">reset</BaseButton>
         </div>
         <div v-if="selectedCategory" space-x-2>
           <span>📁</span>
           <span>{{ selectedCategory.title }}</span>
-          <MyButton @click="setCategoryId(undefined)">reset</MyButton>
+          <BaseButton @click="setCategoryId(undefined)">reset</BaseButton>
         </div>
       </div>
     </div>
     <div v-if="data">
-      <MyOutlines
+      <AppEntryOutlines
         v-model="data"
         @click-feed="setFeedId"
         @click-category="setCategoryId"
       />
-      <MyEntry
-        v-for="(entry, index) in entries"
+      <AppEntry
+        v-for="(entry, index) in filteredEntries"
         :key="entry.id"
-        v-model="entries[index]"
+        v-model="filteredEntries[index]"
         @click-category="setCategoryId"
         @click-feed="setFeedId"
       />
-      <em v-if="status !== 'pending' && entries.length <= 0" block mb-4>
+      <em v-if="status !== 'pending' && filteredEntries.length <= 0" block mb-4>
         (empty)
       </em>
     </div>
     <div class="my-controls">
-      <MyButton :error="error" :pending="status === 'pending'" @click="execute"
-        >🔄 reload</MyButton
+      <BaseButton
+        :error="error"
+        :pending="status === 'pending'"
+        @click="execute"
+        >🔄 reload</BaseButton
       >
       <MarkAllAsReadButton
-        v-if="status !== 'pending' && count > 0"
-        :entry-ids="entryIds"
+        v-if="status !== 'pending' && unreadEntries.length > 0"
+        :entry-ids="unreadEntryIds"
         @mark-all-as-read="execute"
       />
     </div>
