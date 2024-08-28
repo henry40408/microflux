@@ -1,5 +1,6 @@
 <template>
   <div class="my-nav" space-x-2 text-right md:text-left>
+    <span>🧭</span>
     <NuxtLink to="/">miniflux</NuxtLink>
     <NuxtLink to="/linkding">linkding</NuxtLink>
   </div>
