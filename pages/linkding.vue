@@ -20,7 +20,7 @@ const bookmarks = computed(() => fetched.data.value?.results || []);
 </script>
 
 <template>
-  <div>
+  <div space-y-2>
     <div space-y-2 text-right md:text-left>
       <NavBar />
       <div items-center space-y-2 md:flex md:space-x-2 md:space-y-0>
@@ -34,6 +34,7 @@ const bookmarks = computed(() => fetched.data.value?.results || []);
         <div>{{ count }} entries</div>
       </div>
     </div>
+    <AppBookmarkAddForm @add="fetched.refresh()" />
     <div>
       <AppBookmark
         v-for="(bookmark, index) in bookmarks"
