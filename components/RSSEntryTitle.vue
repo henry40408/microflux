@@ -7,7 +7,7 @@
       @click="$emit('click')"
       ><span
         :class="{ 'text-gray-300': isRead, 'dark:text-gray-700': isRead }"
-        >{{ modelValue.title }}</span
+        >{{ pangu(modelValue.title) }}</span
       ></NuxtLink
     >
   </h3>

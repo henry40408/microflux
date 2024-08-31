@@ -30,7 +30,6 @@ const unreadEntries = computed(
 );
 watch(unreadEntries, async () => {
   await handleEmptyEntries();
-  actionsRef?.value?.scrollIntoView();
 });
 
 const selectedCategory = computed(
@@ -99,7 +98,7 @@ handleEmptyEntries();
           <BaseButton @click="resetFeed">reset</BaseButton>
         </li>
       </ul>
-      <h2>outlines</h2>
+      <RSSEntryOutlines v-model="entries" />
       <h2>{{ unreadEntries.length }} entries</h2>
       <div v-for="(entry, index) in entries" :key="entry.id">
         <RSSEntry v-model="entries[index]" />

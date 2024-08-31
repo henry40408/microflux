@@ -3,9 +3,9 @@
   <RSSEntryTitle v-model="model" />
   <div>
     feed:
-    <BaseButton @click="clickFeed">{{ modelValue.feed.title }}</BaseButton
+    <BaseButton @click="selectFeed">{{ modelValue.feed.title }}</BaseButton
     >, category:
-    <BaseButton @click="clickCategory">{{
+    <BaseButton @click="selectCategory">{{
       modelValue.feed.category?.title
     }}</BaseButton
     >, published at: <BaseDateTime :datetime="modelValue.published_at" />
@@ -67,12 +67,12 @@ ${pangu(summary.value)}`,
 );
 const { copy, copied } = useClipboard({ source: copyableSummary });
 
-async function clickFeed() {
+async function selectFeed() {
   const categoryId = parseQuery().get("categoryId");
   const feedId = model.value.feed.id;
   await navigateTo({ query: { categoryId, feedId } });
 }
-async function clickCategory() {
+async function selectCategory() {
   const categoryId = model.value.feed.category?.id;
   if (!categoryId) return;
   const feedId = parseQuery().get("feedId");
