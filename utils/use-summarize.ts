@@ -1,3 +1,5 @@
+import type { AsyncDataRequestStatus } from "#app";
+
 import type { KagiSummarizerOutputResponse } from "~/schema/kagi";
 import type { FullUrlResponse } from "~/schema/internal";
 
@@ -36,12 +38,16 @@ export default function useSummarize(url: string) {
   });
 
   const error = computed(() => sf.error.value || ff.error.value);
-  const done = computed(
-    () => sf.status.value === "success" && ff.status.value === "success",
-  );
-  const pending = computed(
-    () => sf.status.value === "pending" || ff.status.value === "pending",
-  );
+  const status = computed<AsyncDataRequestStatus>(() => {
+    if (ff.status.value === "pending" || sf.status.value === "pending")
+      return "pending";
+    if (ff.status.value === "error" || sf.status.value === "error")
+      return "error";
+    if (ff.status.value === "success" && sf.status.value === "success")
+      return "success";
+
+    return "idle";
+  });
 
   async function execute() {
     await Promise.all([sf.execute(), ff.execute()]);
@@ -55,9 +61,8 @@ export default function useSummarize(url: string) {
   return {
     clear,
     data,
-    done,
     error,
     execute,
-    pending,
+    status,
   };
 }

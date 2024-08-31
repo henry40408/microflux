@@ -2,7 +2,10 @@
 export default defineNuxtConfig({
   build: { transpile: ["trpc-nuxt"] },
   compatibilityDate: "2024-04-03",
-  css: ["~/assets/css/style.css"],
+  css: [
+    !process.env.HISTOIRE ? "~/vendor/assets/css/monospace-web.css" : undefined,
+    "~/assets/css/style.css",
+  ],
   devtools: { enabled: true },
   eslint: { checker: true },
   modules: ["@vueuse/nuxt", "@unocss/nuxt", "@nuxt/eslint"],
