@@ -1,4 +1,5 @@
 <template>
+  <span ref="titleRef" />
   <RSSEntryTitle v-model="model" />
   <div>
     feed:
@@ -6,7 +7,8 @@
     >, category:
     <BaseButton @click="clickCategory">{{
       modelValue.feed.category?.title
-    }}</BaseButton>
+    }}</BaseButton
+    >, published at: <BaseDateTime :datetime="modelValue.published_at" />
   </div>
   <div>
     <RSSEntryToggleStatus v-model="model" />
@@ -21,7 +23,11 @@
     {{ " " }}
     <RSSEntrySave v-model="model" />
   </div>
-  <RSSEntryContent v-if="!hasSummary" v-model="model" />
+  <RSSEntryContent
+    v-if="!hasSummary"
+    v-model="model"
+    @toggle-status="toggleStatus"
+  />
   <details v-if="hasSummary" ref="summaryRef">
     <summary text-yellow-600 dark:text-yellow-300>summary</summary>
     <pre text-wrap>{{ copyableSummary }}</pre>
@@ -38,6 +44,7 @@
 <script setup lang="ts">
 import type { MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
 
+const titleRef = ref<null | HTMLElement>(null);
 const summaryRef = ref<null | HTMLElement>(null);
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
@@ -70,6 +77,11 @@ async function clickCategory() {
   if (!categoryId) return;
   const feedId = parseQuery().get("feedId");
   await navigateTo({ query: { categoryId, feedId } });
+}
+
+function toggleStatus(newStatus: string) {
+  if (newStatus !== "read") return;
+  titleRef.value?.scrollIntoView();
 }
 </script>
 

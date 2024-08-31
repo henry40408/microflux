@@ -2,10 +2,12 @@
 const actionsRef = ref<null | HTMLElement>();
 
 const query = toRef(useRoute(), "query");
-const categoryId = computed(() => query.value.categoryId?.toString() || "");
-const feedId = computed(() => query.value.feedId?.toString() || "");
+const selectedCategoryId = computed(
+  () => query.value.categoryId?.toString() || "",
+);
+const selectedFeedId = computed(() => query.value.feedId?.toString() || "");
 watch(
-  () => `${categoryId.value}|${feedId.value}`,
+  () => `${selectedCategoryId.value}|${selectedFeedId.value}`,
   (next, prev) => {
     if (next !== prev) actionsRef.value?.scrollIntoView();
   },
@@ -16,23 +18,31 @@ const fetched = useAsyncData(
   "entries",
   () =>
     $client.miniflux.getEntries.query({
-      categoryId: categoryId.value,
-      feedId: feedId.value,
+      categoryId: selectedCategoryId.value,
+      feedId: selectedFeedId.value,
     }),
-  { watch: [categoryId, feedId] },
+  { watch: [selectedCategoryId, selectedFeedId] },
 );
 const entries = computed(() => fetched.data.value?.entries || []);
+
 const unreadEntries = computed(
   () => entries.value.filter((e) => e.status === "unread") || [],
 );
+watch(unreadEntries, async () => {
+  await handleEmptyEntries();
+  actionsRef?.value?.scrollIntoView();
+});
+
 const selectedCategory = computed(
   () =>
     entries.value.find(
-      (e) => e.feed.category?.id.toString() === categoryId.value,
+      (e) => e.feed.category?.id.toString() === selectedCategoryId.value,
     )?.feed.category,
 );
 const selectedFeed = computed(
-  () => entries.value.find((e) => e.feed.id.toString() === feedId.value)?.feed,
+  () =>
+    entries.value.find((e) => e.feed.id.toString() === selectedFeedId.value)
+      ?.feed,
 );
 useHead({
   title: () => `(${unreadEntries.value.length}) miniflux`,
@@ -46,6 +56,21 @@ async function resetCategory() {
   const feedId = parseQuery().get("feedId");
   await navigateTo({ query: { categoryId: null, feedId } });
 }
+
+async function handleEmptyEntries() {
+  const count = unreadEntries.value.length;
+  const categoryId = selectedCategoryId.value;
+  const feedId = selectedFeedId.value;
+  if (feedId && count <= 0) {
+    await navigateTo({ query: { categoryId } });
+    return;
+  }
+  if (categoryId && count <= 0) {
+    await navigateTo({ query: {} });
+    return;
+  }
+}
+handleEmptyEntries();
 </script>
 
 <template>

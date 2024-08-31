@@ -9,7 +9,7 @@
     <div>
       <BaseButton @click="collapse">collapse</BaseButton>
       {{ " " }}
-      <RSSEntryToggleStatus v-model="model" />
+      <RSSEntryToggleStatus v-model="model" @click="toggleStatus" />
       {{ " " }}
       <BaseButton
         :clear="downloaded.clear"
@@ -37,6 +37,8 @@ watch(
   },
 );
 
+const emit = defineEmits<{ toggleStatus: [read: string] }>();
+
 const { $client } = useNuxtApp();
 const fetched = useAsyncData(
   `entry-${model.value.id}-content`,
@@ -60,6 +62,10 @@ function collapse() {
 async function download() {
   await downloaded.execute();
   contentRef.value?.scrollIntoView();
+}
+
+function toggleStatus(status: string) {
+  emit("toggleStatus", status);
 }
 </script>
 

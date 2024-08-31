@@ -15,6 +15,8 @@ const nextStatus = computed(() =>
   model.value.status === "unread" ? "read" : "unread",
 );
 
+const emit = defineEmits<{ click: [status: string] }>();
+
 const { $client } = useNuxtApp();
 const fetched = useAsyncData(
   `entry-${model.value.id}-status`,
@@ -27,8 +29,10 @@ const fetched = useAsyncData(
 );
 
 async function onClick() {
+  const newStatus = nextStatus.value;
   await fetched.execute();
-  model.value.status = nextStatus.value;
+  model.value.status = newStatus;
+  emit("click", newStatus);
 }
 </script>
 
