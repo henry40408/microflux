@@ -1,13 +1,23 @@
 <template>
   <details ref="contentRef" @toggle="fetched.execute">
-    <summary>content</summary>
+    <summary>{{ !fullContent ? "content" : "full content" }}</summary>
     <div v-if="pending"><BaseSpinner /></div>
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div v-html="content" />
+    <div v-if="!fullContent" v-html="content" />
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <div v-if="fullContent" v-html="fullContent" />
     <div>
       <BaseButton @click="collapse">collapse</BaseButton>
       {{ " " }}
       <RSSEntryToggleStatus v-model="model" />
+      {{ " " }}
+      <BaseButton
+        :clear="downloaded.clear"
+        :error="downloaded.error"
+        :status="downloaded.status.value"
+        @click="download"
+        >download<template #clear>reset content</template></BaseButton
+      >
       {{ " " }}
       <RSSEntrySave v-model="model" />
     </div>
@@ -36,8 +46,20 @@ const fetched = useAsyncData(
 const content = computed(() => fetched.data.value?.content || "");
 const pending = computed(() => fetched.status.value === "pending");
 
+const downloaded = useAsyncData(
+  `entry-${model.value.id}-download`,
+  () => $client.miniflux.getFullContent.query(model.value.id),
+  { server: false, immediate: false },
+);
+const fullContent = computed(() => downloaded.data.value?.content || "");
+
 function collapse() {
   contentRef.value?.removeAttribute("open");
+}
+
+async function download() {
+  await downloaded.execute();
+  contentRef.value?.scrollIntoView();
 }
 </script>
 

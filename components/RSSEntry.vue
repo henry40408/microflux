@@ -23,9 +23,13 @@
   </div>
   <RSSEntryContent v-if="!hasSummary" v-model="model" />
   <details v-if="hasSummary" ref="summaryRef">
-    <summary>summary</summary>
+    <summary text-yellow-600 dark:text-yellow-300>summary</summary>
     <pre text-wrap>{{ copyableSummary }}</pre>
-    <BaseButton once :status="copied ? 'success' : 'idle'" @click="copy"
+    <BaseButton
+      once
+      :clear="() => {}"
+      :status="copied ? 'success' : 'idle'"
+      @click="copy"
       >copy to clipboard</BaseButton
     >
   </details>

@@ -1,6 +1,6 @@
 <template>
   <span>
-    <a v-if="isInitial" href="#" @click.prevent="$emit('click')">
+    <a v-if="initialized" href="#" @click.prevent="$emit('click')">
       <slot />
     </a>
     <span v-if="pending">
@@ -32,14 +32,31 @@ const props = defineProps<{
 
 defineEmits<{ click: [] }>();
 
-const isInitial = computed(
-  () =>
-    props.status !== "pending" &&
-    !(props.status === "success" && !!props.clear),
-);
+const initialized = computed(() => {
+  if (!props.status) return true;
+  if (props.status === "idle" || props.status === "error") return true;
+  if (props.status === "pending") return false;
+  if (props.status === "success") {
+    if (props.clear) return false;
+    return true;
+  }
+  return false;
+});
 const pending = computed(() => props.status === "pending");
 const cancellable = computed(() => !!props.clear);
-const done = computed(() => props.status === "success" && props.once);
+const done = computed(() => {
+  if (
+    props.status === "idle" ||
+    props.status === "pending" ||
+    props.status === "error"
+  )
+    return false;
+  if (props.status === "success") {
+    if (props.once) return true;
+    return false;
+  }
+  return false;
+});
 const clearable = computed(
   () => !!props.clear && props.status === "success" && !props.once,
 );
