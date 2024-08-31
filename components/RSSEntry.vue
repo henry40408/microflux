@@ -1,8 +1,12 @@
 <template>
   <RSSEntryTitle v-model="model" />
   <div>
-    feed: {{ modelValue.feed.title }}, category:
-    {{ modelValue.feed.category?.title }}
+    feed:
+    <BaseButton @click="clickFeed">{{ modelValue.feed.title }}</BaseButton
+    >, category:
+    <BaseButton @click="clickCategory">{{
+      modelValue.feed.category?.title
+    }}</BaseButton>
   </div>
   <div>
     <RSSEntryToggleStatus v-model="model" />
@@ -51,6 +55,18 @@ ${summarized.data.value?.finalUrl}
 ${pangu(summary.value)}`,
 );
 const { copy, copied } = useClipboard({ source: copyableSummary });
+
+async function clickFeed() {
+  const categoryId = parseQuery().get("categoryId");
+  const feedId = model.value.feed.id;
+  await navigateTo({ query: { categoryId, feedId } });
+}
+async function clickCategory() {
+  const categoryId = model.value.feed.category?.id;
+  if (!categoryId) return;
+  const feedId = parseQuery().get("feedId");
+  await navigateTo({ query: { categoryId, feedId } });
+}
 </script>
 
 <style scoped></style>

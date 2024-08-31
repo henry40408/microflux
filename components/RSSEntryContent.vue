@@ -1,9 +1,16 @@
 <template>
   <details ref="contentRef" @toggle="fetched.execute">
     <summary>content</summary>
-    <span v-if="pending"><BaseSpinner /></span>
+    <div v-if="pending"><BaseSpinner /></div>
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <span v-html="content" />
+    <div v-html="content" />
+    <div>
+      <BaseButton @click="collapse">collapse</BaseButton>
+      {{ " " }}
+      <RSSEntryToggleStatus v-model="model" />
+      {{ " " }}
+      <RSSEntrySave v-model="model" />
+    </div>
   </details>
 </template>
 
@@ -28,6 +35,10 @@ const fetched = useAsyncData(
 );
 const content = computed(() => fetched.data.value?.content || "");
 const pending = computed(() => fetched.status.value === "pending");
+
+function collapse() {
+  contentRef.value?.removeAttribute("open");
+}
 </script>
 
 <style scoped></style>
