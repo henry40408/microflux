@@ -23,12 +23,9 @@ const fetched = useAsyncData(
     }),
   { watch: [selectedCategoryId, selectedFeedId] },
 );
-const entries = computed(() => fetched.data.value?.entries || []);
 
-const unreadEntries = computed(
-  () => entries.value.filter((e) => e.status === "unread") || [],
-);
-watch(unreadEntries, async () => {
+const entries = computed(() => fetched.data.value?.entries || []);
+watch(entries, async () => {
   await handleEmptyEntries();
 });
 
@@ -42,6 +39,10 @@ const selectedFeed = computed(
   () =>
     entries.value.find((e) => e.feed.id.toString() === selectedFeedId.value)
       ?.feed,
+);
+
+const unreadEntries = computed(
+  () => entries.value.filter((e) => e.status === "unread") || [],
 );
 useHead({
   title: () => `(${unreadEntries.value.length}) miniflux`,
@@ -57,7 +58,7 @@ async function resetCategory() {
 }
 
 async function handleEmptyEntries() {
-  const count = unreadEntries.value.length;
+  const count = entries.value.length;
   const categoryId = selectedCategoryId.value;
   const feedId = selectedFeedId.value;
   if (feedId && count <= 0) {
