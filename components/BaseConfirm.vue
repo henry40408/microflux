@@ -1,47 +1,45 @@
+<template>
+  <span v-if="pending"><BaseSpinner /></span>
+  <span v-if="!pending">
+    <span v-if="state === 'init'">
+      <a href="#" @click.prevent="to('pending')"><slot /></a>
+    </span>
+    <span v-if="state === 'pending'">
+      <slot name="confirmation">are you sure?</slot>
+      {{ " " }}
+      <a
+        href="#"
+        text-red-500
+        link:text-red-500
+        @click.prevent="to('confirmed')"
+        >YES</a
+      >
+      {{ " " }}
+      <a href="#" @click.prevent="to('init')">no</a>
+    </span>
+  </span>
+</template>
+
 <script setup lang="ts">
-import { ref } from "vue";
+import type { AsyncDataRequestStatus } from "#app";
+
+type State = "init" | "pending" | "confirmed";
 
 const props = defineProps<{
-  danger?: boolean;
-  error?: unknown;
-  loading?: boolean;
-  repeated?: boolean;
+  once?: boolean;
+  status?: AsyncDataRequestStatus;
 }>();
 
 const emit = defineEmits<{ confirm: [] }>();
 
-type Stage = "init" | "pending" | "confirmed";
+const state = ref<State>("init");
+const pending = computed(() => props.status === "pending");
 
-const stage = ref<Stage>("init");
-
-const counter = useInterval(500);
-const label = computed(() => {
-  const icons = ["⌛", "⏳"];
-  return icons[counter.value % icons.length];
-});
-
-function setStage(newStage: Stage) {
-  if (newStage === "confirmed") emit("confirm");
-  stage.value = newStage;
-  if (newStage === "confirmed" && props.repeated) stage.value = "init";
+function to(newState: State) {
+  if (newState === "confirmed") emit("confirm");
+  state.value = newState;
+  if (newState === "confirmed" && !props.once) state.value = "init";
 }
 </script>
 
-<template>
-  <span>
-    <a
-      v-if="!loading && stage === 'init'"
-      href="#"
-      @click.prevent="setStage('pending')"
-      ><slot
-    /></a>
-    <span v-if="!loading && stage === 'pending'" space-x-1>
-      <span>are you sure?</span>
-      <a href="#" text-red-500 @click.prevent="setStage('confirmed')">yes</a>
-      <a href="#" @click.prevent="setStage('init')">no</a>
-    </span>
-    <span v-if="loading">{{ label }}</span>
-    <span v-if="!loading && stage === 'confirmed'">done!</span>
-    <span v-if="!loading && error">{{ error }}</span>
-  </span>
-</template>
+<style scoped></style>

@@ -31,14 +31,6 @@ export interface MinifluxGetFeedCompactEntriesResponse {
 }
 
 export const minifluxRouter = router({
-  fetchContent: publicProcedure
-    .input(z.number())
-    .query(async ({ ctx, input }) => {
-      const client = minifluxClient(ctx.event);
-      const json = await client.get(`v1/entries/${input}/fetch-content`).json();
-      const { content } = MinifluxFetchContentScheme.parse(json);
-      return { content: sanitizeContent(content) };
-    }),
   getContent: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }): Promise<MinifluxFetchContent> => {
@@ -47,6 +39,14 @@ export const minifluxRouter = router({
         .get(`v1/entries/${input}`)
         .json<MinifluxEntry>();
       return { content: sanitizeContent(entry.content) };
+    }),
+  getFullContent: publicProcedure
+    .input(z.number())
+    .query(async ({ ctx, input }) => {
+      const client = minifluxClient(ctx.event);
+      const json = await client.get(`v1/entries/${input}/fetch-content`).json();
+      const { content } = MinifluxFetchContentScheme.parse(json);
+      return { content: sanitizeContent(content) };
     }),
   getEntries: publicProcedure
     .input(

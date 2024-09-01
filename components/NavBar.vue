@@ -1,17 +1,8 @@
 <template>
-  <div class="my-nav" space-x-2 text-right md:text-left>
-    <span>🧭</span>
-    <NuxtLink to="/">miniflux</NuxtLink>
-    <NuxtLink to="/linkding">linkding</NuxtLink>
-  </div>
+  <nav>
+    <h2>nav</h2>
+    <ul class="incremental">
+      <li><NuxtLink to="/">home</NuxtLink></li>
+    </ul>
+  </nav>
 </template>
-
-<style scope>
-.my-nav a:hover {
-  @apply underline-offset-4;
-}
-
-.router-link-exact-active {
-  @apply underline underline-offset-4;
-}
-</style>

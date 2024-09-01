@@ -1,10 +1,13 @@
 import PQueue from "p-queue";
+import QuickLRU from "quick-lru";
 import { z } from "zod";
 
 import { KagiSummarizerOutputResponseSchema } from "~/schema/kagi";
 
 import { publicProcedure, router } from "../trpc";
+import { differenceInMilliseconds } from "date-fns";
 
+const cache = new QuickLRU({ maxSize: 1000 });
 const queue = new PQueue({ concurrency: 3 });
 
 export const kagiRouter = router({
@@ -21,6 +24,7 @@ export const kagiRouter = router({
       const logger = getLogger();
 
       const client = kagiClient(ctx.event);
+      const start = new Date();
       const json = await queue.add(() => {
         logger.info({ message: "summarize", url });
         return client
@@ -30,10 +34,12 @@ export const kagiRouter = router({
               target_language: input.lang,
               url,
             },
+            cache,
           })
           .json();
       });
-      logger.info({ message: "summarized", url });
+      const elapsed = differenceInMilliseconds(new Date(), start);
+      logger.info({ message: "summarized", url, elapsed });
       return KagiSummarizerOutputResponseSchema.parse(json);
     }),
 });

@@ -1,36 +1,39 @@
+<template>
+  <BaseButton
+    :error="fetched.error"
+    :status="fetched.status.value"
+    @click="onClick"
+    >{{ nextStatus }}</BaseButton
+  >
+</template>
+
 <script setup lang="ts">
 import type { MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
-const emit = defineEmits<{ toggleStatus: [status: string] }>();
-
 const nextStatus = computed(() =>
   model.value.status === "unread" ? "read" : "unread",
 );
+
+const emit = defineEmits<{ click: [status: string] }>();
+
 const { $client } = useNuxtApp();
-const fetched = await useAsyncData(
-  `toggle-status-${model.value.id}`,
+const fetched = useAsyncData(
+  `entry-${model.value.id}-status`,
   () =>
     $client.miniflux.updateEntries.mutate({
-      entryIds: [model.value.id],
       status: nextStatus.value,
+      entryIds: [model.value.id],
     }),
   { immediate: false, server: false },
 );
 
 async function onClick() {
-  const oldStatus = nextStatus.value;
+  const newStatus = nextStatus.value;
   await fetched.execute();
-  model.value.status = oldStatus;
-  emit("toggleStatus", oldStatus);
+  model.value.status = newStatus;
+  emit("click", newStatus);
 }
 </script>
 
-<template>
-  <BaseButton
-    :error="fetched.error.value"
-    :pending="fetched.status.value === 'pending'"
-    @click="onClick"
-    >{{ nextStatus === "read" ? "✅ read" : "✅ unread" }}</BaseButton
-  >
-</template>
+<style scoped></style>

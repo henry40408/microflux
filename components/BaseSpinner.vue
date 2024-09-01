@@ -1,13 +1,12 @@
+<template>
+  {{ label }}
+</template>
+
 <script setup lang="ts">
 const counter = useInterval(500);
-const loadingLabel = computed(() => {
-  const icons = ["⌛", "⏳"];
-  return icons[counter.value % icons.length];
-});
-</script>
 
-<template>
-  <span>{{ loadingLabel }}</span>
-</template>
+const labels = [":..", ".:.", "..:"];
+const label = computed(() => labels[counter.value % labels.length]);
+</script>
 
 <style scoped></style>
