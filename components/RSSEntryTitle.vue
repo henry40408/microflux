@@ -1,12 +1,7 @@
 <template>
   <h3>
     <NuxtLink
-      :class="{
-        'link:text-gray-300': isRead,
-        'visited:text-gray-300': isRead,
-        'dark:link:text-gray-700': isRead,
-        'dark:visited:link:text-gray-700': isRead,
-      }"
+      :class="{ 'link:text-gray-700': isRead, 'visited:text-gray-700': isRead }"
       :to="modelValue.url"
       target="_blank"
       @click="$emit('click')"
