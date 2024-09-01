@@ -44,9 +44,13 @@ const selectedFeed = computed(
 const unreadEntries = computed(
   () => entries.value.filter((e) => e.status === "unread") || [],
 );
+const unreadEntryIds = computed(() => unreadEntries.value.map((e) => e.id));
 useHead({
   title: () => `(${unreadEntries.value.length}) miniflux`,
 });
+const shouldMarkAllAsRead = computed(
+  () => fetched.status.value !== "pending" && unreadEntryIds.value.length > 0,
+);
 
 async function resetFeed() {
   const categoryId = parseQuery().get("categoryId");
@@ -104,6 +108,23 @@ handleEmptyEntries();
       <div v-for="(entry, index) in entries" :key="entry.id">
         <RSSEntry v-model="entries[index]" />
       </div>
+      <h2>actions</h2>
+      <ul>
+        <li>
+          <BaseButton
+            :error="fetched.error"
+            :status="fetched.status.value"
+            @click="fetched.execute"
+            >reload</BaseButton
+          >
+        </li>
+        <li v-if="shouldMarkAllAsRead">
+          <RSSMarkAllAsRead
+            :entry-ids="unreadEntryIds"
+            @confirm="fetched.execute"
+          />
+        </li>
+      </ul>
     </main>
   </div>
 </template>

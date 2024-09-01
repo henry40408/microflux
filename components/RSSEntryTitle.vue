@@ -1,14 +1,16 @@
 <template>
   <h3>
     <NuxtLink
-      :class="{ 'no-underline': isRead }"
+      :class="{
+        'link:text-gray-300': isRead,
+        'visited:text-gray-300': isRead,
+        'dark:link:text-gray-700': isRead,
+        'dark:visited:link:text-gray-700': isRead,
+      }"
       :to="modelValue.url"
       target="_blank"
       @click="$emit('click')"
-      ><span
-        :class="{ 'text-gray-300': isRead, 'dark:text-gray-700': isRead }"
-        >{{ pangu(modelValue.title) }}</span
-      ></NuxtLink
+      >{{ pangu(modelValue.title) }}</NuxtLink
     >
   </h3>
 </template>

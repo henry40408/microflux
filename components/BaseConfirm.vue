@@ -1,0 +1,45 @@
+<template>
+  <span v-if="pending"><BaseSpinner /></span>
+  <span v-if="!pending">
+    <span v-if="state === 'init'">
+      <a href="#" @click.prevent="to('pending')"><slot /></a>
+    </span>
+    <span v-if="state === 'pending'">
+      <slot name="confirmation">are you sure?</slot>
+      {{ " " }}
+      <a
+        href="#"
+        text-red-500
+        link:text-red-500
+        @click.prevent="to('confirmed')"
+        >YES</a
+      >
+      {{ " " }}
+      <a href="#" @click.prevent="to('init')">no</a>
+    </span>
+  </span>
+</template>
+
+<script setup lang="ts">
+import type { AsyncDataRequestStatus } from "#app";
+
+type State = "init" | "pending" | "confirmed";
+
+const props = defineProps<{
+  once?: boolean;
+  status?: AsyncDataRequestStatus;
+}>();
+
+const emit = defineEmits<{ confirm: [] }>();
+
+const state = ref<State>("init");
+const pending = computed(() => props.status === "pending");
+
+function to(newState: State) {
+  if (newState === "confirmed") emit("confirm");
+  state.value = newState;
+  if (newState === "confirmed" && !props.once) state.value = "init";
+}
+</script>
+
+<style scoped></style>
