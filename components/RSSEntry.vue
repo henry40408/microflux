@@ -22,6 +22,14 @@
     >
     {{ " " }}
     <RSSEntrySave v-model="model" />
+    {{ " " }}
+    <NuxtLink
+      v-if="modelValue.comments_url"
+      :to="modelValue.comments_url"
+      target="_blank"
+    >
+      comments
+    </NuxtLink>
   </div>
   <RSSEntryContent
     v-if="!hasSummary"
