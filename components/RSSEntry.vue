@@ -1,6 +1,6 @@
 <template>
   <span ref="titleRef" />
-  <RSSEntryTitle v-model="model" />
+  <RSSEntryTitle v-model="model" @click="markAsRead" />
   <div>
     feed:
     <BaseButton @click="selectFeed">{{ modelValue.feed.title }}</BaseButton
@@ -77,6 +77,22 @@ async function selectCategory() {
   if (!categoryId) return;
   const feedId = parseQuery().get("feedId");
   await navigateTo({ query: { categoryId, feedId } });
+}
+
+const { $client } = useNuxtApp();
+const fetched = useAsyncData(
+  `entry-${model.value.id}-status`,
+  () =>
+    $client.miniflux.updateEntries.mutate({
+      status: "read",
+      entryIds: [model.value.id],
+    }),
+  { immediate: false, server: false },
+);
+function markAsRead() {
+  fetched.execute().then(() => {
+    model.value.status = "read";
+  });
 }
 
 function toggleStatus(newStatus: string) {

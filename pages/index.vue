@@ -14,7 +14,7 @@ watch(
 );
 
 const { $client } = useNuxtApp();
-const fetched = useAsyncData(
+const fetched = await useAsyncData(
   "entries",
   () =>
     $client.miniflux.getEntries.query({
