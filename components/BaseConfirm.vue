@@ -17,6 +17,7 @@
       {{ " " }}
       <a href="#" @click.prevent="to('init')">no</a>
     </span>
+    <span v-if="state === 'confirmed'"><slot name="done">done!</slot></span>
   </span>
 </template>
 
