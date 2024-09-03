@@ -2,8 +2,10 @@
   <h3>
     <NuxtLink
       :class="{
+        'text-gray-300': isRead,
         'link:text-gray-300': isRead,
         'visited:text-gray-300': isRead,
+        'dark:text-gray-700': isRead,
         'dark:link:text-gray-700': isRead,
         'dark:visited:text-gray-700': isRead,
       }"

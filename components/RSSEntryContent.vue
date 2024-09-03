@@ -1,5 +1,5 @@
 <template>
-  <details ref="contentRef" @toggle="fetched.execute">
+  <details ref="contentRef" @toggle="openExpandable">
     <summary>{{ !fullContent ? "content" : "full content" }}</summary>
     <div v-if="pending"><BaseSpinner /></div>
     <!-- eslint-disable-next-line vue/no-v-html -->
@@ -7,7 +7,7 @@
     <!-- eslint-disable-next-line vue/no-v-html -->
     <div v-if="fullContent" v-html="fullContent" />
     <div>
-      <BaseButton @click="collapse">collapse</BaseButton>
+      <BaseButton @click="closeExpandable">collapse</BaseButton>
       {{ " " }}
       <RSSEntryToggleStatus v-model="model" @click="toggleStatus" />
       {{ " " }}
@@ -55,13 +55,18 @@ const downloaded = useAsyncData(
 );
 const fullContent = computed(() => downloaded.data.value?.content || "");
 
-function collapse() {
+function closeExpandable() {
   contentRef.value?.removeAttribute("open");
 }
 
 async function download() {
   await downloaded.execute();
   contentRef.value?.scrollIntoView();
+}
+
+async function openExpandable() {
+  if (fetched.status.value === "success") return;
+  await fetched.execute();
 }
 
 function toggleStatus(status: string) {
