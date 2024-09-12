@@ -10,7 +10,7 @@ const LinkdingBookmarkSchema = z.object({
   website_description: z.string().nullable(),
   web_archive_snapshot_url: z.string().optional(),
   favicon_url: z.string().optional(),
-  preview_image_url: z.string().optional(),
+  preview_image_url: z.string().nullish(),
   is_archived: z.boolean(),
   unread: z.boolean(),
   shared: z.boolean(),
