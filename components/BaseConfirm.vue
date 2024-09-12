@@ -18,6 +18,7 @@
       <a href="#" @click.prevent="to('init')">no</a>
     </span>
     <span v-if="state === 'confirmed'"><slot name="done">done!</slot></span>
+    <span v-if="error">{{ error }}</span>
   </span>
 </template>
 
@@ -27,6 +28,7 @@ import type { AsyncDataRequestStatus } from "#app";
 type State = "init" | "pending" | "confirmed";
 
 const props = defineProps<{
+  error?: unknown;
   once?: boolean;
   status?: AsyncDataRequestStatus;
 }>();
