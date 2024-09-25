@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   ],
   devtools: { enabled: true },
   eslint: { checker: true },
-  modules: ["@vueuse/nuxt", "@unocss/nuxt", "@nuxt/eslint"],
+  modules: ["@vueuse/nuxt", "@nuxt/eslint"],
   runtimeConfig: {
     kagiSessionLink: "",
     linkdingToken: "",

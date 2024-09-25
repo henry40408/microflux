@@ -30,9 +30,7 @@
     </p>
     <details v-if="hasSummary" ref="summaryRef">
       <summary class="summary-title">summary</summary>
-      <code>
-        <pre class="summary">{{ copyableSummary }}</pre>
-      </code>
+      <pre class="summary"><code>{{ copyableSummary }}</code></pre>
       <BaseButton
         once
         :clear="() => {}"
