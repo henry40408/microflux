@@ -24,6 +24,7 @@ const fetched = await useAsyncData(
   { watch: [selectedCategoryId, selectedFeedId] },
 );
 
+const total = computed(() => fetched.data.value?.total || 0);
 const entries = computed(() => fetched.data.value?.entries || []);
 watch(entries, async () => {
   await handleEmptyEntries();
@@ -104,7 +105,7 @@ handleEmptyEntries();
         </li>
       </ul>
       <RSSEntryOutlines v-model="entries" />
-      <h2>{{ unreadEntries.length }} entries</h2>
+      <h2>{{ unreadEntries.length }} on page, {{ total }} total</h2>
       <div v-for="(entry, index) in entries" :key="entry.id">
         <RSSEntry v-model="entries[index]" />
       </div>

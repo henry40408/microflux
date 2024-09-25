@@ -1,7 +1,7 @@
 <template>
   <span ref="titleRef" />
   <RSSEntryTitle v-model="model" @click="markAsRead" />
-  <div>
+  <p>
     feed:
     <BaseButton @click="selectFeed">{{ modelValue.feed.title }}</BaseButton
     >, category:
@@ -9,8 +9,8 @@
       modelValue.feed.category?.title
     }}</BaseButton
     >, published at: <BaseDateTime :datetime="modelValue.published_at" />
-  </div>
-  <div>
+  </p>
+  <p>
     <RSSEntryToggleStatus v-model="model" />
     {{ " " }}
     <BaseButton
@@ -30,15 +30,15 @@
     >
       comments
     </NuxtLink>
-  </div>
+  </p>
   <RSSEntryContent
     v-if="!hasSummary"
     v-model="model"
     @toggle-status="toggleStatus"
   />
   <details v-if="hasSummary" ref="summaryRef">
-    <summary text-yellow-600 dark:text-yellow-300>summary</summary>
-    <pre text-wrap>{{ copyableSummary }}</pre>
+    <summary>summary</summary>
+    <pre>{{ copyableSummary }}</pre>
     <BaseButton
       once
       :clear="() => {}"

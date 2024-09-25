@@ -7,13 +7,7 @@
     <span v-if="state === 'pending'">
       <slot name="confirmation">are you sure?</slot>
       {{ " " }}
-      <a
-        href="#"
-        text-red-500
-        link:text-red-500
-        @click.prevent="to('confirmed')"
-        >YES</a
-      >
+      <a href="#" @click.prevent="to('confirmed')">YES</a>
       {{ " " }}
       <a href="#" @click.prevent="to('init')">no</a>
     </span>

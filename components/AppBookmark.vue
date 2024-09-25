@@ -25,8 +25,8 @@
       >
     </div>
     <details v-if="hasSummary" ref="summaryRef">
-      <summary text-yellow-600 dark:text-yellow-300>summary</summary>
-      <pre text-wrap>{{ copyableSummary }}</pre>
+      <summary>summary</summary>
+      <pre>{{ copyableSummary }}</pre>
       <BaseButton
         once
         :clear="() => {}"
