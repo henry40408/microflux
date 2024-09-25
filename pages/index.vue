@@ -54,12 +54,12 @@ const shouldMarkAllAsRead = computed(
 );
 
 async function resetFeed() {
-  const categoryId = parseQuery().get("categoryId");
-  await navigateTo({ query: { categoryId, feedId: null } });
+  const categoryId = parseQuery().get("categoryId") || undefined;
+  await navigateTo({ query: { categoryId, feedId: undefined } });
 }
 async function resetCategory() {
-  const feedId = parseQuery().get("feedId");
-  await navigateTo({ query: { categoryId: null, feedId } });
+  const feedId = parseQuery().get("feedId") || undefined;
+  await navigateTo({ query: { categoryId: undefined, feedId } });
 }
 
 async function handleEmptyEntries() {
