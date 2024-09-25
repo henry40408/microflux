@@ -1,24 +1,32 @@
 <template>
   <details>
     <summary>outlines</summary>
-    <div>
-      categories
-      <span v-for="group in categories" :key="group.category.id">
-        <BaseButton @click="selectCategory(group.category.id)">{{
-          group.category.title
-        }}</BaseButton>
-        ({{ group.count }})
+    <p>
+      <span class="outline-items">
+        <span class="outline-item">categories</span>
+        <span
+          v-for="group in categories"
+          :key="group.category.id"
+          class="outline-item"
+        >
+          <BaseButton @click="selectCategory(group.category.id)">{{
+            group.category.title
+          }}</BaseButton>
+          <sup>{{ group.count }}</sup>
+        </span>
       </span>
-    </div>
-    <div>
-      feeds
-      <span v-for="group in feeds" :key="group.feed.id">
-        <BaseButton @click="selectFeed(group.feed.id)">{{
-          group.feed.title
-        }}</BaseButton>
-        ({{ group.count }})
+    </p>
+    <p>
+      <span class="outline-items">
+        <span class="outline-item">feeds</span>
+        <span v-for="group in feeds" :key="group.feed.id" class="outline-item">
+          <BaseButton @click="selectFeed(group.feed.id)">{{
+            group.feed.title
+          }}</BaseButton>
+          <sup>{{ group.count }}</sup>
+        </span>
       </span>
-    </div>
+    </p>
   </details>
 </template>
 
@@ -61,4 +69,16 @@ async function selectCategory(categoryId: number) {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.outline-item {
+  margin-left: 0.5rem;
+  text-wrap: nowrap;
+}
+
+.outline-items {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin-left: -0.5rem;
+}
+</style>

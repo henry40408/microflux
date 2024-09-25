@@ -24,6 +24,7 @@ const fetched = await useAsyncData(
   { watch: [selectedCategoryId, selectedFeedId] },
 );
 
+const total = computed(() => fetched.data.value?.total || 0);
 const entries = computed(() => fetched.data.value?.entries || []);
 watch(entries, async () => {
   await handleEmptyEntries();
@@ -53,12 +54,12 @@ const shouldMarkAllAsRead = computed(
 );
 
 async function resetFeed() {
-  const categoryId = parseQuery().get("categoryId");
-  await navigateTo({ query: { categoryId, feedId: null } });
+  const categoryId = parseQuery().get("categoryId") || undefined;
+  await navigateTo({ query: { categoryId, feedId: undefined } });
 }
 async function resetCategory() {
-  const feedId = parseQuery().get("feedId");
-  await navigateTo({ query: { categoryId: null, feedId } });
+  const feedId = parseQuery().get("feedId") || undefined;
+  await navigateTo({ query: { categoryId: undefined, feedId } });
 }
 
 async function handleEmptyEntries() {
@@ -75,6 +76,11 @@ async function handleEmptyEntries() {
   }
 }
 handleEmptyEntries();
+
+async function onReload() {
+  await fetched.refresh();
+  actionsRef.value?.scrollIntoView();
+}
 </script>
 
 <template>
@@ -90,7 +96,7 @@ handleEmptyEntries();
           <BaseButton
             :error="fetched.error"
             :status="fetched.status.value"
-            @click="fetched.execute"
+            @click="onReload"
             >reload</BaseButton
           >
         </li>
@@ -104,7 +110,7 @@ handleEmptyEntries();
         </li>
       </ul>
       <RSSEntryOutlines v-model="entries" />
-      <h2>{{ unreadEntries.length }} entries</h2>
+      <h2>{{ unreadEntries.length }} on page, {{ total }} total</h2>
       <div v-for="(entry, index) in entries" :key="entry.id">
         <RSSEntry v-model="entries[index]" />
       </div>
@@ -114,17 +120,17 @@ handleEmptyEntries();
           <BaseButton
             :error="fetched.error"
             :status="fetched.status.value"
-            @click="fetched.execute"
+            @click="onReload"
             >reload</BaseButton
           >
         </li>
         <li v-if="shouldMarkAllAsRead">
-          <RSSMarkAllAsRead
-            :entry-ids="unreadEntryIds"
-            @confirm="fetched.execute"
-          />
+          <RSSMarkAllAsRead :entry-ids="unreadEntryIds" @confirm="onReload" />
         </li>
       </ul>
     </main>
+    <footer>
+      <AppVersion />
+    </footer>
   </div>
 </template>

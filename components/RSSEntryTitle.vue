@@ -1,14 +1,7 @@
 <template>
   <h3>
     <NuxtLink
-      :class="{
-        'text-gray-300': isRead,
-        'link:text-gray-300': isRead,
-        'visited:text-gray-300': isRead,
-        'dark:text-gray-700': isRead,
-        'dark:link:text-gray-700': isRead,
-        'dark:visited:text-gray-700': isRead,
-      }"
+      :class="{ read: isRead }"
       :to="modelValue.url"
       target="_blank"
       @click="$emit('click')"
@@ -27,4 +20,8 @@ defineEmits<{ click: [] }>();
 const isRead = computed(() => model.value.status === "read");
 </script>
 
-<style scoped></style>
+<style scoped>
+.read {
+  filter: grayscale(100%) opacity(50%);
+}
+</style>
