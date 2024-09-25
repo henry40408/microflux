@@ -2,20 +2,24 @@
   <details>
     <summary>outlines</summary>
     <p>
-      categories
-      <span v-for="group in categories" :key="group.category.id">
-        <span class="no-wrap">
+      <span class="outline-items">
+        <span class="outline-item">categories</span>
+        <span
+          v-for="group in categories"
+          :key="group.category.id"
+          class="outline-item"
+        >
           <BaseButton @click="selectCategory(group.category.id)">{{
             group.category.title
           }}</BaseButton>
-          <sup>{{ group.count }}</sup></span
-        >
+          <sup>{{ group.count }}</sup>
+        </span>
       </span>
     </p>
     <p>
-      feeds
-      <span v-for="group in feeds" :key="group.feed.id">
-        <span class="no-wrap">
+      <span class="outline-items">
+        <span class="outline-item">feeds</span>
+        <span v-for="group in feeds" :key="group.feed.id" class="outline-item">
           <BaseButton @click="selectFeed(group.feed.id)">{{
             group.feed.title
           }}</BaseButton>
@@ -66,7 +70,15 @@ async function selectCategory(categoryId: number) {
 </script>
 
 <style scoped>
-.no-wrap {
+.outline-item {
+  margin-left: 0.5rem;
   text-wrap: nowrap;
+}
+
+.outline-items {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin-left: -0.5rem;
 }
 </style>
