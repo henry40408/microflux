@@ -1,21 +1,25 @@
 <template>
   <div>
-    <h3>
+    <h3 class="bookmark-title">
       <NuxtLink :to="modelValue.url" target="_blank">{{
         pangu(resolvedTitle)
       }}</NuxtLink>
     </h3>
-    <blockquote>{{ resolvedDescription }}</blockquote>
-    <div>added: <BaseDateTime :datetime="modelValue.date_added" /></div>
     <div>
+      <small>{{ modelValue.url }}</small>
+    </div>
+    <blockquote v-if="resolvedDescription">
+      {{ resolvedDescription }}
+    </blockquote>
+    <p>added: <BaseDateTime :datetime="modelValue.date_added" /></p>
+    <p>
       <BaseButton
         :clear="summarized.clear"
         :error="summarized.error"
         :status="summarized.status.value"
         @click="summarized.execute"
         >summarize<template #clear>clear summary</template></BaseButton
-      >
-      {{ " " }}
+      >,
       <BaseConfirm
         once
         :error="deleted.error"
@@ -23,10 +27,12 @@
         @confirm="destroy"
         >delete</BaseConfirm
       >
-    </div>
+    </p>
     <details v-if="hasSummary" ref="summaryRef">
-      <summary>summary</summary>
-      <pre>{{ copyableSummary }}</pre>
+      <summary class="summary-title">summary</summary>
+      <code>
+        <pre class="summary">{{ copyableSummary }}</pre>
+      </code>
       <BaseButton
         once
         :clear="() => {}"
@@ -55,7 +61,7 @@ const summarized = useSummarize(model.value.url);
 const hasSummary = computed(() => summarized.status.value === "success");
 const summary = computed(() => summarized.data.value?.summary || "");
 const copyableSummary = computed(
-  () => `${pangu(resolvedTitle.value)}
+  () => `${pangu(resolvedTitle.value.replace("|", "-"))}
 
 ${summarized.data.value?.finalUrl}
 
@@ -76,4 +82,16 @@ async function destroy() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.bookmark-title {
+  margin-bottom: 0;
+}
+
+.summary {
+  text-wrap: wrap;
+}
+
+.summary-title {
+  color: yellow;
+}
+</style>

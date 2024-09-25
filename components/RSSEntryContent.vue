@@ -1,26 +1,23 @@
 <template>
   <details ref="contentRef" @toggle="openExpandable">
     <summary>{{ !fullContent ? "content" : "full content" }}</summary>
-    <div v-if="pending"><BaseSpinner /></div>
+    <p v-if="pending"><BaseSpinner /></p>
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div v-if="!fullContent" v-html="content" />
+    <p v-if="!fullContent" v-html="content" />
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div v-if="fullContent" v-html="fullContent" />
-    <div>
-      <BaseButton @click="closeExpandable">collapse</BaseButton>
-      {{ " " }}
-      <RSSEntryToggleStatus v-model="model" @click="toggleStatus" />
-      {{ " " }}
+    <p v-if="fullContent" v-html="fullContent" />
+    <p>
+      <BaseButton @click="closeExpandable">collapse</BaseButton>,
+      <RSSEntryToggleStatus v-model="model" @click="toggleStatus" />,
       <BaseButton
         :clear="downloaded.clear"
         :error="downloaded.error"
         :status="downloaded.status.value"
         @click="download"
         >download<template #clear>reset content</template></BaseButton
-      >
-      {{ " " }}
+      >,
       <RSSEntrySave v-model="model" />
-    </div>
+    </p>
   </details>
 </template>
 

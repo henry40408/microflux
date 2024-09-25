@@ -76,6 +76,11 @@ async function handleEmptyEntries() {
   }
 }
 handleEmptyEntries();
+
+async function onReload() {
+  await fetched.refresh();
+  actionsRef.value?.scrollIntoView();
+}
 </script>
 
 <template>
@@ -91,7 +96,7 @@ handleEmptyEntries();
           <BaseButton
             :error="fetched.error"
             :status="fetched.status.value"
-            @click="fetched.execute"
+            @click="onReload"
             >reload</BaseButton
           >
         </li>
@@ -115,15 +120,12 @@ handleEmptyEntries();
           <BaseButton
             :error="fetched.error"
             :status="fetched.status.value"
-            @click="fetched.execute"
+            @click="onReload"
             >reload</BaseButton
           >
         </li>
         <li v-if="shouldMarkAllAsRead">
-          <RSSMarkAllAsRead
-            :entry-ids="unreadEntryIds"
-            @confirm="fetched.execute"
-          />
+          <RSSMarkAllAsRead :entry-ids="unreadEntryIds" @confirm="onReload" />
         </li>
       </ul>
     </main>

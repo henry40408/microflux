@@ -7,7 +7,7 @@
     <span v-if="state === 'pending'">
       <slot name="confirmation">are you sure?</slot>
       {{ " " }}
-      <a href="#" @click.prevent="to('confirmed')">YES</a>
+      <a href="#" class="yes" @click.prevent="to('confirmed')">YES</a>
       {{ " " }}
       <a href="#" @click.prevent="to('init')">no</a>
     </span>
@@ -39,4 +39,8 @@ function to(newState: State) {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.yes {
+  color: red;
+}
+</style>

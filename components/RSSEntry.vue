@@ -11,24 +11,20 @@
     >, published at: <BaseDateTime :datetime="modelValue.published_at" />
   </p>
   <p>
-    <RSSEntryToggleStatus v-model="model" />
-    {{ " " }}
+    <RSSEntryToggleStatus v-model="model" />,
     <BaseButton
       :clear="summarized.clear"
       :error="summarized.error"
       :status="summarized.status.value"
       @click="summarized.execute"
       >summarize<template #clear>clear summary</template></BaseButton
-    >
-    {{ " " }}
+    >,
     <RSSEntrySave v-model="model" />
-    {{ " " }}
     <NuxtLink
       v-if="modelValue.comments_url"
       :to="modelValue.comments_url"
       target="_blank"
-    >
-      comments
+      >, comments
     </NuxtLink>
   </p>
   <RSSEntryContent
@@ -37,8 +33,8 @@
     @toggle-status="toggleStatus"
   />
   <details v-if="hasSummary" ref="summaryRef">
-    <summary>summary</summary>
-    <pre>{{ copyableSummary }}</pre>
+    <summary class="summary-title">summary</summary>
+    <pre class="summary"><code>{{ copyableSummary }}</code></pre>
     <BaseButton
       once
       :clear="() => {}"
@@ -56,12 +52,6 @@ const titleRef = ref<null | HTMLElement>(null);
 const summaryRef = ref<null | HTMLElement>(null);
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
-watch(
-  () => model.value.status,
-  (next) => {
-    if (next === "read") summarized.clear();
-  },
-);
 
 const summarized = useSummarize(model.value.url);
 const hasSummary = computed(() => summarized.status.value === "success");
@@ -109,4 +99,12 @@ function toggleStatus(newStatus: string) {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.summary {
+  text-wrap: wrap;
+}
+
+.summary-title {
+  color: yellow;
+}
+</style>
