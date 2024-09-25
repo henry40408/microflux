@@ -55,13 +55,15 @@ const resolvedDescription = computed(
   () => model.value.website_description || model.value.description,
 );
 
-const summarized = useSummarize(model.value.url);
+const { summary: summarized, fullUrl } = useSummarize(model.value.url);
 const hasSummary = computed(() => summarized.status.value === "success");
-const summary = computed(() => summarized.data.value?.summary || "");
+const summary = computed(
+  () => summarized.data.value?.output_data.markdown || "",
+);
 const copyableSummary = computed(
   () => `${pangu(resolvedTitle.value.replace("|", "-"))}
 
-${summarized.data.value?.finalUrl}
+${fullUrl.data.value?.url}
 
 ${pangu(summary.value)}`,
 );
