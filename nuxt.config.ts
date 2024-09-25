@@ -18,7 +18,9 @@ export default defineNuxtConfig({
     minifluxAuthToken: "",
     minifluxUrl: "",
     public: {
-      gitCommitHash: getGitCommitHash(),
+      gitCommitHash: process.env.GITHUB_SHA
+        ? process.env.GITHUB_SHA.substring(0, 7)
+        : getGitCommitHash(),
     },
   },
   typescript: { typeCheck: true },
