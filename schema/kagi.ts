@@ -1,60 +1,35 @@
-import { z } from "zod";
+export interface KagiSummarizerWordStats {
+  n_tokens: number;
+  n_words: number;
+  n_pages: number;
+  time_saved: number;
+  length: null;
+}
 
-const KagiSummarizerWordStatsSchema = z.object({
-  n_tokens: z.number(),
-  n_words: z.number(),
-  n_pages: z.number(),
-  time_saved: z.number(),
-  length: z.null(),
-});
+export interface KagiSummarizerResponseMetadata {
+  speed: number;
+  tokens: number;
+  total_time_second: number;
+  model: string;
+}
 
-const KagiSummarizerResponseMetadataSchema = z.object({
-  speed: z.number(),
-  tokens: z.number(),
-  total_time_second: z.number(),
-  model: z.string(),
-});
+export interface KagiSummarizerOutputData {
+  status: string;
+  word_stats: KagiSummarizerWordStats;
+  elapsed_seconds: number;
+  markdown: string;
+  citations_json: unknown[];
+  citation_snippets: string;
+  references: unknown[];
+  md_references: string;
+  references_text: string;
+  response_metadata: KagiSummarizerResponseMetadata;
+  images: unknown[];
+}
 
-const KagiSummarizerOutputDataSchema = z.object({
-  status: z.string(),
-  word_stats: KagiSummarizerWordStatsSchema,
-  elapsed_seconds: z.number(),
-  markdown: z.string(),
-  citations_json: z.array(z.unknown()),
-  citation_snippets: z.string(),
-  references: z.array(z.unknown()),
-  md_references: z.string(),
-  references_text: z.string(),
-  response_metadata: KagiSummarizerResponseMetadataSchema,
-  images: z.array(z.unknown()),
-});
-
-const KagiSummarizerOutputResponseSchema = z.object({
-  output_text: z.string(),
-  output_data: KagiSummarizerOutputDataSchema,
-  tokens: z.number(),
-  type: z.string(),
-});
-
-type KagiSummarizerWordStats = z.infer<typeof KagiSummarizerWordStatsSchema>;
-type KagiSummarizerResponseMetadata = z.infer<
-  typeof KagiSummarizerResponseMetadataSchema
->;
-type KagiSummarizerOutputData = z.infer<typeof KagiSummarizerOutputDataSchema>;
-type KagiSummarizerOutputResponse = z.infer<
-  typeof KagiSummarizerOutputResponseSchema
->;
-
-export {
-  KagiSummarizerWordStatsSchema,
-  KagiSummarizerResponseMetadataSchema,
-  KagiSummarizerOutputDataSchema,
-  KagiSummarizerOutputResponseSchema,
-};
-
-export type {
-  KagiSummarizerWordStats,
-  KagiSummarizerResponseMetadata,
-  KagiSummarizerOutputData,
-  KagiSummarizerOutputResponse,
-};
+export interface KagiSummarizerOutputResponse {
+  output_text: string;
+  output_data: KagiSummarizerOutputData;
+  tokens: number;
+  type: string;
+}

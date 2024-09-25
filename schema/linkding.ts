@@ -1,36 +1,25 @@
-import { z } from "zod";
+export interface LinkdingBookmark {
+  id: number;
+  url: string;
+  title: string;
+  description: string;
+  notes: string;
+  website_title: string | null;
+  website_description: string | null;
+  web_archive_snapshot_url?: string;
+  favicon_url?: string;
+  preview_image_url?: string | null;
+  is_archived: boolean;
+  unread: boolean;
+  shared: boolean;
+  tag_names: string[];
+  date_added: string;
+  date_modified: string;
+}
 
-const LinkdingBookmarkSchema = z.object({
-  id: z.number(),
-  url: z.string().url(),
-  title: z.string(),
-  description: z.string(),
-  notes: z.string(),
-  website_title: z.string().nullable(),
-  website_description: z.string().nullable(),
-  web_archive_snapshot_url: z.string().optional(),
-  favicon_url: z.string().optional(),
-  preview_image_url: z.string().nullish(),
-  is_archived: z.boolean(),
-  unread: z.boolean(),
-  shared: z.boolean(),
-  tag_names: z.array(z.string()),
-  date_added: z.string().datetime(),
-  date_modified: z.string().datetime(),
-});
-
-const LinkdingBookmarkPaginationResponseSchema = z.object({
-  count: z.number(),
-  next: z.string().url().nullable(),
-  previous: z.string().url().nullable(),
-  results: z.array(LinkdingBookmarkSchema),
-});
-
-type LinkdingBookmark = z.infer<typeof LinkdingBookmarkSchema>;
-type LinkdingBookmarkPaginationResponse = z.infer<
-  typeof LinkdingBookmarkPaginationResponseSchema
->;
-
-export { LinkdingBookmarkSchema, LinkdingBookmarkPaginationResponseSchema };
-
-export type { LinkdingBookmark, LinkdingBookmarkPaginationResponse };
+export interface LinkdingBookmarkPaginationResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: LinkdingBookmark[];
+}

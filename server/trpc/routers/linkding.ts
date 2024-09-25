@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { LinkdingBookmarkPaginationResponseSchema } from "~/schema/linkding";
+import type { LinkdingBookmarkPaginationResponse } from "~/schema/linkding";
 
 import { publicProcedure, router } from "../trpc";
 
@@ -30,12 +30,11 @@ export const linkdingRouter = router({
     .input(z.object({ q: z.string().optional() }))
     .query(async ({ ctx, input }) => {
       const client = linkdingClient(ctx.event);
-      const json = await client
+      return await client
         .get("api/bookmarks/", {
           searchParams: { q: input.q?.toString() || "" },
         })
-        .json();
-      return LinkdingBookmarkPaginationResponseSchema.parse(json);
+        .json<LinkdingBookmarkPaginationResponse>();
     }),
 });
 

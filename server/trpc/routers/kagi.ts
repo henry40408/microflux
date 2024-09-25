@@ -2,7 +2,7 @@ import PQueue from "p-queue";
 import QuickLRU from "quick-lru";
 import { z } from "zod";
 
-import { KagiSummarizerOutputResponseSchema } from "~/schema/kagi";
+import type { KagiSummarizerOutputResponse } from "~/schema/kagi";
 
 import { publicProcedure, router } from "../trpc";
 import { differenceInMilliseconds } from "date-fns";
@@ -36,11 +36,11 @@ export const kagiRouter = router({
             },
             cache,
           })
-          .json();
+          .json<KagiSummarizerOutputResponse>();
       });
       const elapsed = differenceInMilliseconds(new Date(), start);
       logger.info({ message: "summarized", url, elapsed });
-      return KagiSummarizerOutputResponseSchema.parse(json);
+      return json;
     }),
 });
 

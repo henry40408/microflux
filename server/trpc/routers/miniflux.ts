@@ -1,13 +1,12 @@
 import lodash from "lodash";
 import { z } from "zod";
 
-import {
-  MinifluxEntryResultSetScheme,
-  MinifluxFetchContentScheme,
-  type MinifluxCategory,
-  type MinifluxEntry,
-  type MinifluxFeed,
-  type MinifluxFetchContent,
+import type {
+  MinifluxCategory,
+  MinifluxEntry,
+  MinifluxEntryResultSet,
+  MinifluxFeed,
+  MinifluxFetchContent,
 } from "~/schema/miniflux";
 
 import { publicProcedure, router } from "../trpc";
@@ -44,8 +43,9 @@ export const minifluxRouter = router({
     .input(z.number())
     .query(async ({ ctx, input }) => {
       const client = minifluxClient(ctx.event);
-      const json = await client.get(`v1/entries/${input}/fetch-content`).json();
-      const { content } = MinifluxFetchContentScheme.parse(json);
+      const { content } = await client
+        .get(`v1/entries/${input}/fetch-content`)
+        .json<MinifluxFetchContent>();
       return { content: sanitizeContent(content) };
     }),
   getEntries: publicProcedure
@@ -69,10 +69,9 @@ export const minifluxRouter = router({
           path = `v1/categories/${input.categoryId}/entries`;
         }
 
-        const json = await client
+        const { total, entries } = await client
           .get(path, { searchParams: { status: "unread", direction: "asc" } })
-          .json();
-        const { total, entries } = MinifluxEntryResultSetScheme.parse(json);
+          .json<MinifluxEntryResultSet>();
         return {
           total,
           entries: entries.map((e) => ({
