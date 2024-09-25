@@ -129,5 +129,8 @@ async function onReload() {
         </li>
       </ul>
     </main>
+    <footer>
+      <AppVersion />
+    </footer>
   </div>
 </template>

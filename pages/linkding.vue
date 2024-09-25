@@ -23,6 +23,9 @@
         <AppBookmark v-model="bookmarks[index]" @deleted="fetched.execute()" />
       </div>
     </main>
+    <footer>
+      <AppVersion />
+    </footer>
   </div>
 </template>
 

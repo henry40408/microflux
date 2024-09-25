@@ -1,3 +1,5 @@
+import { getGitCommitHash } from "./utils/get-git-commit-hash";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   build: { transpile: ["trpc-nuxt"] },
@@ -15,6 +17,9 @@ export default defineNuxtConfig({
     linkdingUrl: "",
     minifluxAuthToken: "",
     minifluxUrl: "",
+    public: {
+      gitCommitHash: getGitCommitHash(),
+    },
   },
   typescript: { typeCheck: true },
 });
