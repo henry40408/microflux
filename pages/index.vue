@@ -2,10 +2,8 @@
 const actionsRef = ref<null | HTMLElement>();
 
 const query = toRef(useRoute(), "query");
-const selectedCategoryId = computed(
-  () => query.value.categoryId?.toString() || "",
-);
-const selectedFeedId = computed(() => query.value.feedId?.toString() || "");
+const selectedCategoryId = computed(() => query.value.categoryId?.toString());
+const selectedFeedId = computed(() => query.value.feedId?.toString());
 watch(
   () => `${selectedCategoryId.value}|${selectedFeedId.value}`,
   (next, prev) => {
