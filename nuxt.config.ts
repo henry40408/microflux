@@ -18,8 +18,8 @@ export default defineNuxtConfig({
     minifluxAuthToken: "",
     minifluxUrl: "",
     public: {
-      gitCommitHash: process.env.GITHUB_SHA
-        ? process.env.GITHUB_SHA.substring(0, 7)
+      gitCommitHash: process.env.GIT_COMMIT_HASH
+        ? process.env.GIT_COMMIT_HASH.substring(0, 7)
         : getGitCommitHash(),
     },
   },
