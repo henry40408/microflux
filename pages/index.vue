@@ -23,8 +23,6 @@ const fetched = await useAsyncData(
     }),
   { watch: [selectedCategoryId, selectedFeedId] },
 );
-const windowFocused = useWindowFocus();
-whenever(windowFocused, () => fetched.refresh());
 
 const total = computed(() => fetched.data.value?.total || 0);
 const entries = computed(() => fetched.data.value?.entries || []);
