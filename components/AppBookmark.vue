@@ -55,15 +55,15 @@ const resolvedDescription = computed(
   () => model.value.website_description || model.value.description,
 );
 
-const { summary: summarized, fullUrl } = useSummarize(model.value.url);
+const summarized = useSummarize(model.value.url);
 const hasSummary = computed(() => summarized.status.value === "success");
 const summary = computed(
-  () => summarized.data.value?.output_data.markdown || "",
+  () => summarized.data.value?.[0].output_data.markdown || "",
 );
 const copyableSummary = computed(
   () => `${pangu(resolvedTitle.value.replace("|", "-"))}
 
-${fullUrl.data.value?.url}
+${summarized.data.value?.[1].url}
 
 ${pangu(summary.value)}`,
 );
@@ -71,7 +71,7 @@ const { copy, copied } = useClipboard({ source: copyableSummary });
 
 const { $client } = useNuxtApp();
 const deleted = useAsyncData(
-  `delete-${model.value.id}`,
+  `delete:${model.value.id}`,
   () => $client.linkding.deleteBookmark.mutate(model.value.id),
   { immediate: false, server: false },
 );

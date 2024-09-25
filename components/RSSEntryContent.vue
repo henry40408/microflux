@@ -38,7 +38,7 @@ const emit = defineEmits<{ toggleStatus: [read: string] }>();
 
 const { $client } = useNuxtApp();
 const fetched = useAsyncData(
-  `entry-${model.value.id}-content`,
+  `entry:${model.value.id}:content`,
   () => $client.miniflux.getContent.query(model.value.id),
   { server: false, immediate: false },
 );
@@ -46,7 +46,7 @@ const content = computed(() => fetched.data.value?.content || "");
 const pending = computed(() => fetched.status.value === "pending");
 
 const downloaded = useAsyncData(
-  `entry-${model.value.id}-download`,
+  `entry:${model.value.id}:download`,
   () => $client.miniflux.getFullContent.query(model.value.id),
   { server: false, immediate: false },
 );

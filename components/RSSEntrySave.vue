@@ -17,7 +17,7 @@ const model = defineModel<MinifluxCompactEntry>({ required: true });
 const { $client } = useNuxtApp();
 
 const fetched = useAsyncData(
-  `entry-${model.value.id}-save`,
+  `entry:${model.value.id}:save`,
   () => $client.miniflux.saveEntry.mutate(model.value.id),
   { immediate: false, server: false },
 );

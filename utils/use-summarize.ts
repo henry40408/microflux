@@ -8,21 +8,12 @@ export class SummaryData {
 
 export default function useSummarize(url: string) {
   const { $client } = useNuxtApp();
-
-  const summary = useAsyncData<KagiSummarizerOutputResponse>(
-    `summarize-${url}`,
-    () => $client.kagi.summarize.query({ url }),
+  return useAsyncData<[KagiSummarizerOutputResponse, FullUrlResponse]>(
+    `summarize-full-url:${url}`,
+    async () => [
+      await $client.kagi.summarize.query({ url }),
+      await $client.getFullUrl.query({ url }),
+    ],
     { immediate: false, server: false },
   );
-
-  const fullUrl = useAsyncData<FullUrlResponse>(
-    `full-url-${url}`,
-    () => $client.getFullUrl.query({ url }),
-    {
-      immediate: false,
-      server: false,
-    },
-  );
-
-  return { summary, fullUrl };
 }

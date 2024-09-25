@@ -19,7 +19,7 @@ const emit = defineEmits<{ click: [status: string] }>();
 
 const { $client } = useNuxtApp();
 const fetched = useAsyncData(
-  `entry-${model.value.id}-status`,
+  `entry:${model.value.id}:status`,
   () =>
     $client.miniflux.updateEntries.mutate({
       status: nextStatus.value,
