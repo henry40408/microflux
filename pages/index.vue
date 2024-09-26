@@ -6,12 +6,6 @@ const actionsRef = ref<null | HTMLElement>();
 const query = toRef(useRoute(), "query");
 const selectedCategoryId = computed(() => query.value.categoryId?.toString());
 const selectedFeedId = computed(() => query.value.feedId?.toString());
-watch(
-  () => `${selectedCategoryId.value}|${selectedFeedId.value}`,
-  (next, prev) => {
-    if (next !== prev) actionsRef.value?.scrollIntoView();
-  },
-);
 
 const { $client } = useNuxtApp();
 const fetched = await useAsyncData(
@@ -28,6 +22,9 @@ const total = computed(() => fetched.data.value?.total || 0);
 const entries = computed(() => fetched.data.value?.entries || []);
 watch(entries, async () => {
   await handleEmptyEntries();
+  if (entries.value.length > 0) {
+    actionsRef.value?.scrollIntoView();
+  }
 });
 
 const selectedCategory = computed(
@@ -77,11 +74,6 @@ async function handleEmptyEntries() {
 }
 handleEmptyEntries();
 
-async function onReload() {
-  await fetched.refresh();
-  actionsRef.value?.scrollIntoView();
-}
-
 function clearCache() {
   localforage.clear();
 }
@@ -100,16 +92,18 @@ function clearCache() {
           <BaseButton
             :error="fetched.error"
             :status="fetched.status.value"
-            @click="onReload"
+            @click="fetched.refresh"
             >reload</BaseButton
           >
         </li>
         <li v-if="selectedCategory">
-          filtered by category {{ selectedCategory?.title }}
+          filtered by category <strong>{{ selectedCategory?.title }}</strong>
+          {{ " " }}
           <BaseButton @click="resetCategory">reset</BaseButton>
         </li>
         <li v-if="selectedFeed">
-          filtered by feed {{ selectedFeed?.title }}
+          filtered by feed <strong>{{ selectedFeed?.title }}</strong>
+          {{ " " }}
           <BaseButton @click="resetFeed">reset</BaseButton>
         </li>
       </ul>
@@ -124,12 +118,15 @@ function clearCache() {
           <BaseButton
             :error="fetched.error"
             :status="fetched.status.value"
-            @click="onReload"
+            @click="fetched.refresh"
             >reload</BaseButton
           >
         </li>
         <li v-if="shouldMarkAllAsRead">
-          <RSSMarkAllAsRead :entry-ids="unreadEntryIds" @confirm="onReload" />
+          <RSSMarkAllAsRead
+            :entry-ids="unreadEntryIds"
+            @confirm="fetched.refresh"
+          />
         </li>
       </ul>
     </main>
