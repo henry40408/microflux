@@ -107,6 +107,12 @@ function toggleStatus(newStatus: string) {
 }
 
 .summary-title {
-  color: yellow;
+  color: darkgoldenrod;
+}
+
+@media (prefers-color-scheme: dark) {
+  .summary-title {
+    color: yellow;
+  }
 }
 </style>
