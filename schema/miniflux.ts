@@ -30,9 +30,10 @@ export interface MinifluxFeed {
   category?: MinifluxCategory;
   hide_globally: boolean;
   disable_http2: boolean;
+  icon: { feed_id: number; icon_id: number } | null;
 }
 
-export interface MinifluxFeedIcon {
+export interface MinifluxIcon {
   id: number;
   mime_type: string;
   data: string;

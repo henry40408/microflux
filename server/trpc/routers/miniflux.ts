@@ -1,4 +1,5 @@
 import lodash from "lodash";
+import QuickLRU from "quick-lru";
 import { z } from "zod";
 
 import type {
@@ -7,13 +8,17 @@ import type {
   MinifluxEntryResultSet,
   MinifluxFeed,
   MinifluxFetchContent,
+  MinifluxIcon,
 } from "~/schema/miniflux";
 
 import { publicProcedure, router } from "../trpc";
 
 export type MinifluxCompactCategory = Pick<MinifluxCategory, "id" | "title">;
 
-export type MinifluxCompactFeed = Pick<MinifluxFeed, "id" | "title"> & {
+export type MinifluxCompactFeed = Pick<
+  MinifluxFeed,
+  "icon" | "id" | "title"
+> & {
   category?: MinifluxCompactCategory;
 };
 
@@ -28,6 +33,8 @@ export interface MinifluxGetFeedCompactEntriesResponse {
   total: number;
   entries: MinifluxCompactEntry[];
 }
+
+const iconCache = new QuickLRU<number, MinifluxIcon>({ maxSize: 1000 });
 
 export const minifluxRouter = router({
   getContent: publicProcedure
@@ -84,6 +91,7 @@ export const minifluxRouter = router({
               "url",
             ]),
             feed: {
+              icon: e.feed.icon,
               id: e.feed.id,
               title: e.feed.title,
               category:
@@ -94,6 +102,17 @@ export const minifluxRouter = router({
         };
       },
     ),
+  getIcon: publicProcedure.input(z.number()).query(async ({ ctx, input }) => {
+    const client = minifluxClient(ctx.event);
+
+    const cached = iconCache.get(input);
+    if (cached) return cached;
+
+    const fetched = await client.get(`v1/icons/${input}`).json<MinifluxIcon>();
+    iconCache.set(input, fetched);
+
+    return fetched;
+  }),
   saveEntry: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
