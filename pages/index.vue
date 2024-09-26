@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import localforage from "localforage";
+
 const actionsRef = ref<null | HTMLElement>();
 
 const query = toRef(useRoute(), "query");
@@ -79,6 +81,10 @@ async function onReload() {
   await fetched.refresh();
   actionsRef.value?.scrollIntoView();
 }
+
+function clearCache() {
+  localforage.clear();
+}
 </script>
 
 <template>
@@ -129,6 +135,9 @@ async function onReload() {
     </main>
     <footer>
       <AppVersion />
+      <div>
+        actions: <BaseConfirm @confirm="clearCache">clear cache</BaseConfirm>
+      </div>
     </footer>
   </div>
 </template>
