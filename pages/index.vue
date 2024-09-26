@@ -86,8 +86,7 @@ function clearCache() {
       <h1>miniflux</h1>
     </header>
     <main>
-      <h2 ref="actionsRef">actions</h2>
-      <ul>
+      <ul ref="actionsRef">
         <li>
           <BaseButton
             :error="fetched.error"
@@ -108,11 +107,14 @@ function clearCache() {
         </li>
       </ul>
       <RSSEntryOutlines v-model="entries" />
-      <h2>{{ unreadEntries.length }} on page, {{ total }} total</h2>
+      <p>
+        <strong>{{ unreadEntries.length }}</strong> on page,
+        <strong>{{ total }}</strong> total
+      </p>
       <div v-for="(entry, index) in entries" :key="entry.id">
         <RSSEntry v-model="entries[index]" />
       </div>
-      <h2>actions</h2>
+      <p>actions</p>
       <ul>
         <li>
           <BaseButton

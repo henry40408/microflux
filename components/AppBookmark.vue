@@ -11,7 +11,7 @@
     <blockquote v-if="resolvedDescription">
       {{ resolvedDescription }}
     </blockquote>
-    <p>added: <BaseDateTime :datetime="modelValue.date_added" /></p>
+    <p>added at <BaseDateTime :datetime="modelValue.date_added" /></p>
     <p>
       <BaseButton
         :clear="summarized.clear"

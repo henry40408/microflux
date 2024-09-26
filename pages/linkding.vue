@@ -5,7 +5,6 @@
       <h1>linkding</h1>
     </header>
     <main>
-      <h2>actions</h2>
       <ul>
         <li>
           <BaseButton
@@ -16,9 +15,11 @@
           >
         </li>
       </ul>
-      <h2>add bookmark</h2>
       <NewBookmark @add="fetched.execute" />
-      <h2>{{ count }} bookmarks</h2>
+      <BaseSearch v-model="q" />
+      <p>
+        <strong>{{ count }}</strong> bookmarks
+      </p>
       <div v-for="(bookmark, index) in bookmarks" :key="bookmark.id">
         <AppBookmark v-model="bookmarks[index]" @deleted="fetched.execute()" />
       </div>
@@ -30,13 +31,18 @@
 </template>
 
 <script setup lang="ts">
-const q = ref("");
+const route = useRoute();
+const q = ref(route.query.q?.toString() || "");
+const debouncedQ = refDebounced(q, 500);
+watch(debouncedQ, async () => {
+  await navigateTo({ query: { q: debouncedQ.value || undefined } });
+});
 
 const { $client } = useNuxtApp();
 const fetched = await useAsyncData(
   "bookmarks",
-  () => $client.linkding.getBookmarks.query({ q: q.value }),
-  { watch: [q] },
+  () => $client.linkding.getBookmarks.query({ q: debouncedQ.value }),
+  { watch: [debouncedQ] },
 );
 const bookmarks = computed(() => fetched.data.value?.results || []);
 const count = computed(() => fetched.data.value?.count || 0);
