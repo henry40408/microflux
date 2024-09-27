@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import localforage from "localforage";
-
 const actionsRef = ref<null | HTMLElement>();
 
 const query = toRef(useRoute(), "query");
@@ -73,10 +71,6 @@ async function handleEmptyEntries() {
   }
 }
 handleEmptyEntries();
-
-function clearCache() {
-  localforage.clear();
-}
 </script>
 
 <template>
@@ -134,9 +128,7 @@ function clearCache() {
     </main>
     <footer>
       <AppVersion />
-      <div>
-        actions: <BaseConfirm @confirm="clearCache">clear cache</BaseConfirm>
-      </div>
+      <div>actions: <ClearIconCache /></div>
     </footer>
   </div>
 </template>

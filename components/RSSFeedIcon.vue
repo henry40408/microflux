@@ -1,8 +1,10 @@
 <template>
   <ClientOnly>
-    <span v-if="iconStatus === 'pending'"><BaseSpinner /></span>
-    <span v-if="iconStatus !== 'pending' && iconSrc" class="icon">
-      <img :src="iconSrc" />
+    <span class="icon">
+      <span v-if="iconStatus === 'pending'"><BaseSpinner /></span>
+      <span v-if="iconStatus !== 'pending' && iconSrc">
+        <img :src="iconSrc" />
+      </span>
     </span>
   </ClientOnly>
 </template>
