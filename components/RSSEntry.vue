@@ -107,12 +107,6 @@ function toggleStatus(newStatus: string) {
 }
 
 .summary-title {
-  color: darkgoldenrod;
-}
-
-@media (prefers-color-scheme: dark) {
-  .summary-title {
-    color: yellow;
-  }
+  filter: sepia(100%);
 }
 </style>

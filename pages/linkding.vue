@@ -5,6 +5,7 @@
       <h1>linkding</h1>
     </header>
     <main>
+      <h2>actions</h2>
       <ul>
         <li>
           <BaseButton

@@ -60,11 +60,11 @@ const categories = computed(() =>
 );
 
 async function selectFeed(feedId: number) {
-  const categoryId = parseQuery().get("categoryId");
+  const categoryId = parseQuery().get("categoryId") || undefined;
   await navigateTo({ query: { categoryId, feedId } });
 }
 async function selectCategory(categoryId: number) {
-  const feedId = parseQuery().get("feedId");
+  const feedId = parseQuery().get("feedId") || undefined;
   await navigateTo({ query: { categoryId, feedId } });
 }
 </script>

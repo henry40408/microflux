@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="bookmark-title">
+    <h3>
       <NuxtLink :to="modelValue.url" target="_blank">{{
         pangu(resolvedTitle)
       }}</NuxtLink>
@@ -85,21 +85,11 @@ async function destroy() {
 </script>
 
 <style scoped>
-.bookmark-title {
-  margin-bottom: 0;
-}
-
 .summary {
   text-wrap: wrap;
 }
 
 .summary-title {
-  color: darkgoldenrod;
-}
-
-@media (prefers-color-scheme: dark) {
-  .summary-title {
-    color: yellow;
-  }
+  filter: sepia(100%);
 }
 </style>

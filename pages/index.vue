@@ -80,7 +80,8 @@ handleEmptyEntries();
       <h1>miniflux</h1>
     </header>
     <main>
-      <ul ref="actionsRef">
+      <h2 ref="actionsRef">actions</h2>
+      <ul>
         <li>
           <BaseButton
             :error="fetched.error"
@@ -108,7 +109,7 @@ handleEmptyEntries();
       <div v-for="(entry, index) in entries" :key="entry.id">
         <RSSEntry v-model="entries[index]" />
       </div>
-      <p>actions</p>
+      <h2>actions</h2>
       <ul>
         <li>
           <BaseButton
@@ -128,7 +129,6 @@ handleEmptyEntries();
     </main>
     <footer>
       <AppVersion />
-      <div>actions: <ClearIconCache /></div>
     </footer>
   </div>
 </template>
