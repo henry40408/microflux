@@ -8,9 +8,6 @@
     <div>
       <small>{{ modelValue.url }}</small>
     </div>
-    <blockquote v-if="resolvedDescription">
-      {{ resolvedDescription }}
-    </blockquote>
     <p>added at <BaseDateTime :datetime="modelValue.date_added" /></p>
     <p>
       <BaseButton
@@ -28,6 +25,11 @@
         >delete</BaseConfirm
       >
     </p>
+    <details v-if="!hasSummary">
+      <summary>description</summary>
+      <em v-if="!resolvedDescription">not available</em>
+      {{ resolvedDescription }}
+    </details>
     <details v-if="hasSummary" ref="summaryRef">
       <summary class="summary-title">summary</summary>
       <pre class="summary"><code>{{ copyableSummary }}</code></pre>
