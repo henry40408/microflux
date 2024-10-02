@@ -6,7 +6,7 @@
     <BaseButton @click="selectFeed">{{ modelValue.feed.title }}</BaseButton
     >, category:
     <BaseButton @click="selectCategory">{{
-      modelValue.feed.category?.title
+      modelValue.feed.category.title
     }}</BaseButton
     >, published at <BaseDateTime :datetime="modelValue.published_at" />
   </p>
@@ -73,7 +73,7 @@ async function selectFeed() {
   await navigateTo({ query: { categoryId, feedId } });
 }
 async function selectCategory() {
-  const categoryId = model.value.feed.category?.id;
+  const categoryId = model.value.feed.category.id;
   if (!categoryId) return;
   const feedId = parseQuery().get("feedId") || undefined;
   await navigateTo({ query: { categoryId, feedId } });

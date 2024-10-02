@@ -28,7 +28,7 @@ watch(entries, async () => {
 const selectedCategory = computed(
   () =>
     entries.value.find(
-      (e) => e.feed.category?.id.toString() === selectedCategoryId.value,
+      (e) => e.feed.category.id.toString() === selectedCategoryId.value,
     )?.feed.category,
 );
 const selectedFeed = computed(
@@ -77,7 +77,7 @@ handleEmptyEntries();
   <div>
     <header>
       <NavBar />
-      <h1>miniflux</h1>
+      <h1>unread entries</h1>
     </header>
     <main>
       <h2 ref="actionsRef">actions</h2>
