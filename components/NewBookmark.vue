@@ -1,13 +1,15 @@
 <template>
   <form @submit.prevent="add">
-    <div>
-      <label :for="id">new bookmark</label>
-      <input :id="id" v-model="url" type="url" placeholder="URL" />
-    </div>
-    <div>
-      <button :disabled="disabled">&plus; add</button>
-    </div>
-    <div v-if="added.error">{{ added.error }}</div>
+    <fieldset>
+      <legend>new bookmark</legend>
+      <div>
+        <input v-model="url" type="url" placeholder="URL" />
+      </div>
+      <div>
+        <button :disabled="disabled">&plus; add</button>
+      </div>
+      <div v-if="added.error">{{ added.error }}</div>
+    </fieldset>
   </form>
 </template>
 
@@ -15,7 +17,6 @@
 const emit = defineEmits<{ add: [] }>();
 
 const url = ref("");
-const id = useId();
 const disabled = computed(() => !url.value || added.status.value === "pending");
 
 const { $client } = useNuxtApp();

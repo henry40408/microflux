@@ -5,17 +5,19 @@
       <h1>linkding</h1>
     </header>
     <main>
-      <h2>actions</h2>
-      <ul>
-        <li>
-          <BaseButton
-            :error="fetched.error"
-            :status="fetched.status.value"
-            @click="fetched.execute"
-            >reload</BaseButton
-          >
-        </li>
-      </ul>
+      <fieldset>
+        <legend>actions</legend>
+        <ul>
+          <li>
+            <BaseButton
+              :error="fetched.error"
+              :status="fetched.status.value"
+              @click="fetched.execute"
+              >reload</BaseButton
+            >
+          </li>
+        </ul>
+      </fieldset>
       <NewBookmark @add="fetched.execute" />
       <BaseSearch v-model="q" />
       <p>

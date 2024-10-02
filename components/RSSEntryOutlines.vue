@@ -1,6 +1,6 @@
 <template>
   <details>
-    <summary>outlines</summary>
+    <summary>feeds &amp; categories</summary>
     <p>
       <span class="outline-items">
         <span class="outline-item">categories</span>
