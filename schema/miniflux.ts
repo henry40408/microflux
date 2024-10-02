@@ -27,7 +27,7 @@ export interface MinifluxFeed {
   cookie: string;
   username: string;
   password: string;
-  category?: MinifluxCategory;
+  category: MinifluxCategory;
   hide_globally: boolean;
   disable_http2: boolean;
   icon: { feed_id: number; icon_id: number } | null;

@@ -17,9 +17,9 @@ export type MinifluxCompactCategory = Pick<MinifluxCategory, "id" | "title">;
 
 export type MinifluxCompactFeed = Pick<
   MinifluxFeed,
-  "icon" | "id" | "title"
+  "feed_url" | "icon" | "id" | "site_url" | "title"
 > & {
-  category?: MinifluxCompactCategory;
+  category: MinifluxCompactCategory;
 };
 
 export type MinifluxCompactEntry = Pick<
@@ -37,6 +37,17 @@ export interface MinifluxGetFeedCompactEntriesResponse {
 const iconCache = new QuickLRU<number, MinifluxIcon>({ maxSize: 1000 });
 
 export const minifluxRouter = router({
+  deleteFeed: publicProcedure
+    .input(z.number())
+    .mutation(async ({ ctx, input }) => {
+      const client = minifluxClient(ctx.event);
+      await client.delete(`v1/feeds/${input}`);
+      return null;
+    }),
+  getCategories: publicProcedure.query(async ({ ctx }) => {
+    const client = minifluxClient(ctx.event);
+    return await client.get("v1/categories").json<MinifluxCategory[]>();
+  }),
   getContent: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }): Promise<MinifluxFetchContent> => {
@@ -46,6 +57,13 @@ export const minifluxRouter = router({
         .json<MinifluxEntry>();
       return { content: sanitizeContent(entry.content) };
     }),
+  getCounters: publicProcedure.query(async ({ ctx }) => {
+    const client = minifluxClient(ctx.event);
+    return await client.get(`v1/feeds/counters`).json<{
+      reads: Record<string, number>;
+      unreads: Record<string, number>;
+    }>();
+  }),
   getFullContent: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
@@ -93,8 +111,10 @@ export const minifluxRouter = router({
               "url",
             ]),
             feed: {
+              feed_url: e.feed.feed_url,
               icon: e.feed.icon,
               id: e.feed.id,
+              site_url: e.feed.site_url,
               title: e.feed.title,
               category:
                 e.feed.category &&
@@ -104,6 +124,10 @@ export const minifluxRouter = router({
         };
       },
     ),
+  getFeeds: publicProcedure.query(async ({ ctx }) => {
+    const client = minifluxClient(ctx.event);
+    return await client.get("v1/feeds").json<MinifluxFeed[]>();
+  }),
   getIcon: publicProcedure.input(z.number()).query(async ({ ctx, input }) => {
     const client = minifluxClient(ctx.event);
 
@@ -138,6 +162,27 @@ export const minifluxRouter = router({
         }),
       });
       return null;
+    }),
+  updateFeed: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        categoryId: z.number().optional(),
+        feedUrl: z.string().optional(),
+        title: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const client = minifluxClient(ctx.event);
+      return await client
+        .put(`v1/feeds/${input.id}`, {
+          json: {
+            category_id: input.categoryId,
+            feed_url: input.feedUrl,
+            title: input.title,
+          },
+        })
+        .json<MinifluxFeed>();
     }),
 });
 
