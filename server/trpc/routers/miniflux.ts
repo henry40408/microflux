@@ -78,7 +78,7 @@ export const minifluxRouter = router({
 
         const { total, entries } = await client
           .get(path, {
-            searchParams: { direction: "asc", limit: 200, status: "unread" },
+            searchParams: { direction: "asc", status: "unread" },
           })
           .json<MinifluxEntryResultSet>();
         return {
