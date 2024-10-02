@@ -168,6 +168,7 @@ export const minifluxRouter = router({
       z.object({
         id: z.number(),
         categoryId: z.number().optional(),
+        feedUrl: z.string().optional(),
         title: z.string().optional(),
       }),
     )
@@ -177,6 +178,7 @@ export const minifluxRouter = router({
         .put(`v1/feeds/${input.id}`, {
           json: {
             category_id: input.categoryId,
+            feed_url: input.feedUrl,
             title: input.title,
           },
         })

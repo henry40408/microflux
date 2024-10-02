@@ -13,33 +13,16 @@
           >
         </li>
       </ul>
-      <table>
-        <thead>
-          <tr>
-            <th>title / actions</th>
-            <th>category</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="feed in feeds" :key="feed.id">
-            <td>
-              <EditRSSFeed
-                :feed="feed"
-                :read="reads[feed.id] || 0"
-                :unread="unreads[feed.id] || 0"
-                @deleted="fetched.refresh"
-              />
-            </td>
-            <td>
-              <RSSCategorySelect
-                :feed-id="feed.id"
-                :categories="categories"
-                :selected-category="feed.category"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div v-for="feed in feeds" :key="feed.id">
+        <EditRSSFeed
+          :categories="categories"
+          :feed="feed"
+          :read="reads[feed.id] || 0"
+          :unread="unreads[feed.id] || 0"
+          @deleted="fetched.refresh"
+          @updated="fetched.refresh"
+        />
+      </div>
     </main>
   </div>
 </template>
