@@ -163,6 +163,25 @@ export const minifluxRouter = router({
       });
       return null;
     }),
+  updateFeed: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        categoryId: z.number().optional(),
+        title: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const client = minifluxClient(ctx.event);
+      return await client
+        .put(`v1/feeds/${input.id}`, {
+          json: {
+            category_id: input.categoryId,
+            title: input.title,
+          },
+        })
+        .json<MinifluxFeed>();
+    }),
 });
 
 export type MinifluxRouter = typeof minifluxRouter;

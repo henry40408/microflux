@@ -5,7 +5,7 @@
         <NuxtLink :to="feed.site_url" target="_blank">{{
           feed.title
         }}</NuxtLink>
-        ({{ read }}/{{ unread + read }})
+        ({{ unread }}/{{ read }})
       </div>
       <div>
         <small>feed URL: {{ feed.feed_url }}</small>

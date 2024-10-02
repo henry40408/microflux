@@ -32,8 +32,9 @@
             </td>
             <td>
               <RSSCategorySelect
+                :feed-id="feed.id"
                 :categories="categories"
-                :selected="feed.category"
+                :selected-category="feed.category"
               />
             </td>
           </tr>
