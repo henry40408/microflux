@@ -14,6 +14,7 @@
           }}</BaseButton>
           <sup>{{ group.count }}</sup>
         </span>
+        <em v-if="!categories.length" class="outline-item">no categories</em>
       </span>
     </p>
     <p>
@@ -25,6 +26,7 @@
           }}</BaseButton>
           <sup>{{ group.count }}</sup>
         </span>
+        <em v-if="!feeds.length" class="outline-item">no feeds</em>
       </span>
     </p>
   </details>

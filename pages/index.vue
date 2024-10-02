@@ -109,6 +109,9 @@ handleEmptyEntries();
       <div v-for="(entry, index) in entries" :key="entry.id">
         <RSSEntry v-model="entries[index]" />
       </div>
+      <div v-if="!entries.length">
+        <em>no entries</em>
+      </div>
       <h2>actions</h2>
       <ul>
         <li>
