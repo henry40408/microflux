@@ -1,5 +1,6 @@
 <template>
   <span>
+    <span v-if="disabled"><slot /></span>
     <a v-if="initialized" href="#" @click.prevent="$emit('click')">
       <slot />
     </a>
@@ -25,6 +26,7 @@ import type { AsyncDataRequestStatus } from "#app";
 
 const props = defineProps<{
   clear?: () => void;
+  disabled?: boolean;
   error?: unknown;
   once?: boolean;
   status?: AsyncDataRequestStatus;
@@ -32,24 +34,20 @@ const props = defineProps<{
 
 defineEmits<{ click: [] }>();
 
+const pending = computed(() => props.status === "pending");
 const initialized = computed(() => {
+  if (props.disabled || pending.value) return false;
   if (!props.status) return true;
   if (props.status === "idle" || props.status === "error") return true;
-  if (props.status === "pending") return false;
   if (props.status === "success") {
     if (props.clear) return false;
     return true;
   }
   return false;
 });
-const pending = computed(() => props.status === "pending");
 const cancellable = computed(() => !!props.clear);
 const done = computed(() => {
-  if (
-    props.status === "idle" ||
-    props.status === "pending" ||
-    props.status === "error"
-  )
+  if (props.status === "idle" || pending.value || props.status === "error")
     return false;
   if (props.status === "success") {
     if (props.once) return true;

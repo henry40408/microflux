@@ -13,10 +13,28 @@
               >reload</BaseButton
             >
           </li>
+          <li>sort</li>
+          <ul>
+            <li>
+              <BaseButton
+                :disabled="sort === Sort.NAME"
+                @click="toggleSort(Sort.NAME)"
+                >name (alphabetical)</BaseButton
+              >
+            </li>
+            <li>
+              <BaseButton
+                :disabled="sort === Sort.UNREAD"
+                @click="toggleSort(Sort.UNREAD)"
+                >unreads (more to less)</BaseButton
+              >
+            </li>
+          </ul>
         </ul>
       </fieldset>
+      <RSSNewFeed :categories="categories" @added="fetched.execute" />
       <p>
-        <strong>{{ feeds.length }}</strong> feed(s)
+        <strong>{{ feeds.length }}</strong> feeds
       </p>
       <div v-for="(feed, index) in feeds" :key="feed.id">
         <RSSFeed
@@ -36,6 +54,13 @@ import lodash from "lodash";
 
 useHead({ title: "feeds" });
 
+enum Sort {
+  NAME = "name",
+  UNREAD = "unread",
+}
+
+const [sort, toggleSort] = useToggle(Sort.NAME);
+
 const { $client } = useNuxtApp();
 const fetched = useAsyncData("feeds-categories", async () => ({
   counters: await $client.miniflux.getCounters.query(),
@@ -47,7 +72,16 @@ const reads = computed(() => counters.value?.reads || {});
 const unreads = computed(() => counters.value?.unreads || {});
 const categories = computed(() => fetched.data.value?.categires || []);
 const feeds = computed(() =>
-  lodash.orderBy(fetched.data.value?.feeds || [], "title"),
+  lodash.sortBy(fetched.data.value?.feeds || [], [
+    (f) => {
+      switch (sort.value) {
+        case Sort.NAME:
+          return f.title;
+        case Sort.UNREAD:
+          return unreads.value[f.id] * -1 || 0;
+      }
+    },
+  ]),
 );
 </script>
 
