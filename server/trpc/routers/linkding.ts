@@ -1,6 +1,9 @@
 import { z } from "zod";
 
-import type { LinkdingBookmarkPaginationResponse } from "~/schema/linkding";
+import type {
+  LinkdingBookmarkPaginationResponse,
+  LinkdingTagPaginationResponse,
+} from "~/schema/linkding";
 
 import { publicProcedure, router } from "../trpc";
 
@@ -36,6 +39,10 @@ export const linkdingRouter = router({
         })
         .json<LinkdingBookmarkPaginationResponse>();
     }),
+  getTags: publicProcedure.query(async ({ ctx }) => {
+    const client = linkdingClient(ctx.event);
+    return await client.get("api/tags/").json<LinkdingTagPaginationResponse>();
+  }),
 });
 
 export type LinkdingRouter = typeof linkdingRouter;

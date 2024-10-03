@@ -1,13 +1,11 @@
 <template>
   <form @submit.prevent="add">
-    <div>
-      <label :for="id">new bookmark</label>
-      <input :id="id" v-model="url" type="url" placeholder="URL" />
-    </div>
-    <div>
-      <button :disabled="disabled">&plus; add</button>
-    </div>
-    <div v-if="added.error">{{ added.error }}</div>
+    <fieldset>
+      <legend>new bookmark</legend>
+      <input v-model="url" type="url" placeholder="URL" />
+      <input type="submit" :value="addLabel" :disabled="!shouldAdd" />
+      <div v-if="added.error">{{ added.error }}</div>
+    </fieldset>
   </form>
 </template>
 
@@ -15,8 +13,6 @@
 const emit = defineEmits<{ add: [] }>();
 
 const url = ref("");
-const id = useId();
-const disabled = computed(() => !url.value || added.status.value === "pending");
 
 const { $client } = useNuxtApp();
 const added = useAsyncData(
@@ -24,11 +20,21 @@ const added = useAsyncData(
   () => $client.linkding.addBookmark.mutate({ url: url.value }),
   { immediate: false, server: false },
 );
+const shouldAdd = computed(
+  () => !!url.value && added.status.value !== "pending",
+);
+const addLabel = computed(() =>
+  added.status.value === "pending" ? "..." : "add",
+);
 
 async function add() {
+  added.clear();
   await added.execute();
-  url.value = "";
-  emit("add");
+  await nextTick();
+  if (added.status.value === "success") {
+    url.value = "";
+    emit("add");
+  }
 }
 </script>
 

@@ -6,9 +6,18 @@
       }}</NuxtLink>
     </h3>
     <div>
-      <small>{{ modelValue.url }}</small>
+      <pre>{{ modelValue.url }}</pre>
     </div>
-    <p>added at <BaseDateTime :datetime="modelValue.date_added" /></p>
+    <p>
+      added at <BaseDateTime :datetime="modelValue.date_added" />, tags:
+      <BaseButton
+        v-for="tag in modelValue.tag_names"
+        :key="tag"
+        @click="$emit('filterByTag', tag)"
+        >{{ tag }}</BaseButton
+      >
+      <em v-if="modelValue.tag_names.length <= 0">no tags</em>
+    </p>
     <p>
       <BaseButton
         :clear="summarized.clear"
@@ -48,7 +57,10 @@
 import type { LinkdingBookmark } from "~/schema/linkding";
 
 const model = defineModel<LinkdingBookmark>({ required: true });
-const emit = defineEmits<{ deleted: [id: number] }>();
+const emit = defineEmits<{
+  deleted: [id: number];
+  filterByTag: [tag: string];
+}>();
 
 const resolvedTitle = computed(
   () => model.value.website_title || model.value.title,

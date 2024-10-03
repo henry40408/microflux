@@ -80,28 +80,30 @@ handleEmptyEntries();
       <h1>unread entries</h1>
     </header>
     <main>
-      <h2 ref="actionsRef">actions</h2>
-      <ul>
-        <li>
-          <BaseButton
-            :error="fetched.error"
-            :status="fetched.status.value"
-            @click="fetched.refresh"
-            >reload</BaseButton
-          >
-        </li>
-        <li v-if="selectedCategory">
-          filtered by category <strong>{{ selectedCategory?.title }}</strong>
-          {{ " " }}
-          <BaseButton @click="resetCategory">reset</BaseButton>
-        </li>
-        <li v-if="selectedFeed">
-          filtered by feed <strong>{{ selectedFeed?.title }}</strong>
-          {{ " " }}
-          <BaseButton @click="resetFeed">reset</BaseButton>
-        </li>
-      </ul>
       <RSSEntryOutlines v-model="entries" />
+      <fieldset ref="actionsRef">
+        <legend>actions</legend>
+        <ul>
+          <li>
+            <BaseButton
+              :error="fetched.error"
+              :status="fetched.status.value"
+              @click="fetched.refresh"
+              >reload</BaseButton
+            >
+          </li>
+          <li v-if="selectedCategory">
+            filtered by category <strong>{{ selectedCategory?.title }}</strong>
+            {{ " " }}
+            <BaseButton @click="resetCategory">reset</BaseButton>
+          </li>
+          <li v-if="selectedFeed">
+            filtered by feed <strong>{{ selectedFeed?.title }}</strong>
+            {{ " " }}
+            <BaseButton @click="resetFeed">reset</BaseButton>
+          </li>
+        </ul>
+      </fieldset>
       <p>
         <strong>{{ unreadEntries.length }}</strong> on page,
         <strong>{{ total }}</strong> total
@@ -112,23 +114,25 @@ handleEmptyEntries();
       <div v-if="!entries.length">
         <em>no entries</em>
       </div>
-      <h2>actions</h2>
-      <ul>
-        <li>
-          <BaseButton
-            :error="fetched.error"
-            :status="fetched.status.value"
-            @click="fetched.refresh"
-            >reload</BaseButton
-          >
-        </li>
-        <li v-if="shouldMarkAllAsRead">
-          <RSSMarkAllAsRead
-            :entry-ids="unreadEntryIds"
-            @confirm="fetched.refresh"
-          />
-        </li>
-      </ul>
+      <fieldset>
+        <legend>actions</legend>
+        <ul>
+          <li>
+            <BaseButton
+              :error="fetched.error"
+              :status="fetched.status.value"
+              @click="fetched.refresh"
+              >reload</BaseButton
+            >
+          </li>
+          <li v-if="shouldMarkAllAsRead">
+            <RSSMarkAllAsRead
+              :entry-ids="unreadEntryIds"
+              @confirm="fetched.refresh"
+            />
+          </li>
+        </ul>
+      </fieldset>
     </main>
     <footer>
       <AppVersion />

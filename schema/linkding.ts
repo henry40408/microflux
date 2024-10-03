@@ -23,3 +23,16 @@ export interface LinkdingBookmarkPaginationResponse {
   previous: string | null;
   results: LinkdingBookmark[];
 }
+
+export interface LinkdingTag {
+  id: number;
+  name: string;
+  date_added: string;
+}
+
+export interface LinkdingTagPaginationResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: LinkdingTag[];
+}

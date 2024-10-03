@@ -37,6 +37,16 @@ export interface MinifluxGetFeedCompactEntriesResponse {
 const iconCache = new QuickLRU<number, MinifluxIcon>({ maxSize: 1000 });
 
 export const minifluxRouter = router({
+  createFeed: publicProcedure
+    .input(z.object({ url: z.string(), categoryId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const client = minifluxClient(ctx.event);
+      return await client
+        .post("v1/feeds", {
+          json: { feed_url: input.url, category_id: input.categoryId },
+        })
+        .json<{ feed_id: number }>();
+    }),
   deleteFeed: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
