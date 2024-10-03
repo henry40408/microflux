@@ -35,13 +35,16 @@
   <details v-if="hasSummary" ref="summaryRef">
     <summary class="summary-title">summary</summary>
     <pre class="summary"><code>{{ copyableSummary }}</code></pre>
-    <BaseButton
-      once
-      :clear="() => {}"
-      :status="copied ? 'success' : 'idle'"
-      @click="copy"
-      >copy to clipboard</BaseButton
-    >
+    <div>
+      <BaseButton @click="collapse">collapse</BaseButton>,
+      <BaseButton
+        once
+        :clear="() => void 0"
+        :status="copied ? 'success' : 'idle'"
+        @click="copy"
+        >copy to clipboard</BaseButton
+      >
+    </div>
   </details>
 </template>
 
@@ -52,6 +55,12 @@ const titleRef = ref<null | HTMLElement>(null);
 const summaryRef = ref<null | HTMLElement>(null);
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
+watch(
+  () => model.value.status,
+  (next) => {
+    if (next === "read") summaryRef.value?.removeAttribute("open");
+  },
+);
 
 const summarized = useSummarize(model.value.url);
 const hasSummary = computed(() => summarized.status.value === "success");
@@ -89,10 +98,14 @@ const fetched = useAsyncData(
     }),
   { immediate: false, server: false },
 );
-function markAsRead() {
-  fetched.execute().then(() => {
-    model.value.status = "read";
-  });
+
+function collapse() {
+  summaryRef.value?.removeAttribute("open");
+}
+
+async function markAsRead() {
+  await fetched.execute();
+  model.value.status = "read";
 }
 
 function toggleStatus(newStatus: string) {

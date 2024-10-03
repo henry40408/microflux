@@ -44,7 +44,7 @@
       <pre class="summary"><code>{{ copyableSummary }}</code></pre>
       <BaseButton
         once
-        :clear="() => {}"
+        :clear="() => void 0"
         :status="copied ? 'success' : 'idle'"
         @click="copy"
         >copy to clipboard</BaseButton
