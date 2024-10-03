@@ -6,7 +6,7 @@
       }}</NuxtLink>
     </h3>
     <div>
-      <small>{{ modelValue.url }}</small>
+      <pre>{{ modelValue.url }}</pre>
     </div>
     <p>added at <BaseDateTime :datetime="modelValue.date_added" /></p>
     <p>

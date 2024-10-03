@@ -20,7 +20,8 @@
       </p>
       <div v-for="(feed, index) in feeds" :key="feed.id">
         <RSSFeed
-          :feed="feeds[index]"
+          v-model="feeds[index]"
+          :categories="categories"
           :read="reads[feed.id] || 0"
           :unread="unreads[feed.id] || 0"
           @deleted="fetched.execute"
@@ -38,11 +39,13 @@ useHead({ title: "feeds" });
 const { $client } = useNuxtApp();
 const fetched = useAsyncData("feeds-categories", async () => ({
   counters: await $client.miniflux.getCounters.query(),
+  categires: await $client.miniflux.getCategories.query(),
   feeds: await $client.miniflux.getFeeds.query(),
 }));
 const counters = computed(() => fetched.data.value?.counters);
 const reads = computed(() => counters.value?.reads || {});
 const unreads = computed(() => counters.value?.unreads || {});
+const categories = computed(() => fetched.data.value?.categires || []);
 const feeds = computed(() =>
   lodash.orderBy(fetched.data.value?.feeds || [], "title"),
 );
