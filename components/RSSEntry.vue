@@ -8,7 +8,8 @@
     <BaseButton @click="selectCategory">{{
       modelValue.feed.category.title
     }}</BaseButton
-    >, published at <BaseDateTime :datetime="modelValue.published_at" />
+    >, published at {{ stale ? "🕸" : "🌱" }}
+    <BaseDateTime :datetime="modelValue.published_at" />
   </p>
   <p>
     <RSSEntryToggleStatus v-model="model" />,
@@ -49,6 +50,7 @@
 </template>
 
 <script setup lang="ts">
+import { parseISO } from "date-fns";
 import type { MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
 
 const titleRef = ref<null | HTMLElement>(null);
@@ -62,6 +64,11 @@ watch(
   },
 );
 
+const STALE_DELTA = 24 * 60 * 60 * 1000; // 1day
+const now = computed(() => Date.now());
+const stale = computed(
+  () => now.value - parseISO(model.value.published_at).valueOf() > STALE_DELTA,
+);
 const summarized = useSummarize(model.value.url);
 const hasSummary = computed(() => summarized.status.value === "success");
 const summary = computed(
