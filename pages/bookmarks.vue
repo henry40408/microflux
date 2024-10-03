@@ -2,7 +2,7 @@
   <div>
     <header>
       <NavBar />
-      <h1>linkding</h1>
+      <h1>bookmarks</h1>
     </header>
     <main>
       <NewBookmark @add="fetched.execute" />
