@@ -28,9 +28,13 @@ const addLabel = computed(() =>
 );
 
 async function add() {
+  added.clear();
   await added.execute();
-  url.value = "";
-  emit("add");
+  await nextTick();
+  if (added.status.value === "success") {
+    url.value = "";
+    emit("add");
+  }
 }
 </script>
 

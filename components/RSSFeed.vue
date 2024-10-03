@@ -3,7 +3,7 @@
     <div v-if="editing">
       <form @submit.prevent="submit">
         <fieldset>
-          <legend>edit {{ model.title }}</legend>
+          <legend>edit {{ modelValue.title }}</legend>
           <p><BaseButton @click="cancel">cancel</BaseButton></p>
           <label :for="feedTitleId">title</label>
           <input :id="feedTitleId" v-model="feedTitle" type="text" />
@@ -26,12 +26,12 @@
     </div>
     <div v-if="!editing">
       <h2>
-        <NuxtLink :to="model.site_url">{{ model.title }}</NuxtLink>
+        <NuxtLink :to="modelValue.site_url">{{ modelValue.title }}</NuxtLink>
         ({{ unread }}/{{ read }})
       </h2>
       <p>
-        category: {{ model.category.title }}, feed URL:
-        <code>{{ model.feed_url }}</code>
+        category: {{ modelValue.category.title }}, feed URL:
+        <code>{{ modelValue.feed_url }}</code>
       </p>
       <p>
         <BaseButton @click="toggleEdit(true)">edit</BaseButton>,

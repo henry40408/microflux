@@ -5,6 +5,19 @@
       <h1>linkding</h1>
     </header>
     <main>
+      <NewBookmark @add="fetched.execute" />
+      <BaseSearch v-model="q" />
+      <details>
+        <summary>tags</summary>
+        <div>
+          <span v-for="(tag, index) in tags" :key="tag.id">
+            <BaseButton @click="filterByTag(tag.name)">
+              {{ tag.name }}
+            </BaseButton>
+            <span v-if="index !== tags.length - 1">, </span>
+          </span>
+        </div>
+      </details>
       <fieldset>
         <legend>actions</legend>
         <ul>
@@ -18,13 +31,15 @@
           </li>
         </ul>
       </fieldset>
-      <NewBookmark @add="fetched.execute" />
-      <BaseSearch v-model="q" />
       <p>
         <strong>{{ count }}</strong> bookmarks
       </p>
       <div v-for="(bookmark, index) in bookmarks" :key="bookmark.id">
-        <AppBookmark v-model="bookmarks[index]" @deleted="fetched.execute()" />
+        <AppBookmark
+          v-model="bookmarks[index]"
+          @deleted="fetched.execute()"
+          @filter-by-tag="filterByTag"
+        />
       </div>
     </main>
     <footer>
@@ -43,15 +58,27 @@ watch(debouncedQ, async () => {
 
 const { $client } = useNuxtApp();
 const fetched = await useAsyncData(
-  "bookmarks",
-  () => $client.linkding.getBookmarks.query({ q: debouncedQ.value }),
+  "bookmarks-tags",
+  async () => ({
+    bookmarks: await $client.linkding.getBookmarks.query({
+      q: debouncedQ.value,
+    }),
+    tags: await $client.linkding.getTags.query(),
+  }),
   { watch: [debouncedQ] },
 );
-const bookmarks = computed(() => fetched.data.value?.results || []);
-const count = computed(() => fetched.data.value?.count || 0);
+const bookmarks = computed(() => fetched.data.value?.bookmarks.results || []);
+const count = computed(() => fetched.data.value?.bookmarks.count || 0);
+const tags = computed(() => fetched.data.value?.tags.results || []);
 useHead({
   title: () => `(${count.value || ""}) linkding`,
 });
+
+function filterByTag(tag: string) {
+  const nq = `#${tag}`;
+  if (q.value.indexOf(nq) >= 0) return;
+  q.value = `${q.value} ${nq}`;
+}
 </script>
 
 <style scoped></style>
