@@ -1,19 +1,21 @@
 <template>
   <span>
-    <span v-if="disabled"><slot /></span>
-    <a v-if="initialized" href="#" @click.prevent="$emit('click')">
+    <span v-if="disabled">
+      <slot />
+    </span>
+    <a v-else-if="initialized" href="#" @click.prevent="$emit('click')">
       <slot />
     </a>
-    <span v-if="pending">
+    <span v-else-if="pending">
       <BaseSpinner />
       <span v-if="cancellable">
         {{ " " }}
-        <a href="#" @click.prevent="props.clear?.()">cancel</a>
+        <a href="#" @click.prevent="handleClear">cancel</a>
       </span>
     </span>
-    <span v-if="done">done!</span>
-    <span v-if="clearable">
-      <a href="#" @click.prevent="props.clear?.()">
+    <span v-else-if="done">done!</span>
+    <span v-else-if="clearable">
+      <a href="#" @click.prevent="handleClear">
         <slot name="clear">clear</slot>
       </a>
     </span>
@@ -39,25 +41,17 @@ const initialized = computed(() => {
   if (props.disabled || pending.value) return false;
   if (!props.status) return true;
   if (props.status === "idle" || props.status === "error") return true;
-  if (props.status === "success") {
-    if (props.clear) return false;
-    return true;
-  }
+  if (props.status === "success" && !props.clear) return true;
   return false;
 });
+
 const cancellable = computed(() => !!props.clear);
-const done = computed(() => {
-  if (props.status === "idle" || pending.value || props.status === "error")
-    return false;
-  if (props.status === "success") {
-    if (props.once) return true;
-    return false;
-  }
-  return false;
-});
+const done = computed(() => props.status === "success" && props.once);
 const clearable = computed(
   () => !!props.clear && props.status === "success" && !props.once,
 );
+
+const handleClear = () => props.clear?.();
 </script>
 
 <style scoped></style>

@@ -2,7 +2,7 @@
   <span ref="titleRef" />
   <RSSEntryTitle v-model="model" @click="markAsRead" />
   <p>
-    feed:
+    #{{ modelValue.id }}, feed:
     <BaseButton @click="selectFeed">{{ modelValue.feed.title }}</BaseButton
     >, category:
     <BaseButton @click="selectCategory">{{

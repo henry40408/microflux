@@ -80,7 +80,6 @@ handleEmptyEntries();
       <h1>unread entries</h1>
     </header>
     <main>
-      <RSSEntryOutlines v-model="entries" />
       <fieldset ref="actionsRef">
         <legend>actions</legend>
         <ul>
@@ -104,6 +103,7 @@ handleEmptyEntries();
           </li>
         </ul>
       </fieldset>
+      <RSSEntryOutlines v-model="entries" />
       <p>
         <strong>{{ unreadEntries.length }}</strong> on page,
         <strong>{{ total }}</strong> total
