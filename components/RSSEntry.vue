@@ -66,6 +66,8 @@ watch(
   },
 );
 
+const route = useRoute();
+
 const STALE_DELTA = 24 * 60 * 60 * 1000; // 1day
 const now = computed(() => Date.now());
 const stale = computed(
@@ -86,14 +88,14 @@ ${pangu(summary.value)}`,
 const { copy, copied } = useClipboard({ source: copyableSummary });
 
 async function selectFeed() {
-  const categoryId = parseQuery().get("categoryId") || undefined;
+  const categoryId = route.query.categoryId;
   const feedId = model.value.feed.id;
   await navigateTo({ query: { categoryId, feedId } });
 }
 async function selectCategory() {
   const categoryId = model.value.feed.category.id;
   if (!categoryId) return;
-  const feedId = parseQuery().get("feedId") || undefined;
+  const feedId = route.query.feedId;
   await navigateTo({ query: { categoryId, feedId } });
 }
 

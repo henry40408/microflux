@@ -41,6 +41,8 @@ import type {
 
 const model = defineModel<MinifluxCompactEntry[]>({ required: true });
 
+const route = useRoute();
+
 const feeds = computed(() =>
   lodash(model.value)
     .groupBy("feed.id")
@@ -62,11 +64,11 @@ const categories = computed(() =>
 );
 
 async function selectFeed(feedId: number) {
-  const categoryId = parseQuery().get("categoryId") || undefined;
+  const categoryId = route.query.categoryId;
   await navigateTo({ query: { categoryId, feedId } });
 }
 async function selectCategory(categoryId: number) {
-  const feedId = parseQuery().get("feedId") || undefined;
+  const feedId = route.query.feedId;
   await navigateTo({ query: { categoryId, feedId } });
 }
 </script>

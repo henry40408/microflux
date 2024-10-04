@@ -59,15 +59,16 @@
 <script setup lang="ts">
 import lodash from "lodash";
 
-useHead({ title: "feeds" });
-
 enum Sort {
   NAME = "name",
   UNREAD = "unread",
 }
 
+const route = useRoute();
 const [sort, toggleSort] = useToggle(Sort.NAME);
 const feedRefs = ref<Record<number, Element>>({});
+
+useHead({ title: "feeds" });
 
 const { $client } = useNuxtApp();
 const fetched = useAsyncData("feeds-categories", async () => ({
@@ -94,7 +95,7 @@ const feeds = computed(() =>
 
 (async () => {
   await until(fetched.status).toBe("success");
-  const feedId = parseQuery().get("feedId");
+  const feedId = route.query.feedId;
   if (feedId) feedRefs.value[Number(feedId)]?.scrollIntoView();
 })();
 </script>

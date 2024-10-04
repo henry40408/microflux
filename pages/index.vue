@@ -1,7 +1,8 @@
 <script setup lang="ts">
 const actionsRef = ref<null | HTMLElement>();
 
-const query = toRef(useRoute(), "query");
+const route = useRoute();
+const query = toRef(route, "query");
 const selectedCategoryId = computed(() => query.value.categoryId?.toString());
 const selectedFeedId = computed(() => query.value.feedId?.toString());
 
@@ -49,11 +50,11 @@ const shouldMarkAllAsRead = computed(
 );
 
 async function resetFeed() {
-  const categoryId = parseQuery().get("categoryId") || undefined;
+  const categoryId = route.query.categoryId;
   await navigateTo({ query: { categoryId, feedId: undefined } });
 }
 async function resetCategory() {
-  const feedId = parseQuery().get("feedId") || undefined;
+  const feedId = route.query.feedId;
   await navigateTo({ query: { categoryId: undefined, feedId } });
 }
 
