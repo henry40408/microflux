@@ -19,13 +19,15 @@
       :status="summarized.status.value"
       @click="summarized.execute"
       >summarize<template #clear>clear summary</template></BaseButton
+    >, <RSSEntrySave v-model="model" />
+    <span v-if="modelValue.comments_url"
+      >,
+      <NuxtLink :to="modelValue.comments_url" target="_blank">
+        comments
+      </NuxtLink> </span
     >,
-    <RSSEntrySave v-model="model" />
-    <NuxtLink
-      v-if="modelValue.comments_url"
-      :to="modelValue.comments_url"
-      target="_blank"
-      >, comments
+    <NuxtLink :to="{ name: 'feeds', query: { feedId: modelValue.feed.id } }">
+      edit feed
     </NuxtLink>
   </p>
   <RSSEntryContent

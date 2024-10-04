@@ -37,6 +37,13 @@
         <strong>{{ feeds.length }}</strong> feeds
       </p>
       <div v-for="(feed, index) in feeds" :key="feed.id">
+        <span
+          :ref="
+            (el) => {
+              if (el) feedRefs[feed.id] = el as Element;
+            }
+          "
+        />
         <RSSFeed
           v-model="feeds[index]"
           :categories="categories"
@@ -60,6 +67,7 @@ enum Sort {
 }
 
 const [sort, toggleSort] = useToggle(Sort.NAME);
+const feedRefs = ref<Record<number, Element>>({});
 
 const { $client } = useNuxtApp();
 const fetched = useAsyncData("feeds-categories", async () => ({
@@ -83,6 +91,12 @@ const feeds = computed(() =>
     },
   ]),
 );
+
+(async () => {
+  await until(fetched.status).toBe("success");
+  const feedId = parseQuery().get("feedId");
+  if (feedId) feedRefs.value[Number(feedId)]?.scrollIntoView();
+})();
 </script>
 
 <style scoped></style>

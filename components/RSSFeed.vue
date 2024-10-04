@@ -30,8 +30,8 @@
         ({{ unread }}/{{ read }})
       </h2>
       <p>
-        category: {{ modelValue.category.title }}, feed URL:
-        <code>{{ modelValue.feed_url }}</code>
+        #{{ modelValue.id }}, category: {{ modelValue.category.title }}, feed
+        URL: <code>{{ modelValue.feed_url }}</code>
       </p>
       <p>
         <BaseButton @click="toggleEdit(true)">edit</BaseButton>,
