@@ -1,12 +1,19 @@
 <template>
-  {{ label }}
+  <ClientOnly>
+    <span>
+      {{ label }}
+    </span>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
-const counter = useInterval(500);
+import spinners from "cli-spinners";
 
-const labels = [":..", ".:.", "..:"];
-const label = computed(() => labels[counter.value % labels.length]);
+const spinner = spinners.dots;
+
+const counter = useInterval(spinner.interval);
+
+const label = computed(
+  () => spinner.frames[counter.value % spinner.frames.length],
+);
 </script>
-
-<style scoped></style>
