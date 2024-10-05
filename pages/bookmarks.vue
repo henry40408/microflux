@@ -32,7 +32,7 @@
         </ul>
       </fieldset>
       <p>
-        <strong>{{ count }}</strong> bookmarks
+        <b>{{ count }}</b> bookmarks
       </p>
       <div v-for="(bookmark, index) in bookmarks" :key="bookmark.id">
         <AppBookmark

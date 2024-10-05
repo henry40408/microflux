@@ -16,7 +16,7 @@
         @click="$emit('filterByTag', tag)"
         >{{ tag }}</BaseButton
       >
-      <em v-if="modelValue.tag_names.length <= 0">no tags</em>
+      <i v-if="modelValue.tag_names.length <= 0">no tags</i>
     </p>
     <p>
       <BaseButton
@@ -36,7 +36,7 @@
     </p>
     <details v-if="!hasSummary">
       <summary>description</summary>
-      <em v-if="!resolvedDescription">not available</em>
+      <i v-if="!resolvedDescription">not available</i>
       {{ resolvedDescription }}
     </details>
     <details v-if="hasSummary" ref="summaryRef">

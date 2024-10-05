@@ -34,7 +34,7 @@
       </fieldset>
       <RSSNewFeed :categories="categories" @added="fetched.execute" />
       <p>
-        <strong>{{ feeds.length }}</strong> feeds
+        <b>{{ feeds.length }}</b> feeds
       </p>
       <div v-for="(feed, index) in feeds" :key="feed.id">
         <span

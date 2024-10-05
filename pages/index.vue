@@ -17,12 +17,12 @@
             >
           </li>
           <li v-if="selectedCategory">
-            filtered by category <strong>{{ selectedCategory?.title }}</strong>
+            filtered by category <b>{{ selectedCategory?.title }}</b>
             {{ " " }}
             <BaseButton @click="resetCategory">reset</BaseButton>
           </li>
           <li v-if="selectedFeed">
-            filtered by feed <strong>{{ selectedFeed?.title }}</strong>
+            filtered by feed <b>{{ selectedFeed?.title }}</b>
             {{ " " }}
             <BaseButton @click="resetFeed">reset</BaseButton>
           </li>
@@ -30,14 +30,13 @@
       </fieldset>
       <RSSEntryOutlines v-model="entries" />
       <p>
-        <strong>{{ unreadEntries.length }}</strong> on page,
-        <strong>{{ total }}</strong> total
+        <b>{{ unreadEntries.length }}</b> on page, <b>{{ total }}</b> total
       </p>
       <div v-for="(entry, index) in entries" :key="entry.id">
         <RSSEntry v-model="entries[index]" />
       </div>
       <p v-if="entries.length <= 0">
-        <em>no entries</em>
+        <i>no entries</i>
       </p>
       <fieldset>
         <legend>actions</legend>
