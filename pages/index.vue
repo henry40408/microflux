@@ -1,3 +1,70 @@
+<template>
+  <div>
+    <header>
+      <NavBar />
+      <h1>unread entries</h1>
+    </header>
+    <main>
+      <fieldset ref="actionsRef">
+        <legend>actions</legend>
+        <ul>
+          <li>
+            <BaseButton
+              :error="fetched.error"
+              :status="fetched.status.value"
+              @click="fetched.refresh"
+              >reload</BaseButton
+            >
+          </li>
+          <li v-if="selectedCategory">
+            filtered by category <strong>{{ selectedCategory?.title }}</strong>
+            {{ " " }}
+            <BaseButton @click="resetCategory">reset</BaseButton>
+          </li>
+          <li v-if="selectedFeed">
+            filtered by feed <strong>{{ selectedFeed?.title }}</strong>
+            {{ " " }}
+            <BaseButton @click="resetFeed">reset</BaseButton>
+          </li>
+        </ul>
+      </fieldset>
+      <RSSEntryOutlines v-model="entries" />
+      <p>
+        <strong>{{ unreadEntries.length }}</strong> on page,
+        <strong>{{ total }}</strong> total
+      </p>
+      <div v-for="(entry, index) in entries" :key="entry.id">
+        <RSSEntry v-model="entries[index]" />
+      </div>
+      <p v-if="entries.length <= 0">
+        <em>no entries</em>
+      </p>
+      <fieldset>
+        <legend>actions</legend>
+        <ul>
+          <li>
+            <BaseButton
+              :error="fetched.error"
+              :status="fetched.status.value"
+              @click="fetched.refresh"
+              >reload</BaseButton
+            >
+          </li>
+          <li v-if="shouldMarkAllAsRead">
+            <RSSMarkAllAsRead
+              :entry-ids="unreadEntryIds"
+              @confirm="fetched.refresh"
+            />
+          </li>
+        </ul>
+      </fieldset>
+    </main>
+    <footer>
+      <AppVersion />
+    </footer>
+  </div>
+</template>
+
 <script setup lang="ts">
 const actionsRef = ref<null | HTMLElement>();
 
@@ -74,69 +141,4 @@ async function handleEmptyEntries() {
 handleEmptyEntries();
 </script>
 
-<template>
-  <div>
-    <header>
-      <NavBar />
-      <h1>unread entries</h1>
-    </header>
-    <main>
-      <fieldset ref="actionsRef">
-        <legend>actions</legend>
-        <ul>
-          <li>
-            <BaseButton
-              :error="fetched.error"
-              :status="fetched.status.value"
-              @click="fetched.refresh"
-              >reload</BaseButton
-            >
-          </li>
-          <li v-if="selectedCategory">
-            filtered by category <strong>{{ selectedCategory?.title }}</strong>
-            {{ " " }}
-            <BaseButton @click="resetCategory">reset</BaseButton>
-          </li>
-          <li v-if="selectedFeed">
-            filtered by feed <strong>{{ selectedFeed?.title }}</strong>
-            {{ " " }}
-            <BaseButton @click="resetFeed">reset</BaseButton>
-          </li>
-        </ul>
-      </fieldset>
-      <RSSEntryOutlines v-model="entries" />
-      <p>
-        <strong>{{ unreadEntries.length }}</strong> on page,
-        <strong>{{ total }}</strong> total
-      </p>
-      <div v-for="(entry, index) in entries" :key="entry.id">
-        <RSSEntry v-model="entries[index]" />
-      </div>
-      <p v-if="entries.length <= 0">
-        <em>no entries</em>
-      </p>
-      <fieldset>
-        <legend>actions</legend>
-        <ul>
-          <li>
-            <BaseButton
-              :error="fetched.error"
-              :status="fetched.status.value"
-              @click="fetched.refresh"
-              >reload</BaseButton
-            >
-          </li>
-          <li v-if="shouldMarkAllAsRead">
-            <RSSMarkAllAsRead
-              :entry-ids="unreadEntryIds"
-              @confirm="fetched.refresh"
-            />
-          </li>
-        </ul>
-      </fieldset>
-    </main>
-    <footer>
-      <AppVersion />
-    </footer>
-  </div>
-</template>
+<style scoped></style>
