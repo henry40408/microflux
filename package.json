@@ -14,7 +14,6 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
-    "@nuxt/eslint": "^0.4.0",
     "@trpc/client": "^10.45.2",
     "@trpc/server": "^10.45.2",
     "@vueuse/core": "^10.11.0",
@@ -35,6 +34,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@nuxt/eslint": "^0.4.0",
     "@types/etag": "^1.8.3",
     "@types/lodash": "^4.17.7",
     "@types/pangu": "^4.0.2",
