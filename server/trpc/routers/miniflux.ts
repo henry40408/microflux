@@ -34,7 +34,7 @@ export interface MinifluxGetFeedCompactEntriesResponse {
   entries: MinifluxCompactEntry[];
 }
 
-const iconCache = new QuickLRU<number, MinifluxIcon>({ maxSize: 1000 });
+const cache = new QuickLRU({ maxSize: 1000 });
 
 export const minifluxRouter = router({
   createFeed: publicProcedure
@@ -56,20 +56,22 @@ export const minifluxRouter = router({
     }),
   getCategories: publicProcedure.query(async ({ ctx }) => {
     const client = minifluxClient(ctx.event);
-    return await client.get("v1/categories").json<MinifluxCategory[]>();
+    return await client
+      .get("v1/categories", { cache })
+      .json<MinifluxCategory[]>();
   }),
   getContent: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }): Promise<MinifluxFetchContent> => {
       const client = minifluxClient(ctx.event);
       const entry = await client
-        .get(`v1/entries/${input}`)
+        .get(`v1/entries/${input}`, { cache })
         .json<MinifluxEntry>();
       return { content: sanitizeContent(entry.content) };
     }),
   getCounters: publicProcedure.query(async ({ ctx }) => {
     const client = minifluxClient(ctx.event);
-    return await client.get(`v1/feeds/counters`).json<{
+    return await client.get(`v1/feeds/counters`, { cache }).json<{
       reads: Record<string, number>;
       unreads: Record<string, number>;
     }>();
@@ -79,7 +81,7 @@ export const minifluxRouter = router({
     .query(async ({ ctx, input }) => {
       const client = minifluxClient(ctx.event);
       const { content } = await client
-        .get(`v1/entries/${input}/fetch-content`)
+        .get(`v1/entries/${input}/fetch-content`, { cache })
         .json<MinifluxFetchContent>();
       return { content: sanitizeContent(content) };
     }),
@@ -106,6 +108,7 @@ export const minifluxRouter = router({
 
         const { total, entries } = await client
           .get(path, {
+            cache,
             searchParams: { direction: "asc", status: "unread" },
           })
           .json<MinifluxEntryResultSet>();
@@ -136,18 +139,14 @@ export const minifluxRouter = router({
     ),
   getFeeds: publicProcedure.query(async ({ ctx }) => {
     const client = minifluxClient(ctx.event);
-    return await client.get("v1/feeds").json<MinifluxFeed[]>();
+    return await client.get("v1/feeds", { cache }).json<MinifluxFeed[]>();
   }),
   getIcon: publicProcedure.input(z.number()).query(async ({ ctx, input }) => {
     const client = minifluxClient(ctx.event);
 
-    const cached = iconCache.get(input);
-    if (cached) return cached;
-
-    const fetched = await client.get(`v1/icons/${input}`).json<MinifluxIcon>();
-    iconCache.set(input, fetched);
-
-    return fetched;
+    return await client
+      .get(`v1/icons/${input}`, { cache })
+      .json<MinifluxIcon>();
   }),
   saveEntry: publicProcedure
     .input(z.number())

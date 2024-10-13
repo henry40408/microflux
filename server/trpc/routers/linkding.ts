@@ -1,3 +1,4 @@
+import QuickLRU from "quick-lru";
 import { z } from "zod";
 
 import type {
@@ -6,6 +7,8 @@ import type {
 } from "~/schema/linkding";
 
 import { publicProcedure, router } from "../trpc";
+
+const cache = new QuickLRU({ maxSize: 1000 });
 
 export const linkdingRouter = router({
   addBookmark: publicProcedure
@@ -35,13 +38,16 @@ export const linkdingRouter = router({
       const client = linkdingClient(ctx.event);
       return await client
         .get("api/bookmarks/", {
+          cache,
           searchParams: { q: input.q?.toString() || "" },
         })
         .json<LinkdingBookmarkPaginationResponse>();
     }),
   getTags: publicProcedure.query(async ({ ctx }) => {
     const client = linkdingClient(ctx.event);
-    return await client.get("api/tags/").json<LinkdingTagPaginationResponse>();
+    return await client
+      .get("api/tags/", { cache })
+      .json<LinkdingTagPaginationResponse>();
   }),
 });
 

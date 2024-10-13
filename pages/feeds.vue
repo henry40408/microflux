@@ -49,7 +49,7 @@
           :categories="categories"
           :read="reads[feed.id] || 0"
           :unread="unreads[feed.id] || 0"
-          @deleted="fetched.execute"
+          @deleted="fetched.execute()"
         />
       </div>
     </main>

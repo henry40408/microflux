@@ -26,13 +26,12 @@
     </div>
     <div v-if="!editing">
       <h2>
-        <NuxtLink :to="modelValue.site_url">{{ modelValue.title }}</NuxtLink>
+        <NuxtLink :to="{ name: 'index', query: { feedId: modelValue.id } }">{{
+          modelValue.title
+        }}</NuxtLink>
         ({{ unread }}/{{ read }})
       </h2>
-      <p>
-        #{{ modelValue.id }}, category: {{ modelValue.category.title }}, feed
-        URL: <code>{{ modelValue.feed_url }}</code>
-      </p>
+      <p>#{{ modelValue.id }}, category: {{ modelValue.category.title }}</p>
       <p>
         <BaseButton @click="toggleEdit(true)">edit</BaseButton>,
         <BaseConfirm
@@ -41,7 +40,8 @@
           :status="deleted.status.value"
           @confirm="doDelete"
           >delete</BaseConfirm
-        >
+        >,
+        <NuxtLink :to="modelValue.site_url">go to website</NuxtLink>
       </p>
     </div>
   </div>

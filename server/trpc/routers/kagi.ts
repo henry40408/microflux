@@ -8,7 +8,7 @@ import { publicProcedure, router } from "../trpc";
 import { differenceInMilliseconds } from "date-fns";
 
 const cache = new QuickLRU({ maxSize: 1000 });
-const queue = new PQueue({ concurrency: 3 });
+const queue = new PQueue({ concurrency: 1 });
 
 export const kagiRouter = router({
   summarize: publicProcedure

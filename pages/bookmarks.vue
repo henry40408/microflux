@@ -71,7 +71,7 @@ const bookmarks = computed(() => fetched.data.value?.bookmarks.results || []);
 const count = computed(() => fetched.data.value?.bookmarks.count || 0);
 const tags = computed(() => fetched.data.value?.tags.results || []);
 useHead({
-  title: () => `(${count.value || ""}) linkding`,
+  title: () => `(${count.value}) linkding`,
 });
 
 function filterByTag(tag: string) {
