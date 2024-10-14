@@ -1,12 +1,27 @@
 <template>
-  <nav>
-    <fieldset>
+  <ClientOnly>
+    <details v-if="isMobile">
+      <summary>nav</summary>
+      <NavBarList />
+    </details>
+    <fieldset v-else>
       <legend>nav</legend>
-      <ul class="incremental">
-        <li><NuxtLink to="/">unread entries</NuxtLink></li>
-        <li><NuxtLink to="/feeds">feeds</NuxtLink></li>
-        <li><NuxtLink to="/bookmarks">bookmarks</NuxtLink></li>
-      </ul>
+      <NavBarList />
     </fieldset>
-  </nav>
+    <template #fallback>
+      <fieldset>
+        <legend>nav</legend>
+        <NavBarList />
+      </fieldset>
+    </template>
+  </ClientOnly>
 </template>
+
+<script setup lang="ts">
+import { breakpointsTailwind } from "@vueuse/core";
+
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const isMobile = computed(() => breakpoints.isSmaller("md"));
+</script>
+
+<style scoped></style>
