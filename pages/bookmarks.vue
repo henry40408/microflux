@@ -18,6 +18,7 @@
           </span>
         </div>
       </details>
+      <RandomBookmarks />
       <fieldset>
         <legend>actions</legend>
         <ul>

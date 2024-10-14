@@ -28,6 +28,7 @@
     "pangu": "^4.0.7",
     "pino-http": "^10.2.0",
     "quick-lru": "^5.0.0",
+    "quick-lru6": "npm:quick-lru@^6.1.2",
     "sanitize-html": "^2.13.0",
     "trpc-nuxt": "^0.10.22",
     "vue": "^3.5",
