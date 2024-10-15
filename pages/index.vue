@@ -16,24 +16,39 @@
               >reload</BaseButton
             >
           </li>
+          <li v-if="selectedFreshness">
+            filtered by freshness <b>{{ selectedFreshness }}</b>
+            {{ " " }}
+            <BaseButton @click="removeQuery('freshness')">reset</BaseButton>
+          </li>
           <li v-if="selectedCategory">
             filtered by category <b>{{ selectedCategory?.title }}</b>
             {{ " " }}
-            <BaseButton @click="resetCategory">reset</BaseButton>
+            <BaseButton @click="removeQuery('categoryId')">reset</BaseButton>
           </li>
           <li v-if="selectedFeed">
             filtered by feed <b>{{ selectedFeed?.title }}</b>
             {{ " " }}
-            <BaseButton @click="resetFeed">reset</BaseButton>
+            <BaseButton @click="removeQuery('feedId')">reset</BaseButton>
           </li>
         </ul>
       </fieldset>
-      <RSSEntryOutlines v-model="entries" />
+      <RSSEntryOutlines
+        v-model="entries"
+        :freshness="selectedFreshness"
+        @select-category="(id) => setQuery('categoryId', id)"
+        @select-freshness="(type) => setQuery('freshness', type)"
+        @select-feed="(id) => setQuery('feedId', id)"
+      />
       <p>
         <b>{{ unreadEntries.length }}</b> on page, <b>{{ total }}</b> total
       </p>
       <div v-for="(entry, index) in entries" :key="entry.id">
-        <RSSEntry v-model="entries[index]" />
+        <RSSEntry
+          v-model="entries[index]"
+          @select-category="(id) => setQuery('categoryId', id)"
+          @select-feed="(id) => setQuery('feedId', id)"
+        />
       </div>
       <p v-if="entries.length <= 0">
         <i>no entries</i>
@@ -65,12 +80,34 @@
 </template>
 
 <script setup lang="ts">
+import { addDays, getUnixTime, startOfDay } from "date-fns";
+
 const actionsRef = ref<null | HTMLElement>();
 
 const route = useRoute();
 const query = toRef(route, "query");
+const selectedFreshness = computed(() => query.value.freshness?.toString());
 const selectedCategoryId = computed(() => query.value.categoryId?.toString());
 const selectedFeedId = computed(() => query.value.feedId?.toString());
+
+const publishedBefore = computed(() => {
+  switch (selectedFreshness.value) {
+    case "yesterday":
+      return getUnixTime(startOfDay(new Date()));
+    default:
+      return undefined;
+  }
+});
+const publishedAfter = computed(() => {
+  switch (selectedFreshness.value) {
+    case "today":
+      return getUnixTime(startOfDay(new Date()));
+    case "yesterday":
+      return getUnixTime(startOfDay(addDays(new Date(), -1)));
+    default:
+      return undefined;
+  }
+});
 
 const { $client } = useNuxtApp();
 const fetched = await useAsyncData(
@@ -79,8 +116,10 @@ const fetched = await useAsyncData(
     $client.miniflux.getEntries.query({
       categoryId: selectedCategoryId.value,
       feedId: selectedFeedId.value,
+      publishedAfter: publishedAfter.value,
+      publishedBefore: publishedBefore.value,
     }),
-  { watch: [selectedCategoryId, selectedFeedId] },
+  { watch: [selectedCategoryId, selectedFeedId, selectedFreshness] },
 );
 
 const total = computed(() => fetched.data.value?.total || 0);
@@ -115,25 +154,34 @@ const shouldMarkAllAsRead = computed(
   () => fetched.status.value !== "pending" && unreadEntryIds.value.length > 0,
 );
 
-async function resetFeed() {
-  const categoryId = route.query.categoryId;
-  await navigateTo({ query: { categoryId, feedId: undefined } });
+async function setQuery(name: string, value: unknown) {
+  await navigateTo({
+    query: {
+      ...route.query,
+      [name]: value === undefined ? undefined : `${value}`,
+    },
+  });
 }
-async function resetCategory() {
-  const feedId = route.query.feedId;
-  await navigateTo({ query: { categoryId: undefined, feedId } });
+
+async function removeQuery(name: string) {
+  await navigateTo({ query: { ...route.query, [name]: undefined } });
 }
 
 async function handleEmptyEntries() {
   const count = entries.value.length;
+  const freshness = selectedFreshness.value;
   const categoryId = selectedCategoryId.value;
   const feedId = selectedFeedId.value;
   if (feedId && count <= 0) {
-    await navigateTo({ query: { categoryId } });
+    await removeQuery("feedId");
     return;
   }
   if (categoryId && count <= 0) {
-    await navigateTo({ query: {} });
+    await removeQuery("categoryId");
+    return;
+  }
+  if (freshness && count <= 0) {
+    await removeQuery("freshness");
     return;
   }
 }

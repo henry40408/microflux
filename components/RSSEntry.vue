@@ -3,9 +3,11 @@
   <RSSEntryTitle v-model="model" @click="markAsRead" />
   <p>
     #{{ modelValue.id }}, feed:
-    <BaseButton @click="selectFeed">{{ modelValue.feed.title }}</BaseButton
+    <BaseButton @click="$emit('selectFeed', modelValue.feed.id)">{{
+      modelValue.feed.title
+    }}</BaseButton
     >, category:
-    <BaseButton @click="selectCategory">{{
+    <BaseButton @click="$emit('selectCategory', modelValue.feed.category.id)">{{
       modelValue.feed.category.title
     }}</BaseButton
     >, published at {{ stale ? "🕸" : "🌱" }}
@@ -66,7 +68,7 @@ watch(
   },
 );
 
-const route = useRoute();
+defineEmits<{ selectCategory: [id: number]; selectFeed: [id: number] }>();
 
 const STALE_DELTA = 24 * 60 * 60 * 1000; // 1day
 const now = computed(() => Date.now());
@@ -86,18 +88,6 @@ ${summarized.data.value?.[1].url}
 ${pangu(summary.value)}`,
 );
 const { copy, copied } = useClipboard({ source: copyableSummary });
-
-async function selectFeed() {
-  const categoryId = route.query.categoryId;
-  const feedId = model.value.feed.id;
-  await navigateTo({ query: { categoryId, feedId } });
-}
-async function selectCategory() {
-  const categoryId = model.value.feed.category.id;
-  if (!categoryId) return;
-  const feedId = route.query.feedId;
-  await navigateTo({ query: { categoryId, feedId } });
-}
 
 const { $client } = useNuxtApp();
 const fetched = useAsyncData(
