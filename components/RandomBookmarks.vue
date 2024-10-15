@@ -14,7 +14,7 @@
         <label :for="revisitId">revisit</label>
       </div>
       <p>
-        <input type="submit" value="shuffle" :disabled="shouldSubmit" />
+        <input type="submit" :value="shuffleLabel" :disabled="!shouldSubmit" />
       </p>
       <div v-if="error">{{ error }}</div>
     </form>
@@ -37,7 +37,8 @@ const { data, error, status, execute } = useAsyncData(
   () => $client.linkding.getRandomBookmarks.query({ quantity: quantity.value }),
   { immediate: false, server: false },
 );
-const shouldSubmit = computed(() => status.value === "pending");
+const shouldSubmit = computed(() => status.value !== "pending");
+const shuffleLabel = computed(() => (shouldSubmit.value ? "shuffle" : "..."));
 const bookmarks = computed(() => data.value || []);
 </script>
 
