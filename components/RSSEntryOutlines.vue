@@ -1,6 +1,35 @@
 <template>
   <details>
-    <summary>feeds &amp; categories</summary>
+    <summary>freshness, feeds &amp; categories</summary>
+    <p>
+      <span class="outline-items">
+        <span class="outline-item">freshness</span>
+        <span class="outline-item"
+          ><input
+            :id="noneId"
+            v-model="freshness"
+            type="radio"
+            :value="undefined"
+          /><label :for="noneId">none</label></span
+        >
+        <span class="outline-item"
+          ><input
+            :id="todayId"
+            v-model="freshness"
+            type="radio"
+            value="today"
+          /><label :for="todayId">today</label></span
+        >
+        <span class="outline-item"
+          ><input
+            :id="yesterdayId"
+            v-model="freshness"
+            type="radio"
+            value="yesterday"
+          /><label :for="yesterdayId">yesterday</label></span
+        >
+      </span>
+    </p>
     <p>
       <span class="outline-items">
         <span class="outline-item">categories</span>
@@ -9,7 +38,7 @@
           :key="group.category.id"
           class="outline-item"
         >
-          <BaseButton @click="selectCategory(group.category.id)">{{
+          <BaseButton @click="$emit('selectCategory', group.category.id)">{{
             group.category.title
           }}</BaseButton>
           <sup>{{ group.count }}</sup>
@@ -21,7 +50,7 @@
       <span class="outline-items">
         <span class="outline-item">feeds</span>
         <span v-for="group in feeds" :key="group.feed.id" class="outline-item">
-          <BaseButton @click="selectFeed(group.feed.id)">{{
+          <BaseButton @click="$emit('selectFeed', group.feed.id)">{{
             group.feed.title
           }}</BaseButton>
           <sup>{{ group.count }}</sup>
@@ -39,9 +68,27 @@ import type {
   MinifluxCompactEntry,
 } from "~/server/trpc/routers/miniflux";
 
-const model = defineModel<MinifluxCompactEntry[]>({ required: true });
+const noneId = useId();
+const todayId = useId();
+const yesterdayId = useId();
 
-const route = useRoute();
+const model = defineModel<MinifluxCompactEntry[]>({ required: true });
+const emit = defineEmits<{
+  selectCategory: [id: number];
+  selectFeed: [id: number];
+  selectFreshness: [type?: string];
+}>();
+
+const props = defineProps<{ freshness?: string }>();
+const freshness = ref(props.freshness);
+watch(
+  () => props.freshness,
+  () => (freshness.value = props.freshness),
+);
+watch(
+  () => freshness.value,
+  () => emit("selectFreshness", freshness.value),
+);
 
 const feeds = computed(() =>
   lodash(model.value)
@@ -62,15 +109,6 @@ const categories = computed(() =>
     .orderBy([(g) => g.count, (g) => g.category.title], ["desc", "asc"])
     .value(),
 );
-
-async function selectFeed(feedId: number) {
-  const categoryId = route.query.categoryId;
-  await navigateTo({ query: { categoryId, feedId } });
-}
-async function selectCategory(categoryId: number) {
-  const feedId = route.query.feedId;
-  await navigateTo({ query: { categoryId, feedId } });
-}
 </script>
 
 <style scoped>
