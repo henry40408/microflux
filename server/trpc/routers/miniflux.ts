@@ -35,6 +35,7 @@ export interface MinifluxGetFeedCompactEntriesResponse {
 }
 
 const cache = new QuickLRU({ maxSize: 1000 });
+const contentCache = new QuickLRU({ maxSize: 1000 });
 
 export const minifluxRouter = router({
   createFeed: publicProcedure
@@ -62,12 +63,11 @@ export const minifluxRouter = router({
   }),
   getContent: publicProcedure
     .input(z.number())
-    .query(async ({ ctx, input }): Promise<MinifluxFetchContent> => {
-      const client = minifluxClient(ctx.event);
-      const entry = await client
-        .get(`v1/entries/${input}`, { cache })
-        .json<MinifluxEntry>();
-      return { content: sanitizeContent(entry.content) };
+    .query(async ({ input }): Promise<MinifluxFetchContent> => {
+      const cached = contentCache.get(input) as string | undefined;
+      if (!cached)
+        throw createError({ message: "content not found", statusCode: 404 });
+      return { content: sanitizeContent(cached) };
     }),
   getCounters: publicProcedure.query(async ({ ctx }) => {
     const client = minifluxClient(ctx.event);
@@ -97,6 +97,8 @@ export const minifluxRouter = router({
         ctx,
         input,
       }): Promise<MinifluxGetFeedCompactEntriesResponse> => {
+        contentCache.clear();
+
         const client = minifluxClient(ctx.event);
 
         let path = "v1/entries";
@@ -114,26 +116,29 @@ export const minifluxRouter = router({
           .json<MinifluxEntryResultSet>();
         return {
           total,
-          entries: entries.map((e) => ({
-            ...lodash.pick(e, [
-              "comments_url",
-              "id",
-              "published_at",
-              "status",
-              "title",
-              "url",
-            ]),
-            feed: {
-              feed_url: e.feed.feed_url,
-              icon: e.feed.icon,
-              id: e.feed.id,
-              site_url: e.feed.site_url,
-              title: e.feed.title,
-              category:
-                e.feed.category &&
-                lodash.pick(e.feed.category, ["id", "title"]),
-            },
-          })),
+          entries: entries.map((e) => {
+            contentCache.set(e.id, e.content);
+            return {
+              ...lodash.pick(e, [
+                "comments_url",
+                "id",
+                "published_at",
+                "status",
+                "title",
+                "url",
+              ]),
+              feed: {
+                feed_url: e.feed.feed_url,
+                icon: e.feed.icon,
+                id: e.feed.id,
+                site_url: e.feed.site_url,
+                title: e.feed.title,
+                category:
+                  e.feed.category &&
+                  lodash.pick(e.feed.category, ["id", "title"]),
+              },
+            };
+          }),
         };
       },
     ),
