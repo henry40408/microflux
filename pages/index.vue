@@ -16,11 +16,6 @@
               >reload</BaseButton
             >
           </li>
-          <li v-if="selectedFreshness">
-            filtered by freshness <b>{{ selectedFreshness }}</b>
-            {{ " " }}
-            <BaseButton @click="removeQuery('freshness')">reset</BaseButton>
-          </li>
           <li v-if="selectedCategory">
             filtered by category <b>{{ selectedCategory?.title }}</b>
             {{ " " }}
@@ -31,13 +26,18 @@
             {{ " " }}
             <BaseButton @click="removeQuery('feedId')">reset</BaseButton>
           </li>
+          <li v-if="selectedDate">
+            filtered by date <b>{{ selectedDate }}</b>
+            {{ " " }}
+            <BaseButton @click="removeQuery('date')">reset</BaseButton>
+          </li>
         </ul>
       </fieldset>
       <RSSEntryOutlines
         v-model="entries"
-        :freshness="selectedFreshness"
+        :date="selectedDate"
         @select-category="(id) => setQuery('categoryId', id)"
-        @select-freshness="(type) => setQuery('freshness', type)"
+        @select-date="(date) => setQuery('date', date)"
         @select-feed="(id) => setQuery('feedId', id)"
       />
       <p>
@@ -80,34 +80,26 @@
 </template>
 
 <script setup lang="ts">
-import { addDays, getUnixTime, startOfDay } from "date-fns";
+import { endOfDay, getUnixTime, parseISO, startOfDay } from "date-fns";
 
 const actionsRef = ref<null | HTMLElement>();
 
 const route = useRoute();
 const query = toRef(route, "query");
-const selectedFreshness = computed(() => query.value.freshness?.toString());
 const selectedCategoryId = computed(() => query.value.categoryId?.toString());
+const selectedDate = computed(() => query.value.date?.toString());
 const selectedFeedId = computed(() => query.value.feedId?.toString());
 
-const publishedBefore = computed(() => {
-  switch (selectedFreshness.value) {
-    case "yesterday":
-      return getUnixTime(startOfDay(new Date()));
-    default:
-      return undefined;
-  }
-});
-const publishedAfter = computed(() => {
-  switch (selectedFreshness.value) {
-    case "today":
-      return getUnixTime(startOfDay(new Date()));
-    case "yesterday":
-      return getUnixTime(startOfDay(addDays(new Date(), -1)));
-    default:
-      return undefined;
-  }
-});
+const publishedAfter = computed(() =>
+  selectedDate.value
+    ? getUnixTime(startOfDay(parseISO(selectedDate.value))) - 1
+    : undefined,
+);
+const publishedBefore = computed(() =>
+  selectedDate.value
+    ? getUnixTime(endOfDay(parseISO(selectedDate.value)))
+    : undefined,
+);
 
 const { $client } = useNuxtApp();
 const fetched = await useAsyncData(
@@ -119,7 +111,7 @@ const fetched = await useAsyncData(
       publishedAfter: publishedAfter.value,
       publishedBefore: publishedBefore.value,
     }),
-  { watch: [selectedCategoryId, selectedFeedId, selectedFreshness] },
+  { watch: [selectedCategoryId, selectedFeedId, selectedDate] },
 );
 
 const total = computed(() => fetched.data.value?.total || 0);
@@ -169,19 +161,19 @@ async function removeQuery(name: string) {
 
 async function handleEmptyEntries() {
   const count = entries.value.length;
-  const freshness = selectedFreshness.value;
+  const date = selectedDate.value;
   const categoryId = selectedCategoryId.value;
   const feedId = selectedFeedId.value;
+  if (date && count <= 0) {
+    await removeQuery("date");
+    return;
+  }
   if (feedId && count <= 0) {
     await removeQuery("feedId");
     return;
   }
   if (categoryId && count <= 0) {
     await removeQuery("categoryId");
-    return;
-  }
-  if (freshness && count <= 0) {
-    await removeQuery("freshness");
     return;
   }
 }
