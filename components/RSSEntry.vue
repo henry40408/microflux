@@ -42,6 +42,9 @@
     <pre class="summary"><code>{{ copyableSummary }}</code></pre>
     <div>
       <BaseButton @click="collapse">collapse</BaseButton>,
+      <span v-if="modelValue.status === 'unread'">
+        <BaseButton @click="markAsRead">read</BaseButton>,
+      </span>
       <BaseButton
         once
         :clear="() => void 0"
