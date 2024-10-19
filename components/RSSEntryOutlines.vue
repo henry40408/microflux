@@ -2,44 +2,41 @@
   <details>
     <summary>dates, feeds &amp; categories</summary>
     <p>
-      <span class="outline-items">
-        <span class="outline-item">categories</span>
-        <span
-          v-for="group in categories"
-          :key="group.category.id"
-          class="outline-item"
-        >
+      <span class="items">
+        <span class="item">categories</span>
+        <span v-for="group in categories" :key="group.category.id" class="item">
           <BaseButton @click="$emit('selectCategory', group.category.id)">{{
             group.category.title
           }}</BaseButton>
           <sup>{{ group.count }}</sup>
         </span>
-        <i v-if="!categories.length" class="outline-item">no categories</i>
+        <i v-if="!categories.length" class="item">no categories</i>
       </span>
     </p>
     <p>
-      <span class="outline-items">
-        <span class="outline-item">feeds</span>
-        <span v-for="group in feeds" :key="group.feed.id" class="outline-item">
+      <span class="items">
+        <span class="item">feeds</span>
+        <span v-for="group in feeds" :key="group.feed.id" class="item">
           <BaseButton @click="$emit('selectFeed', group.feed.id)">{{
             group.feed.title
           }}</BaseButton>
           <sup>{{ group.count }}</sup>
         </span>
-        <i v-if="!feeds.length" class="outline-item">no feeds</i>
+        <i v-if="!feeds.length" class="item">no feeds</i>
       </span>
     </p>
     <p>
-      <span class="outline-items">
-        <span class="outline-item">
+      <span class="items">
+        <span class="item">
           date<sup>{{ timezone }}</sup>
         </span>
-        <span v-for="group in dates" :key="group.date" class="outline-item">
+        <span v-for="group in dates" :key="group.date" class="item">
           <BaseButton @click="$emit('selectDate', group.date)">{{
             group.date
           }}</BaseButton>
           <sup>{{ group.count }}</sup>
         </span>
+        <i v-if="!dates.length" class="item">no dates</i>
       </span>
     </p>
   </details>
@@ -104,15 +101,15 @@ const categories = computed(() =>
 </script>
 
 <style scoped>
-.outline-item {
-  margin-left: 0.5rem;
-  text-wrap: nowrap;
-}
-
-.outline-items {
+.items {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   margin-left: -0.5rem;
+}
+
+.items .item {
+  margin-left: 0.5rem;
+  text-wrap: nowrap;
 }
 </style>
