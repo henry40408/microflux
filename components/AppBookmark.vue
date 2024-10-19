@@ -37,7 +37,14 @@
     <details v-if="!hasSummary">
       <summary>description</summary>
       <i v-if="!resolvedDescription">not available</i>
-      {{ resolvedDescription }}
+      <p>{{ resolvedDescription }}</p>
+      <BaseButton
+        once
+        :clear="() => void 0"
+        :status="descriptionCopied ? 'success' : 'idle'"
+        @click="copyDescription"
+        >copy to clipboard</BaseButton
+      >
     </details>
     <details v-if="hasSummary" ref="summaryRef">
       <summary class="summary-title">summary</summary>
@@ -45,8 +52,8 @@
       <BaseButton
         once
         :clear="() => void 0"
-        :status="copied ? 'success' : 'idle'"
-        @click="copy"
+        :status="summaryCopied ? 'success' : 'idle'"
+        @click="copySummary"
         >copy to clipboard</BaseButton
       >
     </details>
@@ -68,6 +75,16 @@ const resolvedTitle = computed(
 const resolvedDescription = computed(
   () => model.value.website_description || model.value.description,
 );
+const copyableDescription = computed(
+  () => `${resolvedTitle.value}
+
+${model.value.url}
+
+${resolvedDescription.value}`,
+);
+const { copied: descriptionCopied, copy: copyDescription } = useClipboard({
+  source: copyableDescription,
+});
 
 const summarized = useSummarize(model.value.url);
 const hasSummary = computed(() => summarized.status.value === "success");
@@ -81,7 +98,9 @@ ${summarized.data.value?.[1].url}
 
 ${pangu(summary.value)}`,
 );
-const { copy, copied } = useClipboard({ source: copyableSummary });
+const { copied: summaryCopied, copy: copySummary } = useClipboard({
+  source: copyableSummary,
+});
 
 const { $client } = useNuxtApp();
 const deleted = useAsyncData(
