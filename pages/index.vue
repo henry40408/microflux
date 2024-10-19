@@ -5,6 +5,10 @@
       <h1>unread entries</h1>
     </header>
     <main>
+      <details>
+        <summary>integrations</summary>
+        <NewBookmark />
+      </details>
       <fieldset ref="actionsRef">
         <legend>actions</legend>
         <ul>
