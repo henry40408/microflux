@@ -19,7 +19,7 @@
       <div v-if="error">{{ error }}</div>
     </form>
     <div v-for="(bookmark, index) in bookmarks" :key="bookmark.id">
-      <AppBookmark v-model="bookmarks[index]" />
+      <AppBookmark v-model="bookmarks[index]" @deleted="fillBookmarks(index)" />
     </div>
   </details>
 </template>
@@ -40,6 +40,14 @@ const { data, error, status, execute } = useAsyncData(
 const shouldSubmit = computed(() => status.value !== "pending");
 const shuffleLabel = computed(() => (shouldSubmit.value ? "shuffle" : "..."));
 const bookmarks = computed(() => data.value || []);
+
+async function fillBookmarks(index: number) {
+  const bookmarks = await $client.linkding.getRandomBookmarks.query({
+    quantity: 1,
+  });
+  if (!data.value) return;
+  data.value[index] = bookmarks[0];
+}
 </script>
 
 <style scoped></style>
