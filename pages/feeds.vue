@@ -71,7 +71,7 @@ const feedRefs = ref<Record<number, Element>>({});
 useHead({ title: "feeds" });
 
 const { $client } = useNuxtApp();
-const fetched = useAsyncData("feeds-categories", async () => ({
+const fetched = await useAsyncData("feeds-categories", async () => ({
   counters: await $client.miniflux.getCounters.query(),
   categires: await $client.miniflux.getCategories.query(),
   feeds: await $client.miniflux.getFeeds.query(),
