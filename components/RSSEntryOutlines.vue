@@ -76,7 +76,7 @@ const dates = computed(() =>
       date: formatISO(entries[0].published_at, { representation: "date" }),
       count: entries.length,
     }))
-    .orderBy([(g) => g.count, (g) => g.date], ["desc", "asc"])
+    .orderBy([(g) => g.date])
     .value(),
 );
 const feeds = computed(() =>
