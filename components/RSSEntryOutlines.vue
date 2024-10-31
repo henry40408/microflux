@@ -3,6 +3,21 @@
     <summary>dates, feeds &amp; categories</summary>
     <p>
       <span class="items">
+        <span class="item">limit</span>
+        <span class="item">
+          <BaseButton @click="$emit('selectLimit', undefined)">100</BaseButton>
+        </span>
+        <span v-for="n in [500, 1000]" :key="n" class="item">
+          <BaseButton
+            :disabled="limit === String(n)"
+            @click="$emit('selectLimit', n)"
+            >{{ n }}</BaseButton
+          >
+        </span>
+      </span>
+    </p>
+    <p>
+      <span class="items">
         <span class="item">categories</span>
         <span v-for="group in categories" :key="group.category.id" class="item">
           <BaseButton @click="$emit('selectCategory', group.category.id)">{{
@@ -51,22 +66,14 @@ import type {
 } from "~/server/trpc/routers/miniflux";
 
 const model = defineModel<MinifluxCompactEntry[]>({ required: true });
-const emit = defineEmits<{
+defineEmits<{
   selectCategory: [id: number];
   selectDate: [date?: string];
   selectFeed: [id: number];
+  selectLimit: [n: undefined | number];
 }>();
 
-const props = defineProps<{ date?: string }>();
-const date = ref(props.date);
-watch(
-  () => props.date,
-  () => (date.value = props.date),
-);
-watch(
-  () => date.value,
-  () => emit("selectDate", date.value),
-);
+defineProps<{ date?: string; limit?: string }>();
 
 const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const dates = computed(() =>

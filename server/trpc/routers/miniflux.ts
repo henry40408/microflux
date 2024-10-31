@@ -90,6 +90,7 @@ export const minifluxRouter = router({
       z.object({
         categoryId: z.string().optional(),
         feedId: z.string().optional(),
+        limit: z.string().optional(),
         publishedAfter: z.number().optional(),
         publishedBefore: z.number().optional(),
       }),
@@ -115,9 +116,10 @@ export const minifluxRouter = router({
             cache,
             searchParams: {
               direction: "asc",
-              status: "unread",
+              limit: input.limit,
               published_after: input.publishedAfter,
               published_before: input.publishedBefore,
+              status: "unread",
             },
           })
           .json<MinifluxEntryResultSet>();

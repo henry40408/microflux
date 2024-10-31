@@ -20,6 +20,12 @@
               >reload</BaseButton
             >
           </li>
+          <li v-if="shouldMarkAllAsRead">
+            <RSSMarkAllAsRead
+              :entry-ids="unreadEntryIds"
+              @confirm="fetched.refresh"
+            />
+          </li>
           <li v-if="selectedCategory">
             filtered by category <b>{{ selectedCategory?.title }}</b>
             {{ " " }}
@@ -40,9 +46,11 @@
       <RSSEntryOutlines
         v-model="entries"
         :date="selectedDate"
+        :limit="selectedLimit"
         @select-category="(id) => setQuery('categoryId', id)"
         @select-date="(date) => setQuery('date', date)"
         @select-feed="(id) => setQuery('feedId', id)"
+        @select-limit="(limit) => setQuery('limit', limit)"
       />
       <p>
         <b>{{ unreadEntries.length }}</b> on page, <b>{{ total }}</b> total
@@ -93,6 +101,7 @@ const query = toRef(route, "query");
 const selectedCategoryId = computed(() => query.value.categoryId?.toString());
 const selectedDate = computed(() => query.value.date?.toString());
 const selectedFeedId = computed(() => query.value.feedId?.toString());
+const selectedLimit = computed(() => query.value.limit?.toString());
 
 const publishedAfter = computed(() =>
   selectedDate.value
@@ -112,10 +121,11 @@ const fetched = await useAsyncData(
     $client.miniflux.getEntries.query({
       categoryId: selectedCategoryId.value,
       feedId: selectedFeedId.value,
+      limit: selectedLimit.value,
       publishedAfter: publishedAfter.value,
       publishedBefore: publishedBefore.value,
     }),
-  { watch: [selectedCategoryId, selectedFeedId, selectedDate] },
+  { watch: [selectedCategoryId, selectedFeedId, selectedDate, selectedLimit] },
 );
 
 const total = computed(() => fetched.data.value?.total || 0);
