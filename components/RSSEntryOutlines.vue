@@ -1,6 +1,6 @@
 <template>
   <details>
-    <summary>dates, feeds &amp; categories</summary>
+    <summary>limit, dates, feeds &amp; categories</summary>
     <p>
       <span class="items">
         <span class="item">limit</span>
