@@ -17,10 +17,7 @@
             >
           </li>
           <li v-if="shouldMarkAllAsRead">
-            <RSSMarkAllAsRead
-              :entry-ids="unreadEntryIds"
-              @confirm="fetched.refresh"
-            />
+            <RSSMarkAllAsRead v-model="entries" :entry-ids="unreadEntryIds" />
           </li>
           <li v-if="selectedCategory">
             filtered by category <b>{{ selectedCategory?.title }}</b>
@@ -73,10 +70,7 @@
             >
           </li>
           <li v-if="shouldMarkAllAsRead">
-            <RSSMarkAllAsRead
-              :entry-ids="unreadEntryIds"
-              @confirm="fetched.refresh"
-            />
+            <RSSMarkAllAsRead v-model="entries" :entry-ids="unreadEntryIds" />
           </li>
         </ul>
       </fieldset>

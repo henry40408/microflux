@@ -5,9 +5,13 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{ entryIds: number[] }>();
+import { type MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
 
-const emit = defineEmits<{ confirm: [] }>();
+const model = defineModel<MinifluxCompactEntry[]>({ required: true });
+
+const props = defineProps<{
+  entryIds: number[];
+}>();
 
 const { $client } = useNuxtApp();
 const fetched = useAsyncData(
@@ -22,7 +26,9 @@ const fetched = useAsyncData(
 
 async function confirm() {
   await fetched.execute();
-  emit("confirm");
+  for (const entry of model.value) {
+    entry.status = "read";
+  }
 }
 </script>
 
