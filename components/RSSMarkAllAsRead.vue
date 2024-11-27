@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { type MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
+import type { MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
 
 const model = defineModel<MinifluxCompactEntry[]>({ required: true });
 

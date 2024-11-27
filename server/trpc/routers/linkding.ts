@@ -31,7 +31,6 @@ async function getAllBookmarks(event: H3Event) {
   const bookmarks = [];
   const limit = 500;
   let offset = 0;
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const res = await client
       .get("api/bookmarks", { searchParams: { limit, offset } })

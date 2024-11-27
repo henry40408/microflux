@@ -16,14 +16,14 @@
   "dependencies": {
     "@trpc/client": "^10.45.2",
     "@trpc/server": "^10.45.2",
-    "@vueuse/core": "^10.11.0",
-    "@vueuse/nuxt": "^10.11.0",
+    "@vueuse/core": "^12.0.0",
+    "@vueuse/nuxt": "^12.0.0",
     "cli-spinners": "^3.2.0",
     "date-fns": "^4",
     "etag": "^1.8.1",
     "got": "^14.4.1",
     "lodash": "^4.17.21",
-    "nuxt": "^3.12.4",
+    "nuxt": "^3.14.1592",
     "p-queue": "^8.0.1",
     "pangu": "^4.0.7",
     "pino-http": "^10.2.0",
@@ -35,7 +35,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@nuxt/eslint": "^0.4.0",
+    "@nuxt/eslint": "^0.7.2",
     "@types/etag": "^1.8.3",
     "@types/lodash": "^4.17.7",
     "@types/pangu": "^4.0.2",
