@@ -32,6 +32,7 @@
     "sanitize-html": "^2.13.0",
     "trpc-nuxt": "^0.10.22",
     "vue": "^3.5",
+    "vuetify-nuxt-module": "^0.18.3",
     "zod": "^3.23.8"
   },
   "devDependencies": {

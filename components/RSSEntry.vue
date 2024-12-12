@@ -1,129 +1,100 @@
 <template>
-  <span ref="titleRef" />
-  <RSSEntryTitle v-model="model" @click="markAsRead" />
-  <p>
-    #{{ modelValue.id }}, feed:
-    <BaseButton @click="$emit('selectFeed', modelValue.feed.id)">{{
-      modelValue.feed.title
-    }}</BaseButton
-    >, category:
-    <BaseButton @click="$emit('selectCategory', modelValue.feed.category.id)">{{
-      modelValue.feed.category.title
-    }}</BaseButton
-    >, published at {{ stale ? "🕸" : "🌱" }}
-    <BaseDateTime :datetime="modelValue.published_at" />
-  </p>
-  <p>
-    <RSSEntryToggleStatus v-model="model" />,
-    <BaseButton
-      :clear="summarized.clear"
-      :error="summarized.error"
-      :status="summarized.status.value"
-      @click="summarized.execute"
-      >summarize<template #clear>clear summary</template></BaseButton
-    >, <RSSEntrySave v-model="model" />
-    <span v-if="modelValue.comments_url"
-      >,
-      <NuxtLink :to="modelValue.comments_url" target="_blank">
-        comments
-      </NuxtLink> </span
-    >,
-    <NuxtLink :to="{ name: 'feeds', query: { feedId: modelValue.feed.id } }">
-      edit feed
-    </NuxtLink>
-  </p>
-  <RSSEntryContent
-    v-if="!hasSummary"
-    v-model="model"
-    @toggle-status="toggleStatus"
-  />
-  <details v-if="hasSummary" ref="summaryRef">
-    <summary class="summary-title">summary</summary>
-    <pre class="summary"><code>{{ copyableSummary }}</code></pre>
-    <div>
-      <BaseButton @click="collapse">collapse</BaseButton>,
-      <span v-if="modelValue.status === 'unread'">
-        <BaseButton @click="markAsRead">read</BaseButton>,
-      </span>
-      <BaseButton
-        once
-        :clear="() => void 0"
-        :status="copied ? 'success' : 'idle'"
-        @click="copy"
-        >copy to clipboard</BaseButton
+  <v-card :loading="loading" class="mb-4">
+    <template #prepend>
+      <v-avatar
+        v-if="model.feed.icon"
+        size="24"
+        :image="`/api/miniflux/icon/${model.feed.icon.icon_id}`"
+      />
+    </template>
+    <template #title>
+      <div class="text-subtitle-2">{{ model.feed.title }}</div>
+    </template>
+    <template #append>
+      <v-btn
+        flat
+        :icon="modelValue.status === 'unread' ? 'mdi-check' : 'mdi-undo'"
+        @click="toggleStatus"
+      />
+      <v-btn
+        :href="model.url"
+        flat
+        icon="mdi-open-in-new"
+        rel="noopener noreferrer"
+        target="_blank"
+      />
+    </template>
+    <template #text>
+      <div
+        class="mb-4 text-h5"
+        :class="{ 'text-disabled': modelValue.status === 'read' }"
       >
-    </div>
-  </details>
+        {{ model.title }}
+      </div>
+      <div class="d-flex flex-wrap ga-2">
+        <v-chip size="small" prepend-icon="mdi-calendar-blank">
+          {{ ago(model.published_at) }}
+        </v-chip>
+        <v-chip size="small" prepend-icon="mdi-rss">
+          {{ model.feed.title }}
+        </v-chip>
+        <v-chip size="small" prepend-icon="mdi-folder">
+          {{ model.feed.category.title }}
+        </v-chip>
+      </div>
+    </template>
+    <v-card-actions>
+      <v-btn @click.prevent="loadContent">read</v-btn>
+    </v-card-actions>
+    <v-expand-transition v-model="content">
+      <div v-if="content">
+        <v-divider />
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <div class="ma-4 my-content" v-html="content" />
+      </div>
+    </v-expand-transition>
+  </v-card>
 </template>
 
 <script setup lang="ts">
-import { parseISO } from "date-fns";
 import type { MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
 
-const titleRef = ref<null | HTMLElement>(null);
-const summaryRef = ref<null | HTMLElement>(null);
-
 const model = defineModel<MinifluxCompactEntry>({ required: true });
-watch(
-  () => model.value.status,
-  (next) => {
-    if (next === "read") summaryRef.value?.removeAttribute("open");
-  },
-);
-
-defineEmits<{ selectCategory: [id: number]; selectFeed: [id: number] }>();
-
-const STALE_DELTA = 24 * 60 * 60 * 1000; // 1day
-const now = computed(() => Date.now());
-const stale = computed(
-  () => now.value - parseISO(model.value.published_at).valueOf() > STALE_DELTA,
-);
-const summarized = useSummarize(model.value.url);
-const hasSummary = computed(() => summarized.status.value === "success");
-const summary = computed(
-  () => summarized.data.value?.[0].output_data.markdown || "",
-);
-const copyableSummary = computed(
-  () => `${pangu(model.value.title)}
-
-${summarized.data.value?.[1].url}
-
-${pangu(summary.value)}`,
-);
-const { copy, copied } = useClipboard({ source: copyableSummary });
 
 const { $client } = useNuxtApp();
-const fetched = useAsyncData(
+const contentFetched = useAsyncData(
+  `entry:${model.value.id}:content`,
+  () => $client.miniflux.getContent.query(model.value.id),
+  { immediate: false, server: false },
+);
+const content = computed(() => contentFetched.data.value?.content || "");
+
+async function loadContent() {
+  await contentFetched.execute();
+}
+
+const statusToggled = useAsyncData(
   `entry:${model.value.id}:status`,
   () =>
     $client.miniflux.updateEntries.mutate({
-      status: "read",
       entryIds: [model.value.id],
+      status: model.value.status === "unread" ? "read" : "unread",
     }),
   { immediate: false, server: false },
 );
-
-function collapse() {
-  summaryRef.value?.removeAttribute("open");
+async function toggleStatus() {
+  const nextStatus = model.value.status === "unread" ? "read" : "unread";
+  await statusToggled.execute();
+  model.value.status = nextStatus;
 }
 
-async function markAsRead() {
-  await fetched.execute();
-  model.value.status = "read";
-}
-
-function toggleStatus(newStatus: string) {
-  if (newStatus !== "read") return;
-  titleRef.value?.scrollIntoView();
-}
+const loading = computed(() =>
+  [contentFetched.status.value, statusToggled.status.value].includes("pending"),
+);
 </script>
 
-<style scoped>
-.summary {
-  text-wrap: wrap;
-}
-
-.summary-title {
-  filter: sepia(100%);
+<style>
+.my-content img {
+  width: 100%;
 }
 </style>
