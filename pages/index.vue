@@ -11,9 +11,34 @@
     </v-app-bar>
     <v-main>
       <v-container>
-        <div v-for="(entry, index) in entries" :key="entry.id">
-          <RSSEntry v-model="entries[index]" />
+        <div class="position-relative">
+          <div v-for="(entry, index) in entries" :key="entry.id">
+            <RSSEntry v-model="entries[index]" />
+          </div>
+          <v-overlay
+            contained
+            class="d-flex justify-center align-center"
+            v-model="loading"
+          >
+            <v-progress-circular indeterminate />
+          </v-overlay>
         </div>
+        <v-speed-dial location="top end" transition="fade-transition">
+          <template v-slot:activator="{ props: activatorProps }">
+            <v-fab
+              app
+              location="bottom end"
+              v-bind="activatorProps"
+              icon="mdi-menu"
+            ></v-fab>
+          </template>
+          <v-btn
+            key="1"
+            icon="mdi-reload"
+            color="success"
+            @click.prevent="refresh"
+          />
+        </v-speed-dial>
       </v-container>
     </v-main>
   </v-app>
@@ -31,6 +56,12 @@ const fetched = useAsyncData("entries", () =>
   $client.miniflux.getEntries.query({}),
 );
 const entries = computed(() => fetched.data.value?.entries || []);
+
+async function refresh() {
+  await fetched.execute();
+}
+
+const loading = computed(() => [fetched.status.value].includes("pending"));
 </script>
 
 <style scoped></style>

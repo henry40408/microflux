@@ -49,8 +49,13 @@
     <v-expand-transition v-model="content">
       <div v-if="content">
         <v-divider />
-        <!-- eslint-disable-next-line vue/no-v-html -->
-        <div class="ma-4 my-content" v-html="content" />
+        <div class="ma-4">
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <div class="my-content" v-html="content" />
+        </div>
+        <div class="ma-2">
+          <v-btn flat @click="resetContent">collapse</v-btn>
+        </div>
       </div>
     </v-expand-transition>
   </v-card>
@@ -71,6 +76,9 @@ const content = computed(() => contentFetched.data.value?.content || "");
 
 async function loadContent() {
   await contentFetched.execute();
+}
+function resetContent() {
+  contentFetched.clear();
 }
 
 const statusToggled = useAsyncData(
@@ -94,7 +102,12 @@ const loading = computed(() =>
 </script>
 
 <style>
-.my-content img {
-  width: 100%;
+.my-content {
+  img {
+    max-width: 100%;
+  }
+  ul {
+    padding: 0 16px;
+  }
 }
 </style>
