@@ -9,7 +9,13 @@
       <q-inner-loading :showing="fetching" />
     </q-list>
     <q-page-sticky :offset="[16, 16]">
-      <q-btn color="secondary" fab icon="refresh" @click="fetched.execute()" />
+      <q-btn
+        color="secondary"
+        fab
+        icon="refresh"
+        :loading="fetching"
+        @click="fetched.execute()"
+      />
     </q-page-sticky>
   </q-page>
 </template>

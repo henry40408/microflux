@@ -3,7 +3,7 @@ import { getGitCommitHash } from "./utils/get-git-commit-hash";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   build: { transpile: ["trpc-nuxt"] },
-  compatibilityDate: "2024-04-03",
+  compatibilityDate: "2024-08-08",
   css: ["~/assets/css/style.css"],
   devtools: { enabled: true },
   eslint: { checker: true },
@@ -20,6 +20,8 @@ export default defineNuxtConfig({
         : getGitCommitHash(),
     },
   },
+  quasar: {
+    cssAddon: true,
+  },
   typescript: { typeCheck: true },
 });
-
