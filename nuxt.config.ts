@@ -4,13 +4,10 @@ import { getGitCommitHash } from "./utils/get-git-commit-hash";
 export default defineNuxtConfig({
   build: { transpile: ["trpc-nuxt"] },
   compatibilityDate: "2024-04-03",
-  css: [
-    !process.env.HISTOIRE ? "~/vendor/water.css" : undefined,
-    "~/assets/css/style.css",
-  ],
+  css: ["~/assets/css/style.css"],
   devtools: { enabled: true },
   eslint: { checker: true },
-  modules: ["@vueuse/nuxt", "@nuxt/eslint"],
+  modules: ["@vueuse/nuxt", "@nuxt/eslint", "nuxt-quasar-ui"],
   runtimeConfig: {
     kagiSessionLink: "",
     linkdingToken: "",
@@ -25,3 +22,4 @@ export default defineNuxtConfig({
   },
   typescript: { typeCheck: true },
 });
+
