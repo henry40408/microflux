@@ -2,6 +2,7 @@
   <q-item>
     <q-item-section side>
       <q-btn
+        :color="unreadColor"
         flat
         :icon="unreadIcon"
         :loading="toggling"
@@ -10,10 +11,10 @@
       />
     </q-item-section>
     <q-item-section>
-      <q-item-label class="items-center row">
+      <q-item-label>
         <a
           class="text-body2 text-primary"
-          :class="{ 'text-secondary': isRead }"
+          :class="{ 'text-accent': isRead }"
           href="#"
           @click.prevent="openContent"
         >
@@ -27,28 +28,25 @@
           @click.prevent="openInNew"
         />
       </q-item-label>
-      <q-item-label caption class="q-gutter-xs row">
-        <div class="items-center q-gutter-x-xs row">
-          <q-avatar v-if="iconId" size="xs">
+      <q-item-label caption>
+        <q-chip size="sm">
+          <q-avatar v-if="iconId">
             <img :src="`/api/miniflux/icon/${iconId}`" />
           </q-avatar>
-          <div>{{ pangu(modelValue.feed.title) }}</div>
-        </div>
-        <div class="items-center q-gutter-x-xs row">
-          <q-icon name="folder" />
-          <div>{{ pangu(modelValue.feed.category.title) }}</div>
-        </div>
-        <div class="items-center q-gutter-x-xs row">
-          <q-icon name="calendar_today" />
-          <div>{{ ago(modelValue.published_at) }}</div>
-        </div>
+          {{ pangu(modelValue.feed.title) }}
+        </q-chip>
+        <q-chip icon="folder" size="sm">
+          {{ pangu(modelValue.feed.category.title) }}
+        </q-chip>
+        <q-chip icon="calendar_today" size="sm">
+          {{ ago(modelValue.published_at) }}
+        </q-chip>
       </q-item-label>
     </q-item-section>
   </q-item>
   <q-dialog
     v-model="showContent"
     full-height
-    full-width
     position="right"
     @before-show="loadContent()"
   >
@@ -77,20 +75,18 @@
         <q-btn v-close-popup dense flat icon="close" round />
       </q-card-section>
       <q-card-section class="column q-gutter-xs row-sm">
-        <div class="items-center q-gutter-x-xs row">
-          <q-avatar v-if="iconId" size="xs">
+        <q-chip>
+          <q-avatar v-if="iconId">
             <img :src="`/api/miniflux/icon/${iconId}`" />
           </q-avatar>
-          <div>{{ pangu(modelValue.feed.title) }}</div>
-        </div>
-        <div class="items-center q-gutter-x-xs row">
-          <q-icon name="folder" />
-          <div>{{ pangu(modelValue.feed.category.title) }}</div>
-        </div>
-        <div class="items-center q-gutter-x-xs row">
-          <q-icon name="calendar_today" />
-          <div>{{ ago(modelValue.published_at) }}</div>
-        </div>
+          {{ pangu(modelValue.feed.title) }}
+        </q-chip>
+        <q-chip icon="folder">
+          {{ pangu(modelValue.feed.category.title) }}
+        </q-chip>
+        <q-chip icon="calendar_today">
+          {{ ago(modelValue.published_at) }}
+        </q-chip>
       </q-card-section>
       <q-card-section>
         <!-- eslint-disable-next-line vue/no-v-html -->
@@ -117,6 +113,7 @@ const model = defineModel<MinifluxCompactEntry>({ required: true });
 const iconId = computed(() => model.value.feed.icon?.icon_id || "");
 const isRead = computed(() => model.value.status === "read");
 const unreadIcon = computed(() => (isRead.value ? "drafts" : "email"));
+const unreadColor = computed(() => (isRead.value ? "dark" : "primary"));
 
 const contentFetched = useAsyncData(
   `entry:${model.value.id}:content`,
