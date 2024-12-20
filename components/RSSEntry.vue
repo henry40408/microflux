@@ -13,7 +13,7 @@
     <q-item-section>
       <q-item-label>
         <a
-          class="text-body2 text-primary"
+          class="text-body1 text-primary"
           :class="{ 'text-accent': isRead }"
           href="#"
           @click.prevent="openContent"
@@ -52,16 +52,6 @@
   >
     <q-card>
       <q-card-section class="items-center q-pb-none row">
-        <div class="text-h6">
-          <NuxtLink
-            class="text-primary"
-            external
-            target="_blank"
-            :to="modelValue.url"
-          >
-            {{ modelValue.title }}
-          </NuxtLink>
-        </div>
         <q-space />
         <q-btn
           v-if="!fullContent"
@@ -73,6 +63,16 @@
         />
         <q-btn v-else dense flat icon="undo" round @click="fullContent = ''" />
         <q-btn v-close-popup dense flat icon="close" round />
+      </q-card-section>
+      <q-card-section class="items-center q-pb-none row">
+        <NuxtLink
+          class="text-h5 text-primary"
+          external
+          target="_blank"
+          :to="modelValue.url"
+        >
+          {{ modelValue.title }}
+        </NuxtLink>
       </q-card-section>
       <q-card-section class="column q-gutter-xs row-sm">
         <q-chip>
@@ -89,10 +89,16 @@
         </q-chip>
       </q-card-section>
       <q-card-section>
-        <!-- eslint-disable-next-line vue/no-v-html -->
-        <div v-if="!fullContent" class="my-content" v-html="content" />
-        <!-- eslint-disable-next-line vue/no-v-html -->
-        <div v-else class="my-content" v-html="fullContent" />
+        <!-- eslint-disable vue/no-v-html -->
+        <div
+          v-if="!fullContent"
+          class="my-content text-body1"
+          v-html="content"
+        />
+        <!-- eslint-enable vue/no-v-html -->
+        <!-- eslint-disable vue/no-v-html -->
+        <div v-else class="my-content text-body1" v-html="fullContent" />
+        <!-- eslint-enable vue/no-v-html -->
       </q-card-section>
     </q-card>
   </q-dialog>
