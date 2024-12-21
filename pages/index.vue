@@ -9,11 +9,14 @@
           round
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
-        <q-toolbar-title>unread entries</q-toolbar-title>
+        <q-avatar>
+          <q-icon name="rss_feed" />
+        </q-avatar>
+        <q-toolbar-title>Unread entries</q-toolbar-title>
         <q-btn
           dense
           flat
-          icon="filter_list"
+          icon="menu"
           round
           @click="rightDrawerOpen = !rightDrawerOpen"
         />
@@ -21,7 +24,17 @@
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" bordered show-if-above side="left">
-      <!-- empty -->
+      <q-list padding>
+        <q-item-label header>Navigation</q-item-label>
+        <q-item v-ripple clickable to="/">
+          <q-item-section side>
+            <q-avatar>
+              <q-icon name="rss_feed" />
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>Unread entries</q-item-section>
+        </q-item>
+      </q-list>
     </q-drawer>
 
     <q-drawer v-model="rightDrawerOpen" bordered show-if-above side="right">
@@ -158,10 +171,10 @@
               <q-card-section>Mark all as done?</q-card-section>
               <q-card-actions align="right">
                 <q-btn flat @click="marking = false">Cancel</q-btn>
-                <q-btn color="negative" @click="markAllAsDone">YES</q-btn>
-                <q-btn color="positive" @click="markAllAsDoneAndRefresh"
-                  >YES and refresh</q-btn
-                >
+                <q-btn color="negative" @click="markAllAsDone">Yes</q-btn>
+                <q-btn color="negative" @click="markAllAsDoneAndRefresh">
+                  Yes and refresh
+                </q-btn>
               </q-card-actions>
             </q-card>
           </q-dialog>
@@ -255,7 +268,7 @@ const selectedCategory = computed(() =>
 const filteredCategoryOptions = ref<{ value: number; label: string }[]>();
 const total = computed(() => fetched.data.value?.total || 0);
 useHead({
-  title: () => `(${total.value}) unread entries`,
+  title: () => `(${total.value}) Unread entries`,
 });
 
 function filterFeed(val: string, update: (callbackFn: () => void) => void) {
