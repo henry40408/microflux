@@ -130,13 +130,38 @@
           no entries
         </div>
         <q-page-sticky :offset="[16, 16]">
-          <q-btn color="primary" fab icon="done_all" @click="marking = true" />
+          <q-fab
+            color="primary"
+            direction="up"
+            icon="keyboard_arrow_up"
+            vertical-actions-align="right"
+          >
+            <q-fab-action
+              color="secondary"
+              external-label
+              icon="done_all"
+              label="Mark all as done"
+              label-position="left"
+              @click="marking = true"
+            />
+            <q-fab-action
+              color="secondary"
+              external-label
+              icon="refresh"
+              label="Refresh"
+              label-position="left"
+              @click="fetched.execute()"
+            />
+          </q-fab>
           <q-dialog v-model="marking">
             <q-card>
               <q-card-section>Mark all as done?</q-card-section>
               <q-card-actions align="right">
                 <q-btn flat @click="marking = false">Cancel</q-btn>
-                <q-btn color="negative" @click="markAllAsDone">OK</q-btn>
+                <q-btn color="negative" @click="markAllAsDone">YES</q-btn>
+                <q-btn color="positive" @click="markAllAsDoneAndRefresh"
+                  >YES and refresh</q-btn
+                >
               </q-card-actions>
             </q-card>
           </q-dialog>
@@ -167,7 +192,26 @@ const fetched = useAsyncData(
   },
   { watch: [selectedCategoryId, selectedFeedId] },
 );
+
 const entries = computed(() => fetched.data.value?.entries || []);
+watch(
+  () => entries.value,
+  async (next) => {
+    if (next.length <= 0) {
+      if (selectedFeedId.value) {
+        selectedFeedId.value = null;
+        await nextTick();
+        return;
+      }
+      if (selectedCategoryId.value) {
+        selectedCategoryId.value = null;
+        await nextTick();
+        return;
+      }
+    }
+  },
+);
+
 const feeds = computed(() =>
   lodash(entries.value)
     .groupBy("feed.id")
@@ -245,11 +289,22 @@ function filterCategory(val: string, update: (callbackFn: () => void) => void) {
 }
 
 async function markAllAsDone() {
-  const entryIds = entries.value.map((e) => e.id);
-  await $client.miniflux.updateEntries.mutate({ entryIds, status: "read" });
-  for (let i = 0; i < entries.value.length; i += 1) {
-    entries.value[i].status = "read";
+  try {
+    const entryIds = entries.value.map((e) => e.id);
+    await $client.miniflux.updateEntries.mutate({ entryIds, status: "read" });
+    for (let i = 0; i < entries.value.length; i += 1) {
+      entries.value[i].status = "read";
+    }
+  } catch (err) {
+    console.error(err);
+  } finally {
+    marking.value = false;
   }
+}
+
+async function markAllAsDoneAndRefresh() {
+  await markAllAsDone();
+  await fetched.execute();
 }
 
 async function refreshEntries(done: () => void) {
