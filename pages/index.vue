@@ -171,8 +171,17 @@
               <q-card-section>Mark all as done?</q-card-section>
               <q-card-actions align="right">
                 <q-btn flat @click="marking = false">Cancel</q-btn>
-                <q-btn color="negative" @click="markAllAsDone">Yes</q-btn>
-                <q-btn color="negative" @click="markAllAsDoneAndRefresh">
+                <q-btn
+                  color="negative"
+                  :loading="loading"
+                  @click="markAllAsDone"
+                  >Yes</q-btn
+                >
+                <q-btn
+                  color="negative"
+                  :loading="loading"
+                  @click="markAllAsDoneAndRefresh"
+                >
                   Yes and refresh
                 </q-btn>
               </q-card-actions>
@@ -301,10 +310,18 @@ function filterCategory(val: string, update: (callbackFn: () => void) => void) {
   }
 }
 
+const markedAllAsRead = useAsyncData(
+  "mark-all-as-read",
+  () =>
+    $client.miniflux.updateEntries.mutate({
+      entryIds: entries.value.map((e) => e.id),
+      status: "read",
+    }),
+  { immediate: false, server: false },
+);
 async function markAllAsDone() {
   try {
-    const entryIds = entries.value.map((e) => e.id);
-    await $client.miniflux.updateEntries.mutate({ entryIds, status: "read" });
+    await markedAllAsRead.execute();
     for (let i = 0; i < entries.value.length; i += 1) {
       entries.value[i].status = "read";
     }
@@ -325,7 +342,9 @@ async function refreshEntries(done: () => void) {
   done();
 }
 
-const loading = computed(() => [fetched.status.value].includes("pending"));
+const loading = computed(() =>
+  [fetched.status.value, markedAllAsRead.status.value].includes("pending"),
+);
 </script>
 
 <style scoped></style>
