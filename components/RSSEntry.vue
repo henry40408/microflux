@@ -29,13 +29,22 @@
         />
       </q-item-label>
       <q-item-label caption>
-        <q-chip size="sm">
+        <q-chip
+          clickable
+          size="sm"
+          @click="$emit('selectFeed', String(modelValue.feed.id))"
+        >
           <q-avatar v-if="iconId">
             <img :src="`/api/miniflux/icon/${iconId}`" />
           </q-avatar>
           {{ pangu(modelValue.feed.title) }}
         </q-chip>
-        <q-chip icon="folder" size="sm">
+        <q-chip
+          clickable
+          icon="folder"
+          size="sm"
+          @click="$emit('selectCategory', String(modelValue.feed.category.id))"
+        >
           {{ pangu(modelValue.feed.category.title) }}
         </q-chip>
         <q-chip icon="calendar_today" size="sm">
@@ -116,6 +125,10 @@ const showContent = ref(false);
 const toggling = ref(false);
 
 const model = defineModel<MinifluxCompactEntry>({ required: true });
+defineEmits<{
+  selectCategory: [id: string];
+  selectFeed: [id: string];
+}>();
 
 const iconId = computed(() => model.value.feed.icon?.icon_id || "");
 const isRead = computed(() => model.value.status === "read");

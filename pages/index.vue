@@ -120,6 +120,8 @@
               v-for="(entry, index) in entries"
               :key="entry.id"
               v-model="entries[index]"
+              @select-category="(id) => (selectedCategoryId = id)"
+              @select-feed="(id) => (selectedFeedId = id)"
             />
             <q-inner-loading :showing="loading" />
           </q-list>
