@@ -32,8 +32,26 @@
             <q-item-section avatar>
               <q-icon name="numbers" />
             </q-item-section>
-            <q-item-section>{{ total }} entries</q-item-section>
+            <q-item-section>{{ formatNumber(total) }} entries</q-item-section>
           </q-item>
+          <q-item>
+            <q-item-section avatar>
+              <q-icon name="rss_feed" />
+            </q-item-section>
+            <q-item-section
+              >{{ formatNumber(feeds.length) }} feeds</q-item-section
+            >
+          </q-item>
+          <q-item>
+            <q-item-section avatar>
+              <q-icon name="folder" />
+            </q-item-section>
+            <q-item-section
+              >{{ formatNumber(categories.length) }} categories</q-item-section
+            >
+          </q-item>
+          <q-separator />
+          <q-item-label header>Filters</q-item-label>
         </q-list>
       </q-scroll-area>
     </q-drawer>
@@ -63,6 +81,8 @@
 </template>
 
 <script setup lang="ts">
+import lodash from "lodash";
+
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
 
@@ -73,6 +93,18 @@ const fetched = useAsyncData("entres", () =>
 );
 const fetching = computed(() => fetched.status.value === "pending");
 const entries = computed(() => fetched.data.value?.entries || []);
+const feeds = computed(() =>
+  lodash.uniqBy(
+    entries.value.map((e) => e.feed),
+    "id",
+  ),
+);
+const categories = computed(() =>
+  lodash.uniqBy(
+    feeds.value.map((f) => f.category),
+    "id",
+  ),
+);
 const total = computed(() => fetched.data.value?.total || 0);
 useHead({
   title: () => `(${total.value}) unread entries`,
