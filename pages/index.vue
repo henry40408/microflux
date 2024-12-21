@@ -58,12 +58,16 @@
                 <q-select
                   v-model="selectedCategoryId"
                   clearable
-                  filled
-                  label="category"
+                  emit-value
+                  label="Category"
+                  map-options
                   :options="filteredCategoryOptions"
                   use-input
                   @filter="filterCategory"
                 >
+                  <template #selected>
+                    {{ selectedCategory?.label || "" }}
+                  </template>
                   <template #option="scope">
                     <q-item v-bind="scope.itemProps">
                       <q-item-section>
@@ -82,12 +86,14 @@
                 <q-select
                   v-model="selectedFeedId"
                   clearable
-                  filled
-                  label="feed"
+                  emit-value
+                  label="Feed"
+                  map-options
                   :options="filteredFeedOptions"
                   use-input
                   @filter="filterFeed"
                 >
+                  <template #selected>{{ selectedFeed?.label || "" }}</template>
                   <template #option="scope">
                     <q-item v-bind="scope.itemProps">
                       <q-item-section>
@@ -114,14 +120,17 @@
             :key="entry.id"
             v-model="entries[index]"
           />
-          <q-inner-loading :showing="fetching" />
+          <q-inner-loading :showing="loading" />
         </q-list>
+        <div v-if="!entries.length" class="text-body1 text-grey text-italic">
+          no entries
+        </div>
         <q-page-sticky :offset="[16, 16]">
           <q-btn
             color="secondary"
             fab
             icon="refresh"
-            :loading="fetching"
+            :loading="loading"
             @click="fetched.execute()"
           />
         </q-page-sticky>
@@ -132,19 +141,24 @@
 
 <script setup lang="ts">
 import lodash from "lodash";
-import type { QSelect } from "quasar";
+import { useRouteQuery } from "@vueuse/router";
 
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
-const selectedCategoryId = ref(null);
-const selectedFeedId = ref(null);
+const selectedCategoryId = useRouteQuery("categoryId");
+const selectedFeedId = useRouteQuery("feedId");
 
 const { $client } = useNuxtApp();
 
-const fetched = useAsyncData("entres", () =>
-  $client.miniflux.getEntries.query({}),
+const fetched = useAsyncData(
+  "entries",
+  () => {
+    const categoryId = queryToString(selectedCategoryId);
+    const feedId = queryToString(selectedFeedId);
+    return $client.miniflux.getEntries.query({ categoryId, feedId });
+  },
+  { watch: [selectedCategoryId, selectedFeedId] },
 );
-const fetching = computed(() => fetched.status.value === "pending");
 const entries = computed(() => fetched.data.value?.entries || []);
 const feeds = computed(() =>
   lodash(entries.value)
@@ -159,6 +173,9 @@ const feedOptions = computed(() =>
     label: g.feed.title,
     count: g.count,
   })),
+);
+const selectedFeed = computed(() =>
+  feedOptions.value.find((f) => String(f.value) === selectedFeedId.value),
 );
 const filteredFeedOptions = ref<{ value: number; label: string }[]>([]);
 const categories = computed(() =>
@@ -177,6 +194,11 @@ const categoryOptions = computed(() =>
     label: g.category.title,
     count: g.count,
   })),
+);
+const selectedCategory = computed(() =>
+  categoryOptions.value.find(
+    (c) => String(c.value) === selectedCategoryId.value,
+  ),
 );
 const filteredCategoryOptions = ref<{ value: number; label: string }[]>();
 const total = computed(() => fetched.data.value?.total || 0);
@@ -213,6 +235,8 @@ function filterCategory(val: string, update: (callbackFn: () => void) => void) {
     });
   }
 }
+
+const loading = computed(() => [fetched.status.value].includes("pending"));
 </script>
 
 <style scoped></style>

@@ -58,6 +58,7 @@
           dense
           flat
           icon="download"
+          :loading="loading"
           round
           @click="loadFullContent"
         />
@@ -178,6 +179,12 @@ async function updateStatus(status: "read" | "unread") {
     toggling.value = false;
   }
 }
+
+const loading = computed(() =>
+  [contentFetched.status.value, fullContentFetched.status.value].includes(
+    "pending",
+  ),
+);
 </script>
 
 <style scoped></style>
