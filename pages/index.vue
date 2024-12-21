@@ -52,6 +52,56 @@
           </q-item>
           <q-separator />
           <q-item-label header>Filters</q-item-label>
+          <q-list>
+            <q-item>
+              <q-item-section>
+                <q-select
+                  v-model="selectedCategoryId"
+                  clearable
+                  filled
+                  label="category"
+                  :options="filteredCategoryOptions"
+                  use-input
+                  @filter="filterCategory"
+                >
+                  <template #option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section>
+                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-badge>{{ scope.opt.count }}</q-badge>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section>
+                <q-select
+                  v-model="selectedFeedId"
+                  clearable
+                  filled
+                  label="feed"
+                  :options="filteredFeedOptions"
+                  use-input
+                  @filter="filterFeed"
+                >
+                  <template #option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section>
+                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-badge>{{ scope.opt.count }}</q-badge>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </q-item-section>
+            </q-item>
+          </q-list>
         </q-list>
       </q-scroll-area>
     </q-drawer>
@@ -82,9 +132,12 @@
 
 <script setup lang="ts">
 import lodash from "lodash";
+import type { QSelect } from "quasar";
 
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
+const selectedCategoryId = ref(null);
+const selectedFeedId = ref(null);
 
 const { $client } = useNuxtApp();
 
@@ -94,21 +147,72 @@ const fetched = useAsyncData("entres", () =>
 const fetching = computed(() => fetched.status.value === "pending");
 const entries = computed(() => fetched.data.value?.entries || []);
 const feeds = computed(() =>
-  lodash.uniqBy(
-    entries.value.map((e) => e.feed),
-    "id",
-  ),
+  lodash(entries.value)
+    .groupBy("feed.id")
+    .map((entries) => ({ feed: entries[0].feed, count: entries.length }))
+    .orderBy([(g) => g.count, (g) => g.feed.title], ["desc", "asc"])
+    .value(),
 );
+const feedOptions = computed(() =>
+  feeds.value.map((g) => ({
+    value: g.feed.id,
+    label: g.feed.title,
+    count: g.count,
+  })),
+);
+const filteredFeedOptions = ref<{ value: number; label: string }[]>([]);
 const categories = computed(() =>
-  lodash.uniqBy(
-    feeds.value.map((f) => f.category),
-    "id",
-  ),
+  lodash(entries.value)
+    .groupBy("feed.category.id")
+    .map((entries) => ({
+      category: entries[0].feed.category,
+      count: entries.length,
+    }))
+    .orderBy([(g) => g.count, (g) => g.category.title], ["desc", "asc"])
+    .value(),
 );
+const categoryOptions = computed(() =>
+  categories.value.map((g) => ({
+    value: g.category.id,
+    label: g.category.title,
+    count: g.count,
+  })),
+);
+const filteredCategoryOptions = ref<{ value: number; label: string }[]>();
 const total = computed(() => fetched.data.value?.total || 0);
 useHead({
   title: () => `(${total.value}) unread entries`,
 });
+
+function filterFeed(val: string, update: (callbackFn: () => void) => void) {
+  if (val !== "") {
+    update(() => {
+      const needle = val.toLowerCase();
+      filteredFeedOptions.value = feedOptions.value.filter((f) =>
+        f.label.toLowerCase().includes(needle),
+      );
+    });
+  } else {
+    update(() => {
+      filteredFeedOptions.value = feedOptions.value;
+    });
+  }
+}
+
+function filterCategory(val: string, update: (callbackFn: () => void) => void) {
+  if (val !== "") {
+    update(() => {
+      const needle = val.toLowerCase();
+      filteredCategoryOptions.value = categoryOptions.value.filter((f) =>
+        f.label.toLowerCase().includes(needle),
+      );
+    });
+  } else {
+    update(() => {
+      filteredCategoryOptions.value = categoryOptions.value;
+    });
+  }
+}
 </script>
 
 <style scoped></style>
