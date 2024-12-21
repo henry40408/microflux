@@ -114,25 +114,30 @@
 
     <q-page-container>
       <q-page padding>
-        <q-list separator>
-          <RSSEntry
-            v-for="(entry, index) in entries"
-            :key="entry.id"
-            v-model="entries[index]"
-          />
-          <q-inner-loading :showing="loading" />
-        </q-list>
+        <q-pull-to-refresh @refresh="refreshEntries">
+          <q-list separator>
+            <RSSEntry
+              v-for="(entry, index) in entries"
+              :key="entry.id"
+              v-model="entries[index]"
+            />
+            <q-inner-loading :showing="loading" />
+          </q-list>
+        </q-pull-to-refresh>
         <div v-if="!entries.length" class="text-body1 text-grey text-italic">
           no entries
         </div>
         <q-page-sticky :offset="[16, 16]">
-          <q-btn
-            color="secondary"
-            fab
-            icon="refresh"
-            :loading="loading"
-            @click="fetched.execute()"
-          />
+          <q-btn color="primary" fab icon="done_all" @click="marking = true" />
+          <q-dialog v-model="marking">
+            <q-card>
+              <q-card-section>Mark all as done?</q-card-section>
+              <q-card-actions align="right">
+                <q-btn flat @click="marking = false">Cancel</q-btn>
+                <q-btn color="negative" @click="markAllAsDone">OK</q-btn>
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
         </q-page-sticky>
       </q-page>
     </q-page-container>
@@ -145,6 +150,7 @@ import { useRouteQuery } from "@vueuse/router";
 
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
+const marking = ref(false);
 const selectedCategoryId = useRouteQuery("categoryId");
 const selectedFeedId = useRouteQuery("feedId");
 
@@ -234,6 +240,19 @@ function filterCategory(val: string, update: (callbackFn: () => void) => void) {
       filteredCategoryOptions.value = categoryOptions.value;
     });
   }
+}
+
+async function markAllAsDone() {
+  const entryIds = entries.value.map((e) => e.id);
+  await $client.miniflux.updateEntries.mutate({ entryIds, status: "read" });
+  for (let i = 0; i < entries.value.length; i += 1) {
+    entries.value[i].status = "read";
+  }
+}
+
+async function refreshEntries(done: () => void) {
+  await fetched.execute();
+  done();
 }
 
 const loading = computed(() => [fetched.status.value].includes("pending"));
