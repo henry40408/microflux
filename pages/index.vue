@@ -152,18 +152,18 @@
             <q-fab-action
               color="secondary"
               external-label
-              icon="done_all"
-              label="Mark all as done"
-              label-position="left"
-              @click="marking = true"
-            />
-            <q-fab-action
-              color="secondary"
-              external-label
               icon="refresh"
               label="Refresh"
               label-position="left"
               @click="fetched.execute()"
+            />
+            <q-fab-action
+              color="secondary"
+              external-label
+              icon="done_all"
+              label="Mark all as done"
+              label-position="left"
+              @click="marking = true"
             />
             <q-fab-action
               v-if="errors.length > 0"
@@ -188,6 +188,7 @@
                 </q-list>
               </q-card-section>
               <q-card-actions align="right">
+                <q-btn flat label="Clear" @click="clearErrors()" />
                 <q-btn flat label="Dismiss" @click="showingErrors = false" />
               </q-card-actions>
             </q-card>
@@ -222,7 +223,7 @@
 import lodash from "lodash";
 import { useRouteQuery } from "@vueuse/router";
 
-import { errors } from "~/utils/add-error";
+import { clearErrors, errors } from "~/utils/add-error";
 
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
@@ -382,6 +383,15 @@ async function refreshEntries(done: () => void) {
 
 const loading = computed(() =>
   [fetched.status.value, markedAllAsRead.status.value].includes("pending"),
+);
+
+watch(
+  () => [fetched.error.value, markedAllAsRead.error.value],
+  (errors) => {
+    for (const error of errors) {
+      if (error) addError(error);
+    }
+  },
 );
 </script>
 

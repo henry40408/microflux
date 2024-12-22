@@ -9,6 +9,10 @@ interface OccurredError {
 
 export const errors = ref<OccurredError[]>([]);
 
+export function clearErrors() {
+  errors.value = [];
+}
+
 export default function (e: unknown) {
   Notify.create({
     color: "negative",

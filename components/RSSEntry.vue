@@ -63,6 +63,14 @@
       <q-card-section class="items-center q-pb-none row">
         <q-space />
         <q-btn
+          dense
+          flat
+          icon="save"
+          :loading="loading"
+          round
+          @click="saved.execute()"
+        />
+        <q-btn
           v-if="!fullContent"
           dense
           flat
@@ -145,6 +153,11 @@ const fullContentFetched = useAsyncData(
   () => $client.miniflux.getFullContent.query(model.value.id),
   { immediate: false, server: false },
 );
+const saved = useAsyncData(
+  `entry:${model.value.id}:save`,
+  () => $client.miniflux.saveEntry.mutate(model.value.id),
+  { immediate: false, server: false },
+);
 
 async function loadContent() {
   if (content.value) return;
@@ -210,9 +223,24 @@ async function updateStatus(status: "read" | "unread") {
 }
 
 const loading = computed(() =>
-  [contentFetched.status.value, fullContentFetched.status.value].includes(
-    "pending",
-  ),
+  [
+    contentFetched.status.value,
+    fullContentFetched.status.value,
+    saved.status.value,
+  ].includes("pending"),
+);
+
+watch(
+  () => [
+    contentFetched.error.value,
+    fullContentFetched.error.value,
+    saved.error.value,
+  ],
+  (errors) => {
+    for (const error of errors) {
+      if (error) addError(error);
+    }
+  },
 );
 </script>
 
