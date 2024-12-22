@@ -148,19 +148,31 @@ const fullContentFetched = useAsyncData(
 
 async function loadContent() {
   if (content.value) return;
-  await contentFetched.execute();
-  content.value = contentFetched.data.value?.content || "";
+  try {
+    await contentFetched.execute();
+    content.value = contentFetched.data.value?.content || "";
+  } catch (err) {
+    addError(err);
+  }
 }
 
 async function loadFullContent() {
   if (fullContent.value) return;
-  await fullContentFetched.execute();
-  fullContent.value = fullContentFetched.data.value?.content || "";
+  try {
+    await fullContentFetched.execute();
+    fullContent.value = fullContentFetched.data.value?.content || "";
+  } catch (err) {
+    addError(err);
+  }
 }
 
 async function markAsRead() {
-  await updateStatus("read");
-  model.value.status = "read";
+  try {
+    await updateStatus("read");
+    model.value.status = "read";
+  } catch (err) {
+    addError(err);
+  }
 }
 
 function openContent() {
@@ -174,9 +186,13 @@ function openInNew() {
 }
 
 async function toggleStatus() {
-  const nextStatus = isRead.value ? "unread" : "read";
-  await updateStatus(nextStatus);
-  model.value.status = nextStatus;
+  try {
+    const nextStatus = isRead.value ? "unread" : "read";
+    await updateStatus(nextStatus);
+    model.value.status = nextStatus;
+  } catch (err) {
+    addError(err);
+  }
 }
 
 async function updateStatus(status: "read" | "unread") {
@@ -187,7 +203,7 @@ async function updateStatus(status: "read" | "unread") {
       status,
     });
   } catch (err) {
-    console.error(err);
+    addError(err);
   } finally {
     toggling.value = false;
   }

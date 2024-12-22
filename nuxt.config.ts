@@ -22,6 +22,8 @@ export default defineNuxtConfig({
   },
   quasar: {
     cssAddon: true,
+    plugins: ["Notify"],
   },
   typescript: { typeCheck: true },
 });
+

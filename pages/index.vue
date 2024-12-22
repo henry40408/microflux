@@ -165,25 +165,50 @@
               label-position="left"
               @click="fetched.execute()"
             />
+            <q-fab-action
+              v-if="errors.length > 0"
+              color="negative"
+              external-label
+              icon="error_outline"
+              label="Show errors"
+              label-position="left"
+              @click="showingErrors = true"
+            />
           </q-fab>
+          <q-dialog v-model="showingErrors">
+            <q-card>
+              <q-card-section>
+                <q-list separator>
+                  <q-item v-for="e in errors" :key="e.id">
+                    <q-item-section>
+                      <q-item-label>{{ e.error }}</q-item-label>
+                      <q-item-label caption>{{ e.timestamp }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-card-section>
+              <q-card-actions align="right">
+                <q-btn flat label="Dismiss" @click="showingErrors = false" />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
           <q-dialog v-model="marking">
             <q-card>
               <q-card-section>Mark all as done?</q-card-section>
               <q-card-actions align="right">
-                <q-btn flat @click="marking = false">Cancel</q-btn>
+                <q-btn flat label="Cancel" @click="marking = false" />
                 <q-btn
                   color="negative"
+                  label="Yes"
                   :loading="loading"
                   @click="markAllAsDone"
-                  >Yes</q-btn
-                >
+                />
                 <q-btn
                   color="negative"
+                  label="Yes and refresh"
                   :loading="loading"
                   @click="markAllAsDoneAndRefresh"
-                >
-                  Yes and refresh
-                </q-btn>
+                />
               </q-card-actions>
             </q-card>
           </q-dialog>
@@ -197,9 +222,13 @@
 import lodash from "lodash";
 import { useRouteQuery } from "@vueuse/router";
 
+import { errors } from "~/utils/add-error";
+
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
 const marking = ref(false);
+const showingErrors = ref(false);
+
 const selectedCategoryId = useRouteQuery("categoryId");
 const selectedFeedId = useRouteQuery("feedId");
 
@@ -326,20 +355,29 @@ async function markAllAsDone() {
       entries.value[i].status = "read";
     }
   } catch (err) {
-    console.error(err);
+    addError(err);
   } finally {
     marking.value = false;
   }
 }
 
 async function markAllAsDoneAndRefresh() {
-  await markAllAsDone();
-  await fetched.execute();
+  try {
+    await markAllAsDone();
+    await fetched.execute();
+  } catch (err) {
+    addError(err);
+  }
 }
 
 async function refreshEntries(done: () => void) {
-  await fetched.execute();
-  done();
+  try {
+    await fetched.execute();
+  } catch (err) {
+    addError(err);
+  } finally {
+    done();
+  }
 }
 
 const loading = computed(() =>
