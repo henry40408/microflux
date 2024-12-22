@@ -1,187 +1,406 @@
 <template>
-  <div>
-    <header>
-      <NavBar />
-      <h1>unread entries</h1>
-    </header>
-    <main>
-      <fieldset ref="actionsRef">
-        <legend>actions</legend>
-        <ul>
-          <li>
-            <BaseButton
-              :error="fetched.error"
-              :status="fetched.status.value"
-              @click="fetched.refresh"
-              >reload</BaseButton
-            >
-          </li>
-          <li v-if="shouldMarkAllAsRead">
-            <RSSMarkAllAsRead v-model="entries" :entry-ids="unreadEntryIds" />
-          </li>
-          <li v-if="selectedCategory">
-            filtered by category <b>{{ selectedCategory?.title }}</b>
-            {{ " " }}
-            <BaseButton @click="removeQuery('categoryId')">reset</BaseButton>
-          </li>
-          <li v-if="selectedFeed">
-            filtered by feed <b>{{ selectedFeed?.title }}</b>
-            {{ " " }}
-            <BaseButton @click="removeQuery('feedId')">reset</BaseButton>
-          </li>
-          <li v-if="selectedDate">
-            filtered by date <b>{{ selectedDate }}</b>
-            {{ " " }}
-            <BaseButton @click="removeQuery('date')">reset</BaseButton>
-          </li>
-        </ul>
-      </fieldset>
-      <RSSEntryOutlines
-        v-model="entries"
-        :date="selectedDate"
-        :limit="selectedLimit"
-        @select-category="(id) => setQuery('categoryId', id)"
-        @select-date="(date) => setQuery('date', date)"
-        @select-feed="(id) => setQuery('feedId', id)"
-        @select-limit="(limit) => setQuery('limit', limit)"
-      />
-      <p>
-        <b>{{ unreadEntries.length }}</b> on page, <b>{{ total }}</b> total
-      </p>
-      <div v-for="(entry, index) in entries" :key="entry.id">
-        <RSSEntry
-          v-model="entries[index]"
-          @select-category="(id) => setQuery('categoryId', id)"
-          @select-feed="(id) => setQuery('feedId', id)"
+  <q-layout view="hHh lpR fFf">
+    <q-header class="bg-primary text-white" elevated>
+      <q-toolbar>
+        <q-btn
+          dense
+          flat
+          icon="menu"
+          round
+          @click="leftDrawerOpen = !leftDrawerOpen"
         />
-      </div>
-      <p v-if="entries.length <= 0">
-        <i>no entries</i>
-      </p>
-      <fieldset>
-        <legend>actions</legend>
-        <ul>
-          <li>
-            <BaseButton
-              :error="fetched.error"
-              :status="fetched.status.value"
-              @click="fetched.refresh"
-              >reload</BaseButton
+        <q-avatar>
+          <q-icon name="rss_feed" />
+        </q-avatar>
+        <q-toolbar-title>Unread entries</q-toolbar-title>
+        <q-btn
+          dense
+          flat
+          icon="menu"
+          round
+          @click="rightDrawerOpen = !rightDrawerOpen"
+        />
+      </q-toolbar>
+    </q-header>
+
+    <q-drawer v-model="leftDrawerOpen" bordered show-if-above side="left">
+      <q-list padding>
+        <q-item-label header>Navigation</q-item-label>
+        <q-item v-ripple clickable to="/">
+          <q-item-section side>
+            <q-avatar>
+              <q-icon name="rss_feed" />
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>Unread entries</q-item-section>
+        </q-item>
+      </q-list>
+    </q-drawer>
+
+    <q-drawer v-model="rightDrawerOpen" bordered show-if-above side="right">
+      <q-scroll-area class="fit">
+        <q-list>
+          <q-item-label header>Statistics</q-item-label>
+          <q-item>
+            <q-item-section avatar>
+              <q-icon name="numbers" />
+            </q-item-section>
+            <q-item-section>{{ formatNumber(total) }} entries</q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section avatar>
+              <q-icon name="rss_feed" />
+            </q-item-section>
+            <q-item-section
+              >{{ formatNumber(feeds.length) }} feeds</q-item-section
             >
-          </li>
-          <li v-if="shouldMarkAllAsRead">
-            <RSSMarkAllAsRead v-model="entries" :entry-ids="unreadEntryIds" />
-          </li>
-        </ul>
-      </fieldset>
-    </main>
-    <footer>
-      <AppVersion />
-    </footer>
-  </div>
+          </q-item>
+          <q-item>
+            <q-item-section avatar>
+              <q-icon name="folder" />
+            </q-item-section>
+            <q-item-section
+              >{{ formatNumber(categories.length) }} categories</q-item-section
+            >
+          </q-item>
+          <q-separator />
+          <q-item-label header>Filters</q-item-label>
+          <q-list>
+            <q-item>
+              <q-item-section>
+                <q-select
+                  v-model="selectedCategoryId"
+                  clearable
+                  emit-value
+                  label="Category"
+                  map-options
+                  :options="filteredCategoryOptions"
+                  use-input
+                  @filter="filterCategory"
+                >
+                  <template #selected>
+                    {{ selectedCategory?.label || "" }}
+                  </template>
+                  <template #option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section>
+                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-badge>{{ scope.opt.count }}</q-badge>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section>
+                <q-select
+                  v-model="selectedFeedId"
+                  clearable
+                  emit-value
+                  label="Feed"
+                  map-options
+                  :options="filteredFeedOptions"
+                  use-input
+                  @filter="filterFeed"
+                >
+                  <template #selected>{{ selectedFeed?.label || "" }}</template>
+                  <template #option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section>
+                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-badge>{{ scope.opt.count }}</q-badge>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-list>
+      </q-scroll-area>
+    </q-drawer>
+
+    <q-page-container>
+      <q-page padding>
+        <q-pull-to-refresh @refresh="refreshEntries">
+          <q-list separator>
+            <RSSEntry
+              v-for="(entry, index) in entries"
+              :key="entry.id"
+              v-model="entries[index]"
+              @select-category="(id) => (selectedCategoryId = id)"
+              @select-feed="(id) => (selectedFeedId = id)"
+            />
+            <q-item
+              v-if="!entries.length"
+              class="text-body1 text-grey text-italic"
+            >
+              no entries
+            </q-item>
+            <q-inner-loading :showing="loading" />
+          </q-list>
+        </q-pull-to-refresh>
+        <q-page-sticky :offset="[16, 16]">
+          <q-fab
+            color="primary"
+            direction="up"
+            icon="keyboard_arrow_up"
+            vertical-actions-align="right"
+          >
+            <q-fab-action
+              color="secondary"
+              external-label
+              icon="refresh"
+              label="Refresh"
+              label-position="left"
+              @click="fetched.execute()"
+            />
+            <q-fab-action
+              color="secondary"
+              external-label
+              icon="done_all"
+              label="Mark all as done"
+              label-position="left"
+              @click="marking = true"
+            />
+            <q-fab-action
+              v-if="errors.length > 0"
+              color="negative"
+              external-label
+              icon="error_outline"
+              label="Show errors"
+              label-position="left"
+              @click="showingErrors = true"
+            />
+          </q-fab>
+          <q-dialog v-model="showingErrors">
+            <q-card>
+              <q-card-section>
+                <q-list separator>
+                  <q-item v-for="e in errors" :key="e.id">
+                    <q-item-section>
+                      <q-item-label>{{ e.error }}</q-item-label>
+                      <q-item-label caption>{{ e.timestamp }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item v-if="errors.length <= 0">
+                    <q-item-section class="text-grey text-italic">
+                      no errors
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-card-section>
+              <q-card-actions align="right">
+                <q-btn flat label="Clear" @click="clearErrors()" />
+                <q-btn flat label="Dismiss" @click="showingErrors = false" />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+          <q-dialog v-model="marking">
+            <q-card>
+              <q-card-section>Mark all as done?</q-card-section>
+              <q-card-actions align="right">
+                <q-btn flat label="Cancel" @click="marking = false" />
+                <q-btn
+                  color="negative"
+                  label="Yes"
+                  :loading="loading"
+                  @click="markAllAsDone"
+                />
+                <q-btn
+                  color="negative"
+                  label="Yes and refresh"
+                  :loading="loading"
+                  @click="markAllAsDoneAndRefresh"
+                />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+        </q-page-sticky>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script setup lang="ts">
-import { endOfDay, getUnixTime, parseISO, startOfDay } from "date-fns";
+import lodash from "lodash";
+import { useRouteQuery } from "@vueuse/router";
 
-const actionsRef = ref<null | HTMLElement>();
+import { clearErrors, errors } from "~/utils/add-error";
 
-const route = useRoute();
-const query = toRef(route, "query");
-const selectedCategoryId = computed(() => query.value.categoryId?.toString());
-const selectedDate = computed(() => query.value.date?.toString());
-const selectedFeedId = computed(() => query.value.feedId?.toString());
-const selectedLimit = computed(() => query.value.limit?.toString());
+const leftDrawerOpen = ref(false);
+const rightDrawerOpen = ref(false);
+const marking = ref(false);
+const showingErrors = ref(false);
 
-const publishedAfter = computed(() =>
-  selectedDate.value
-    ? getUnixTime(startOfDay(parseISO(selectedDate.value))) - 1
-    : undefined,
-);
-const publishedBefore = computed(() =>
-  selectedDate.value
-    ? getUnixTime(endOfDay(parseISO(selectedDate.value)))
-    : undefined,
-);
+const selectedCategoryId = useRouteQuery("categoryId");
+const selectedFeedId = useRouteQuery("feedId");
 
 const { $client } = useNuxtApp();
-const fetched = await useAsyncData(
+
+const fetched = useAsyncData(
   "entries",
-  () =>
-    $client.miniflux.getEntries.query({
-      categoryId: selectedCategoryId.value,
-      feedId: selectedFeedId.value,
-      limit: selectedLimit.value,
-      publishedAfter: publishedAfter.value,
-      publishedBefore: publishedBefore.value,
-    }),
-  { watch: [selectedCategoryId, selectedFeedId, selectedDate, selectedLimit] },
+  () => {
+    const categoryId = queryToString(selectedCategoryId);
+    const feedId = queryToString(selectedFeedId);
+    return $client.miniflux.getEntries.query({ categoryId, feedId });
+  },
+  { watch: [selectedCategoryId, selectedFeedId] },
 );
 
-const total = computed(() => fetched.data.value?.total || 0);
 const entries = computed(() => fetched.data.value?.entries || []);
-watch(entries, async () => {
-  await handleEmptyEntries();
-  if (entries.value.length > 0) {
-    actionsRef.value?.scrollIntoView();
-  }
-});
+watch(
+  () => entries.value,
+  async (next) => {
+    if (next.length <= 0) {
+      if (selectedFeedId.value) {
+        selectedFeedId.value = null;
+        await nextTick();
+        return;
+      }
+      if (selectedCategoryId.value) {
+        selectedCategoryId.value = null;
+        await nextTick();
+        return;
+      }
+    }
+  },
+);
 
-const selectedCategory = computed(
-  () =>
-    entries.value.find(
-      (e) => e.feed.category.id.toString() === selectedCategoryId.value,
-    )?.feed.category,
+const feeds = computed(() =>
+  lodash(entries.value)
+    .groupBy("feed.id")
+    .map((entries) => ({ feed: entries[0].feed, count: entries.length }))
+    .orderBy([(g) => g.count, (g) => g.feed.title], ["desc", "asc"])
+    .value(),
 );
-const selectedFeed = computed(
-  () =>
-    entries.value.find((e) => e.feed.id.toString() === selectedFeedId.value)
-      ?.feed,
+const feedOptions = computed(() =>
+  feeds.value.map((g) => ({
+    value: g.feed.id,
+    label: g.feed.title,
+    count: g.count,
+  })),
 );
-
-const unreadEntries = computed(
-  () => entries.value.filter((e) => e.status === "unread") || [],
+const selectedFeed = computed(() =>
+  feedOptions.value.find((f) => String(f.value) === selectedFeedId.value),
 );
-const unreadEntryIds = computed(() => unreadEntries.value.map((e) => e.id));
+const filteredFeedOptions = ref<{ value: number; label: string }[]>([]);
+const categories = computed(() =>
+  lodash(entries.value)
+    .groupBy("feed.category.id")
+    .map((entries) => ({
+      category: entries[0].feed.category,
+      count: entries.length,
+    }))
+    .orderBy([(g) => g.count, (g) => g.category.title], ["desc", "asc"])
+    .value(),
+);
+const categoryOptions = computed(() =>
+  categories.value.map((g) => ({
+    value: g.category.id,
+    label: g.category.title,
+    count: g.count,
+  })),
+);
+const selectedCategory = computed(() =>
+  categoryOptions.value.find(
+    (c) => String(c.value) === selectedCategoryId.value,
+  ),
+);
+const filteredCategoryOptions = ref<{ value: number; label: string }[]>();
+const total = computed(() => fetched.data.value?.total || 0);
 useHead({
-  title: () => `(${unreadEntries.value.length}) miniflux`,
+  title: () => `(${total.value}) Unread entries`,
 });
-const shouldMarkAllAsRead = computed(
-  () => fetched.status.value !== "pending" && unreadEntryIds.value.length > 0,
+
+function filterFeed(val: string, update: (callbackFn: () => void) => void) {
+  if (val !== "") {
+    update(() => {
+      const needle = val.toLowerCase();
+      filteredFeedOptions.value = feedOptions.value.filter((f) =>
+        f.label.toLowerCase().includes(needle),
+      );
+    });
+  } else {
+    update(() => {
+      filteredFeedOptions.value = feedOptions.value;
+    });
+  }
+}
+
+function filterCategory(val: string, update: (callbackFn: () => void) => void) {
+  if (val !== "") {
+    update(() => {
+      const needle = val.toLowerCase();
+      filteredCategoryOptions.value = categoryOptions.value.filter((f) =>
+        f.label.toLowerCase().includes(needle),
+      );
+    });
+  } else {
+    update(() => {
+      filteredCategoryOptions.value = categoryOptions.value;
+    });
+  }
+}
+
+const markedAllAsRead = useAsyncData(
+  "mark-all-as-read",
+  () =>
+    $client.miniflux.updateEntries.mutate({
+      entryIds: entries.value.map((e) => e.id),
+      status: "read",
+    }),
+  { immediate: false, server: false },
+);
+async function markAllAsDone() {
+  try {
+    await markedAllAsRead.execute();
+    for (let i = 0; i < entries.value.length; i += 1) {
+      entries.value[i].status = "read";
+    }
+  } catch (err) {
+    addError(err);
+  } finally {
+    marking.value = false;
+  }
+}
+
+async function markAllAsDoneAndRefresh() {
+  try {
+    await markAllAsDone();
+    await fetched.execute();
+  } catch (err) {
+    addError(err);
+  }
+}
+
+async function refreshEntries(done: () => void) {
+  try {
+    await fetched.execute();
+  } catch (err) {
+    addError(err);
+  } finally {
+    done();
+  }
+}
+
+const loading = computed(() =>
+  [fetched.status.value, markedAllAsRead.status.value].includes("pending"),
 );
 
-async function setQuery(name: string, value: unknown) {
-  await navigateTo({
-    query: {
-      ...route.query,
-      [name]: value === undefined ? undefined : `${value}`,
-    },
-  });
-}
-
-async function removeQuery(name: string) {
-  await navigateTo({ query: { ...route.query, [name]: undefined } });
-}
-
-async function handleEmptyEntries() {
-  const count = entries.value.length;
-  const date = selectedDate.value;
-  const categoryId = selectedCategoryId.value;
-  const feedId = selectedFeedId.value;
-  if (date && count <= 0) {
-    await removeQuery("date");
-    return;
-  }
-  if (feedId && count <= 0) {
-    await removeQuery("feedId");
-    return;
-  }
-  if (categoryId && count <= 0) {
-    await removeQuery("categoryId");
-    return;
-  }
-}
-handleEmptyEntries();
+watch(
+  () => [fetched.error.value, markedAllAsRead.error.value],
+  (errors) => {
+    for (const error of errors) {
+      if (error) addError(error);
+    }
+  },
+);
 </script>
 
 <style scoped></style>

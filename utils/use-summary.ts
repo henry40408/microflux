@@ -6,7 +6,7 @@ export class SummaryData {
   summary!: string;
 }
 
-export default function useSummarize(url: string) {
+export default function (url: string) {
   const { $client } = useNuxtApp();
   return useAsyncData<[KagiSummarizerOutputResponse, FullUrlResponse]>(
     `summarize-full-url:${url}`,
