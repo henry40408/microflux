@@ -124,7 +124,7 @@
         </q-chip>
       </q-card-section>
       <q-card-section v-if="copySource">
-        <div class="bg-grey-3">
+        <div class="bg-teal">
           <code>
             <pre class="q-pa-md" style="text-wrap: auto">{{ copySource }}</pre>
           </code>
