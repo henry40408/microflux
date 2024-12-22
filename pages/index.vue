@@ -136,12 +136,15 @@
               @select-category="(id) => (selectedCategoryId = id)"
               @select-feed="(id) => (selectedFeedId = id)"
             />
+            <q-item
+              v-if="!entries.length"
+              class="text-body1 text-grey text-italic"
+            >
+              no entries
+            </q-item>
             <q-inner-loading :showing="loading" />
           </q-list>
         </q-pull-to-refresh>
-        <div v-if="!entries.length" class="text-body1 text-grey text-italic">
-          no entries
-        </div>
         <q-page-sticky :offset="[16, 16]">
           <q-fab
             color="primary"
@@ -183,6 +186,11 @@
                     <q-item-section>
                       <q-item-label>{{ e.error }}</q-item-label>
                       <q-item-label caption>{{ e.timestamp }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item v-if="errors.length <= 0">
+                    <q-item-section class="text-grey text-italic">
+                      no errors
                     </q-item-section>
                   </q-item>
                 </q-list>

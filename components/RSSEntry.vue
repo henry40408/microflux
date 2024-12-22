@@ -71,6 +71,23 @@
           @click="saved.execute()"
         />
         <q-btn
+          v-if="!summary"
+          dense
+          flat
+          icon="bolt"
+          :loading="summarizing"
+          round
+          @click="summarized.execute()"
+        />
+        <q-btn
+          v-else
+          dense
+          flat
+          icon="undo"
+          round
+          @click="summarized.clear()"
+        />
+        <q-btn
           v-if="!fullContent"
           dense
           flat
@@ -106,6 +123,17 @@
           {{ ago(modelValue.published_at) }}
         </q-chip>
       </q-card-section>
+      <q-card-section v-if="copySource">
+        <div class="bg-grey-3">
+          <code>
+            <pre class="q-pa-md" style="text-wrap: auto">{{ copySource }}</pre>
+          </code>
+        </div>
+        <div class="row">
+          <q-space />
+          <q-btn flat icon="content_copy" @click="copy()" />
+        </div>
+      </q-card-section>
       <q-card-section>
         <!-- eslint-disable vue/no-v-html -->
         <div
@@ -123,8 +151,11 @@
 </template>
 
 <script setup lang="ts">
+import { useQuasar } from "quasar";
+
 import type { MinifluxCompactEntry } from "~/server/trpc/routers/miniflux";
 
+const $q = useQuasar();
 const { $client } = useNuxtApp();
 
 const content = ref("");
@@ -141,7 +172,6 @@ defineEmits<{
 const iconId = computed(() => model.value.feed.icon?.icon_id || "");
 const isRead = computed(() => model.value.status === "read");
 const unreadIcon = computed(() => (isRead.value ? "drafts" : "email"));
-const unreadColor = computed(() => (isRead.value ? "dark" : "primary"));
 
 const contentFetched = useAsyncData(
   `entry:${model.value.id}:content`,
@@ -157,6 +187,36 @@ const saved = useAsyncData(
   `entry:${model.value.id}:save`,
   () => $client.miniflux.saveEntry.mutate(model.value.id),
   { immediate: false, server: false },
+);
+const summarized = useSummary(model.value.url);
+const summarizing = computed(() => summarized.status.value === "pending");
+const summary = computed(
+  () => summarized.data.value?.[0].output_data.markdown || "",
+);
+const unreadColor = computed(() =>
+  summary.value ? "positive" : isRead.value ? "dark" : "primary",
+);
+const copySource = computed(() =>
+  summary.value
+    ? `${model.value.title}
+
+${summarized.data.value?.[1].url}
+
+${pangu(summary.value)}`
+    : "",
+);
+const { copy, copied } = useClipboard({ source: copySource });
+watch(
+  () => copied.value,
+  (next, prev) => {
+    if (next && !prev)
+      $q.notify({
+        color: "positive",
+        icon: "info",
+        message: "Copied!",
+        position: "top",
+      });
+  },
 );
 
 async function loadContent() {
@@ -235,6 +295,7 @@ watch(
     contentFetched.error.value,
     fullContentFetched.error.value,
     saved.error.value,
+    summarized.error.value,
   ],
   (errors) => {
     for (const error of errors) {
