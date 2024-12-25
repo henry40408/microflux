@@ -12,12 +12,7 @@
     </q-item-section>
     <q-item-section>
       <q-item-label>
-        <a
-          class="text-body1 text-primary"
-          :class="{ 'text-accent': isRead }"
-          href="#"
-          @click.prevent="openContent"
-        >
+        <a :class="titleClass" href="#" @click.prevent="openContent">
           {{ pangu(modelValue.title) }}
         </a>
         <q-btn
@@ -101,7 +96,8 @@
       </q-card-section>
       <q-card-section class="items-center q-pb-none row">
         <NuxtLink
-          class="text-h5 text-primary"
+          class="text-h5"
+          :class="titleClass"
           external
           target="_blank"
           :to="modelValue.url"
@@ -123,18 +119,18 @@
           {{ ago(modelValue.published_at) }}
         </q-chip>
       </q-card-section>
-      <q-card-section v-if="copySource">
-        <div class="bg-teal">
-          <code>
-            <pre class="q-pa-md" style="text-wrap: auto">{{ copySource }}</pre>
-          </code>
+      <q-card-section v-if="copySource" class="my-max-width">
+        <div class="q-mb-md text-h6">Summary</div>
+        <div>
+          <pre class="my-text-wrap q-pa-md">{{ copySource }}</pre>
         </div>
         <div class="row">
           <q-space />
           <q-btn flat icon="content_copy" @click="copy()" />
         </div>
       </q-card-section>
-      <q-card-section>
+      <q-card-section class="my-max-width">
+        <div class="q-mb-md text-h6">Content</div>
         <!-- eslint-disable vue/no-v-html -->
         <div
           v-if="!fullContent"
@@ -194,7 +190,10 @@ const summary = computed(
   () => summarized.data.value?.[0].output_data.markdown || "",
 );
 const unreadColor = computed(() =>
-  summary.value ? "positive" : isRead.value ? "dark" : "primary",
+  summary.value ? "positive" : $q.dark.isActive ? "white" : "dark",
+);
+const titleClass = computed(() =>
+  $q.dark.isActive ? "text-white" : "text-dark",
 );
 const copySource = computed(() =>
   summary.value
@@ -346,5 +345,21 @@ watch(
   img {
     max-width: 100%;
   }
+
+  a,
+  a:visited {
+    color: black;
+    @media (prefers-color-scheme: dark) {
+      color: white;
+    }
+  }
+}
+
+.my-max-width {
+  max-width: 100vw;
+}
+
+.my-text-wrap {
+  text-wrap: wrap;
 }
 </style>
