@@ -12,7 +12,12 @@
     </q-item-section>
     <q-item-section>
       <q-item-label>
-        <a :class="titleClass" href="#" @click.prevent="openContent">
+        <a
+          class="text-body1"
+          :class="titleClass"
+          href="#"
+          @click.prevent="openContent"
+        >
           {{ pangu(modelValue.title) }}
         </a>
         <q-btn
@@ -190,7 +195,13 @@ const summary = computed(
   () => summarized.data.value?.[0].output_data.markdown || "",
 );
 const unreadColor = computed(() =>
-  summary.value ? "positive" : $q.dark.isActive ? "white" : "dark",
+  summary.value
+    ? "positive"
+    : isRead.value
+      ? "grey-7"
+      : $q.dark.isActive
+        ? "white"
+        : "dark",
 );
 const titleClass = computed(() =>
   $q.dark.isActive ? "text-white" : "text-dark",
