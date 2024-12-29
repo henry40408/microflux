@@ -13,7 +13,7 @@
     <q-item-section>
       <q-item-label>
         <a
-          class="text-body1"
+          class="my-underline-offset text-body1"
           :class="titleClass"
           href="#"
           @click.prevent="openContent"
@@ -101,7 +101,7 @@
       </q-card-section>
       <q-card-section class="items-center q-pb-none row">
         <NuxtLink
-          class="text-h5"
+          class="my-underline-offset text-h5"
           :class="titleClass"
           external
           target="_blank"
@@ -135,7 +135,10 @@
         </div>
       </q-card-section>
       <q-card-section class="my-max-width">
-        <div class="q-mb-md text-h6">Content</div>
+        <div class="q-mb-md text-h6">
+          <span v-if="!fullContent">Content</span>
+          <span v-else>Full content</span>
+        </div>
         <!-- eslint-disable vue/no-v-html -->
         <div
           v-if="!fullContent"
@@ -359,11 +362,16 @@ watch(
 
   a,
   a:visited {
+    text-underline-offset: 0.3rem;
     color: black;
     @media (prefers-color-scheme: dark) {
       color: white;
     }
   }
+}
+
+.my-underline-offset {
+  text-underline-offset: 0.3rem;
 }
 
 .my-max-width {

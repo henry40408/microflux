@@ -212,7 +212,9 @@
             </q-dialog>
             <q-dialog v-model="marking">
               <q-card>
-                <q-card-section>Mark all as done?</q-card-section>
+                <q-card-section class="text-h6">
+                  Mark all as done?
+                </q-card-section>
                 <q-card-actions align="right">
                   <q-btn flat label="Cancel" @click="marking = false" />
                   <q-btn
